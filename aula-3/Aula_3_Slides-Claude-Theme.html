@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code — O Guia Completo para Devs · TRF1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg-deep: #FFFFFF;
+  --bg-card: rgba(15, 28, 54, 0.04);
+  --bg-card-border: rgba(15, 28, 54, 0.14);
+  --accent-1: #B8892B;
+  --accent-2: #0F1C36;
+  --accent-1-rgb: 184, 137, 43;
+  --accent-2-rgb: 15, 28, 54;
+  --purple-300: #0F1C36;
+  --purple-400: #16274a;
+  --purple-500: #B8892B;
+  --purple-600: #A67824;
+  --purple-700: #8A6620;
+  --text-primary: #1A2233;
+  --text-secondary: #4A5568;
+  --text-muted: #8A8FA3;
+  --glass-bg: rgba(15, 28, 54, 0.035);
+  --glass-border: rgba(15, 28, 54, 0.10);
+  --border-subtle: rgba(15, 28, 54, 0.08);
+  --glow-purple: rgba(184, 137, 43, 0.14);
+  --glow-cyan: rgba(14, 124, 123, 0.10);
+  --teal: #0E7C7B;
+  --teal-soft: #D6ECEB;
+  --gold-soft: #E9D9B4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  -webkit-scroll-snap-type: y mandatory;
+}
+
+body {
+  background: var(--bg-deep);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.slides-container { position: relative; }
+
+.slide {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  width: 100%;
+  text-align: center;
+}
+
+.progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+  z-index: 1000;
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+.slide-counter {
+  position: fixed; bottom: 24px; right: 32px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 1000;
+}
+
+.glow {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glow-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--glow-purple), transparent 70%);
+  top: -200px; right: -100px;
+  animation: float1 8s ease-in-out infinite;
+}
+
+.glow-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(14, 124, 123, 0.08), transparent 70%);
+  bottom: -150px; left: -100px;
+  animation: float2 10s ease-in-out infinite;
+}
+
+.glow-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, var(--glow-cyan), transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: float3 12s ease-in-out infinite;
+  opacity: 0.5;
+}
+
+@keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-30px, 20px); } }
+@keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, -30px); } }
+@keyframes float3 { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.2); } }
+
+h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 4rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 24px;
+}
+
+h2 { font-family: 'Fraunces', serif; font-size: 2.8rem; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: var(--text-primary); margin-bottom: 20px; }
+h3 { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 600; color: var(--purple-300); margin-bottom: 16px; }
+h4 { color: var(--text-primary); font-weight: 700; margin-bottom: 8px; }
+p, li { font-size: 1.35rem; line-height: 1.6; color: var(--text-secondary); }
+
+.subtitle { font-size: 1.5rem; color: var(--text-secondary); font-weight: 400; max-width: 700px; margin: 0 auto; }
+.overline { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-1); margin-bottom: 12px; display: block; }
+.text-muted { color: var(--text-muted); }
+
+.big-number-value {
+  font-family: 'Fraunces', serif;
+  font-size: 8rem; font-weight: 700; letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent-1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1; margin-bottom: 16px;
+}
+
+.big-number-context { font-size: 1.4rem; color: var(--text-secondary); max-width: 500px; margin: 0 auto; }
+
+.quote-block { display: flex; gap: 24px; max-width: 800px; margin: 0 auto; text-align: left; }
+.quote-bar { width: 4px; min-height: 100%; background: linear-gradient(180deg, var(--accent-1), var(--accent-2)); border-radius: 2px; flex-shrink: 0; }
+.quote-text { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 500; font-style: italic; color: var(--text-primary); line-height: 1.5; margin-bottom: 16px; }
+.quote-author { display: flex; flex-direction: column; gap: 2px; }
+.quote-author strong { font-size: 1rem; color: var(--text-primary); font-style: normal; }
+.quote-author span { font-size: 0.85rem; color: var(--text-muted); font-style: normal; }
+
+.glass { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 32px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+.glass-sm { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 14px; padding: 20px 24px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+.split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; text-align: left; }
+.split-text h2 { margin-bottom: 16px; }
+.split-text p { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.6; }
+.split-visual { display: flex; align-items: center; justify-content: center; }
+.split-visual img { width: 100%; max-width: 480px; border-radius: 16px; }
+
+.illustration-placeholder {
+  width: 100%; max-width: 480px; aspect-ratio: 4/3; border-radius: 16px;
+  background: linear-gradient(135deg, var(--glass-bg), rgba(184, 137, 43, 0.06));
+  border: 1px dashed var(--glass-border);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 0.85rem; padding: 20px; text-align: center;
+}
+.illustration-placeholder .ip-icon { font-size: 2.6rem; margin-bottom: 12px; }
+.illustration-placeholder::after { content: attr(data-label); }
+
+.code-block { background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; margin: 24px auto; max-width: 600px; }
+.code-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: rgba(0,0,0,0.06); border-bottom: 1px solid rgba(0,0,0,0.06); }
+.code-dot { width: 12px; height: 12px; border-radius: 50%; }
+.code-dot.red { background: #ff5f57; }
+.code-dot.yellow { background: #febc2e; }
+.code-dot.green { background: #28c840; }
+.code-filename { font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-left: 8px; }
+.code-body { padding: 20px 24px; }
+.code-body pre { margin: 0; white-space: pre-wrap; }
+.code-body code { font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; color: var(--accent-1); line-height: 1.6; }
+.kw { color: var(--accent-1); }
+.fn { color: var(--accent-2); }
+
+.feature-card { text-align: center; padding: 28px 20px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; }
+.feature-card .icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+.feature-card h4 { font-size: 1.1rem; color: var(--text-primary); font-weight: 700; margin-bottom: 8px; }
+.feature-card p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.4; }
+.feature-cards-grid, .cards-grid, .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+
+.styled-list { list-style: none; padding: 0; max-width: 700px; margin: 32px auto 0; text-align: left; }
+.styled-list li { display: flex; gap: 20px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border-subtle); }
+.styled-list li:last-child { border-bottom: none; }
+.list-icon { width: 40px; height: 40px; min-width: 40px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: var(--accent-1); font-family: 'JetBrains Mono', monospace; }
+.styled-list strong { font-size: 1.15rem; color: var(--text-primary); display: block; margin-bottom: 4px; }
+.styled-list p { font-size: 0.95rem; color: var(--text-muted); margin: 0; }
+
+.timeline { display: flex; align-items: center; justify-content: center; gap: 0; margin: 32px 0; }
+.timeline-item { text-align: center; flex: 1; max-width: 280px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 14px; padding: 20px 24px; }
+.timeline-item .year { font-size: 1rem; font-weight: 700; color: var(--accent-1); margin-bottom: 8px; }
+.timeline-item h4 { font-size: 1.3rem; color: var(--text-primary); font-weight: 700; margin-bottom: 6px; }
+.timeline-item p { font-size: 0.95rem; color: var(--text-muted); }
+.timeline-arrow { font-size: 1.5rem; color: var(--accent-1); padding: 0 12px; flex-shrink: 0; }
+
+.stat-row { display: flex; gap: 40px; justify-content: center; margin: 32px 0; flex-wrap: wrap; }
+.stat { text-align: center; }
+.stat .value { font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.1; display: block; }
+.stat .label { font-size: 0.95rem; color: var(--text-muted); margin-top: 4px; display: block; }
+
+.story-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+.story-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-2), var(--accent-1)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: white; flex-shrink: 0; }
+.story-header strong { font-size: 1.15rem; color: var(--text-primary); display: block; }
+.story-header span { font-size: 0.9rem; color: var(--text-muted); }
+
+.badge { display: inline-block; background: rgba(184, 137, 43, 0.15); border: 1px solid rgba(184, 137, 43, 0.35); border-radius: 100px; padding: 6px 18px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-1); margin-bottom: 16px; }
+
+.section-marker { font-size: 6rem; font-weight: 900; opacity: 0.08; position: absolute; top: 40px; right: 60px; z-index: 1; color: var(--accent-1); letter-spacing: -0.05em; }
+
+.comparison-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 32px; align-items: center; margin-top: 40px; }
+.comparison-col { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 32px; text-align: left; }
+.comparison-col--good { border-color: var(--accent-1); }
+.comparison-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 12px; }
+.comparison-col--good .comparison-label { color: var(--accent-1); }
+.comparison-divider { font-size: 1.5rem; color: var(--text-muted); }
+
+.highlight { color: var(--accent-2); font-weight: 700; }
+.purple { color: var(--accent-1); font-weight: 700; }
+
+.animate-in { opacity: 0; }
+
+@media (max-width: 900px) {
+  .slide { padding: 40px 24px; }
+  h1 { font-size: 2.8rem; }
+  h2 { font-size: 2rem; }
+  .big-number-value { font-size: 5rem; }
+  .split-layout { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  .feature-cards-grid, .cards-grid, .feature-grid { grid-template-columns: 1fr 1fr; }
+  .stat-row { gap: 20px; }
+  .timeline { flex-direction: column; gap: 24px; }
+  .timeline-arrow { transform: rotate(90deg); }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .comparison-divider { display: none; }
+}
+
+@media (max-width: 600px) {
+  .slide { padding: 32px 16px; }
+  h1 { font-size: 2rem; }
+  .big-number-value { font-size: 3.5rem; }
+  .feature-cards-grid, .cards-grid, .feature-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  html { scroll-snap-type: none; -webkit-scroll-snap-type: none; }
+  .animate-in { opacity: 1; }
+}
+
+.topbar{
+  position:fixed; top:0; left:0; right:0; z-index:900;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 32px;
+  background:rgba(15,28,54,0.88);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  color:#fff;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.72rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.topbar .brand{display:flex; align-items:center; gap:10px; font-weight:600;}
+.topbar .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-1); flex-shrink:0;}
+.topbar .step{color:#9fb0d1;}
+@media (max-width:900px){
+  .topbar{padding:12px 20px;}
+  .topbar .step{display:none;}
+}
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span> Claude Code · IA · TRF1</div>
+    <div class="step">Guia Completo para Devs</div>
+  </div>
+  <div class="progress-bar" id="progress"></div>
+  <div class="slide-counter" id="counter">001 / 081</div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
+
+  <div class="slides-container">
+
+<!-- ============================================================
+     SLIDES 1-50 — Claude Code: O Guia Completo para Empreendedores
+     Secoes 1-4 | Gerado por Squad Dev
+     APENAS sections — sem CSS, JS, head ou body
+     ============================================================ -->
+
+<!-- ============================================================
+     SECAO 1: ABERTURA + HOOK (slides 1-14)
+     ============================================================ -->
+
+<section class="slide slide--title" data-slide="1">
+  <div class="slide-content">
+    <span class="badge animate-in">Capacitação IA · TRF1</span>
+    <h1 class="animate-in">Claude Code</h1>
+    <p class="subtitle animate-in">O Guia Completo para Devs</p>
+  </div>
+</section>
+
+<section class="slide slide--story" data-slide="2">
+  <div class="slide-content">
+    <span class="overline animate-in">Boris Cherny — Engenheiro Anthropic</span>
+    <h2 class="animate-in">"Quando foi a última vez que você escreveu código manualmente?"</h2>
+    <p class="animate-in" style="font-size: 1.25rem; color: var(--text-secondary); margin-top: 24px;">A pergunta que mudou tudo</p>
+  </div>
+</section>
+
+<section class="slide slide--big-number" data-slide="3">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" style="font-size: 7rem; line-height: 1;">Novembro.</div>
+    <p class="big-number-context animate-in">Novembro de 2025. O criador da ferramenta não usa mais as mãos para programar.</p>
+  </div>
+</section>
+
+<section class="slide slide--story" data-slide="4">
+  <div class="slide-content">
+    <h2 class="animate-in">E ele continua sendo um dos mais produtivos da empresa</h2>
+    <p class="animate-in" style="font-size: 1.25rem; color: var(--text-secondary); margin-top: 24px; max-width: 650px; margin-left: auto; margin-right: auto;">O criador foi o primeiro a parar de usar a habilidade que a ferramenta substituiu.</p>
+  </div>
+</section>
+
+<section class="slide slide--big-number" data-slide="5">
+  <div class="slide-content">
+    <span class="overline animate-in">O cenário atual</span>
+    <div class="big-number-value animate-in" data-value="4" data-suffix="%">0%</div>
+    <p class="big-number-context animate-in">dos commits no GitHub hoje são escritos por IA</p>
+  </div>
+</section>
+
+<section class="slide slide--big-number" data-slide="6">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" data-value="20" data-suffix="%">0%</div>
+    <p class="big-number-context animate-in">projeção até o fim de 2026</p>
+  </div>
+</section>
+
+<section class="slide slide--big-number" data-slide="7">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" data-value="90" data-suffix="%">0%</div>
+    <p class="big-number-context animate-in">do código da Anthropic é gerado pela própria IA</p>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="8">
+  <div class="slide-content">
+    <h2 class="animate-in">O que você vai aprender</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">01</span>
+        <div><strong>O que é Claude Code</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">02</span>
+        <div><strong>Como funciona na prática, no dia a dia de desenvolvimento</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">03</span>
+        <div><strong>Como usar com responsabilidade num ambiente institucional</strong></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide slide--section-divider" data-slide="9">
+  <div class="slide-content">
+    <h1 class="animate-in" style="position: relative; z-index: 2;">Claude Code</h1>
+    <p class="subtitle animate-in" style="position: relative; z-index: 2;">O Guia Completo para Devs</p>
+  </div>
+</section>
+
+<section class="slide slide--story" data-slide="10">
+  <div class="slide-content">
+    <h2 class="animate-in">A promessa de IA para código</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 650px; margin: 24px auto 0; line-height: 1.7;">Há alguns anos, a promessa era o autocomplete inteligente. Útil. Mas ainda era você escrevendo.</p>
+  </div>
+</section>
+
+<section class="slide slide--timeline" data-slide="11">
+  <div class="slide-content">
+    <h2 class="animate-in">A evolução das ferramentas</h2>
+    <div class="timeline" style="margin-top: 48px;">
+      <div class="timeline-item animate-in">
+        <div class="year">2021</div>
+        <h4>GitHub Copilot</h4>
+        <p>Autocomplete inteligente</p>
+      </div>
+      <div class="timeline-arrow animate-in">→</div>
+      <div class="timeline-item animate-in">
+        <div class="year">2024</div>
+        <h4>Cursor</h4>
+        <p>Editor que conversa</p>
+      </div>
+      <div class="timeline-arrow animate-in">→</div>
+      <div class="timeline-item animate-in" style="border-color: var(--accent-2); box-shadow: 0 0 20px rgba(var(--accent-1-rgb), 0.15);">
+        <div class="year" style="color: var(--accent-2);">2025</div>
+        <h4 class="purple">Claude Code</h4>
+        <p>Agente autônomo</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide--comparison" data-slide="12">
+  <div class="slide-content">
+    <h2 class="animate-in">A diferença fundamental</h2>
+    <div class="comparison-grid" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 32px; align-items: center; margin-top: 40px;">
+      <div class="glass animate-in" style="padding: 32px; border-radius: 16px; text-align: left;">
+        <h3 style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 16px;">Copilot / Cursor</h3>
+        <p style="font-size: 1.15rem; line-height: 1.6; color: var(--text-primary);">Você decide, IA sugere, você aplica</p>
+      </div>
+      <div class="animate-in" style="font-size: 2rem; color: var(--text-muted);">→</div>
+      <div class="glass animate-in" style="padding: 32px; border-radius: 16px; text-align: left; border-color: var(--accent-1);">
+        <h3 style="font-size: 1.1rem; color: var(--accent-1); margin-bottom: 16px;">Claude Code</h3>
+        <p style="font-size: 1.15rem; line-height: 1.6; color: var(--text-primary);">Você descreve, ele planeja, executa, testa e entrega</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide--big-number" data-slide="13">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" style="font-size: 4.5rem; line-height: 1.2;">Não é sugestão. É execução.</div>
+    <p class="big-number-context animate-in" style="margin-top: 20px;">Claude Code é outra categoria.</p>
+  </div>
+</section>
+
+<section class="slide slide--quote" data-slide="14">
+  <div class="slide-content">
+    <blockquote class="quote-block animate-in">
+      <div class="quote-bar"></div>
+      <div class="quote-body">
+        <p class="quote-text">"Esquece que se chama Claude Code. Pensa nisso como um assistente superinteligente rodando no seu computador."</p>
+        <footer class="quote-author">
+          <strong>Lenny Rachitsky</strong>
+        </footer>
+      </div>
+    </blockquote>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="15">
+  <div class="slide-content">
+    <h2 class="animate-in">O que Claude pode fazer</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">01</span>
+        <div><strong>Escrever código</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">02</span>
+        <div><strong>Organizar arquivos</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">03</span>
+        <div><strong>Pesquisar na internet</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">04</span>
+        <div><strong>Conectar com sistemas de negócio</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">05</span>
+        <div><strong>Automatizar tarefas e monitorar processos</strong></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="16">
+  <div class="slide-content">
+    <h2 class="animate-in">Por que devs do TRF1 precisam prestar atenção</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">01</span>
+        <div><strong>A demanda por sistemas internos nunca diminui — e o time é sempre finito</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">02</span>
+        <div><strong>A fila de tarefas técnicas e manutenções nunca diminui</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">03</span>
+        <div><strong>A janela para aprender antes de virar prática padrão do mercado está fechando</strong></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide slide--big-number" data-slide="17">
+  <div class="slide-content">
+    <span class="overline animate-in">SemiAnalysis, fevereiro 2026</span>
+    <div class="big-number-value animate-in" data-value="42896" data-suffix="x">0x</div>
+    <p class="big-number-context animate-in">de crescimento em 13 meses</p>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SECAO 3: O QUE E CLAUDE CODE (slides 25-38)
+     ============================================================ -->
+
+<section class="slide slide--section-divider" data-slide="19">
+  <div class="slide-content">
+    <span class="badge animate-in">BLOCO 03</span>
+    <h2 class="animate-in" style="font-size: clamp(2.5rem, 7vw, 5.5rem); font-weight: 900; line-height: 1.05;">O que é <span class="highlight">Claude Code</span></h2>
+  </div>
+</section>
+
+<section class="slide slide--split" data-slide="20">
+  <div class="slide-content split-layout">
+    <div class="split-text">
+      <span class="overline animate-in">O que é Claude Code</span>
+      <h2 class="animate-in">Um programa que você instala e acessa pelo terminal</h2>
+      <p class="animate-in">Você digita em português. Ele executa.</p>
+    </div>
+    <div class="split-visual animate-in">
+      <div class="illustration-placeholder">
+        <span class="ip-icon">&gt;_</span>
+        Terminal com Claude Code — você digita em português, ele executa
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide--code" data-slide="21">
+  <div class="slide-content">
+    <h2 class="animate-in">Uma linha no terminal</h2>
+    <div class="code-block animate-in" style="max-width: 480px;">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-filename">terminal</span>
+      </div>
+      <pre class="code-body"><code><span style="color: var(--accent-1);">$</span> claude</code></pre>
+    </div>
+    <p class="animate-in" style="margin-top: 24px; color: var(--text-secondary); font-size: 1.15rem;">E começa a conversar em linguagem natural</p>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="22">
+  <div class="slide-content">
+    <span class="badge animate-in">Capacidade 1 de 5</span>
+    <h2 class="animate-in">Lê código</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 600px; margin: 24px auto 0; line-height: 1.7;">Todos os arquivos do projeto, de uma vez, entendendo como as peças se conectam.</p>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="23">
+  <div class="slide-content">
+    <span class="badge animate-in">Capacidade 2 de 5</span>
+    <h2 class="animate-in">Edita arquivos</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 600px; margin: 24px auto 0; line-height: 1.7;">Vários ao mesmo tempo. Uma instrução altera dezenas de arquivos em sequência.</p>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="24">
+  <div class="slide-content">
+    <span class="badge animate-in">Capacidade 3 de 5</span>
+    <h2 class="animate-in">Roda comandos</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 600px; margin: 24px auto 0; line-height: 1.7;">Instala dependências, roda testes, verifica erros. Tudo automaticamente.</p>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="25">
+  <div class="slide-content">
+    <span class="badge animate-in">Capacidade 4 de 5</span>
+    <h2 class="animate-in">Aprende com erros</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 600px; margin: 24px auto 0; line-height: 1.7;">Se algo não funcionar, tenta de novo por outro caminho. Sem esperar você notar o problema.</p>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="26">
+  <div class="slide-content">
+    <span class="badge animate-in">Capacidade 5 de 5</span>
+    <h2 class="animate-in">Acessa a internet</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 600px; margin: 24px auto 0; line-height: 1.7;">Busca documentação atualizada sem você precisar copiar e colar nada.</p>
+  </div>
+</section>
+
+<section class="slide slide--split" data-slide="27">
+  <div class="slide-content split-layout">
+    <div class="split-text">
+      <h2 class="animate-in">MCP = Porta USB-C para IA</h2>
+      <p class="animate-in">Conecta Notion, Gmail, Calendar, banco de dados. Claude acessa dados reais, não só código.</p>
+    </div>
+    <div class="split-visual animate-in">
+      <div class="illustration-placeholder">
+        <span class="ip-icon">🔌</span>
+        MCP: uma porta universal que conecta Claude a outras ferramentas
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide--split" data-slide="28">
+  <div class="slide-content">
+    <h2 class="animate-in">CLAUDE.md = Contrato de trabalho</h2>
+    <div class="comparison-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: stretch; margin-top: 40px;">
+      <div class="glass animate-in" style="padding: 32px; border-radius: 16px; text-align: left;">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.1em;">Sem CLAUDE.md</p>
+        <p style="font-size: 1.15rem; line-height: 1.6; color: var(--text-secondary);">Estagiário brilhante sem instruções</p>
+      </div>
+      <div class="glass animate-in" style="padding: 32px; border-radius: 16px; text-align: left; border-color: var(--accent-1);">
+        <p style="font-size: 0.9rem; color: var(--accent-1); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.1em;">Com CLAUDE.md</p>
+        <p style="font-size: 1.15rem; line-height: 1.6; color: var(--text-primary);">Alguém que nunca esquece o combinado</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide--split" data-slide="29">
+  <div class="slide-content">
+    <h2 class="animate-in">Context window = Mesa de trabalho</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 650px; margin: 24px auto 0; line-height: 1.7;">Quanto mais papéis empilha, mais difícil encontrar o que precisa. Manter a mesa limpa é o segredo.</p>
+  </div>
+</section>
+
+<section class="slide slide--comparison" data-slide="30">
+  <div class="slide-content">
+    <h2 class="animate-in">Claude Code vs Cursor</h2>
+    <div class="comparison-grid" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 32px; align-items: start; margin-top: 40px;">
+      <div class="glass animate-in" style="padding: 32px; border-radius: 16px; text-align: left;">
+        <h3 style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 16px;">Cursor</h3>
+        <p style="font-size: 1.05rem; line-height: 1.6; color: var(--text-primary);">Ótimo para edições rápidas e contexto visual</p>
+      </div>
+      <div class="animate-in" style="font-size: 1.5rem; color: var(--text-muted); margin-top: 40px;">vs</div>
+      <div class="glass animate-in" style="padding: 32px; border-radius: 16px; text-align: left; border-color: var(--accent-1);">
+        <h3 style="font-size: 1.1rem; color: var(--accent-1); margin-bottom: 16px;">Claude Code</h3>
+        <p style="font-size: 1.05rem; line-height: 1.6; color: var(--text-primary);">Melhor em raciocínio profundo, projetos grandes, múltiplos arquivos</p>
+      </div>
+    </div>
+    <p class="animate-in" style="margin-top: 28px; color: var(--text-muted); font-size: 0.95rem;">A maioria usa os dois de forma complementar</p>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SECAO 4: SETUP + PRIMEIROS PASSOS (slides 39-50)
+     ============================================================ -->
+
+<section class="slide slide--section-divider" data-slide="31">
+  <div class="slide-content">
+    <span class="badge animate-in">BLOCO 04</span>
+    <h2 class="animate-in" style="font-size: clamp(2.5rem, 7vw, 5.5rem); font-weight: 900; line-height: 1.05;">Setup + <span class="highlight">Primeiros Passos</span></h2>
+  </div>
+</section>
+
+<section class="slide slide--code" data-slide="32">
+  <div class="slide-content">
+    <h2 class="animate-in">Uma linha. 60 segundos.</h2>
+    <div class="code-block animate-in" style="max-width: 680px;">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-filename">terminal</span>
+      </div>
+      <pre class="code-body"><code><span style="color: var(--accent-1);">npm</span> install <span style="color: var(--accent-2);">-g</span> @anthropic-ai/claude-code</code></pre>
+    </div>
+    <p class="animate-in" style="margin-top: 24px; color: var(--text-secondary); font-size: 1.15rem;">Sem configuração complicada. Sem extensão. Uma linha.</p>
+  </div>
+</section>
+
+<section class="slide slide--code" data-slide="33">
+  <div class="slide-content">
+    <h2 class="animate-in">Depois, só digitar:</h2>
+    <div class="code-block animate-in" style="max-width: 360px;">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-filename">terminal</span>
+      </div>
+      <pre class="code-body"><code><span style="color: var(--accent-1);">$</span> claude</code></pre>
+    </div>
+    <p class="animate-in" style="margin-top: 24px; color: var(--text-secondary); font-size: 1.15rem;">E começar a usar em linguagem natural.</p>
+  </div>
+</section>
+
+<section class="slide slide--feature-card" data-slide="34">
+  <div class="slide-content">
+    <h2 class="animate-in">Planos e preços</h2>
+    <div class="cards-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px;">
+      <div class="feature-card glass animate-in" style="text-align: left; padding: 28px;">
+        <h4 style="font-size: 1.1rem; margin-bottom: 8px;">Pro</h4>
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-1); margin-bottom: 12px;">US$20<span style="font-size: 1rem; font-weight: 400; color: var(--text-muted);">/mês</span></div>
+        <p style="font-size: 0.95rem; color: var(--text-muted);">Claude normal com Claude Code incluído</p>
+      </div>
+      <div class="feature-card glass animate-in" style="text-align: left; padding: 28px; border-color: var(--accent-1); position: relative;">
+        <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent-1); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 3px 12px; border-radius: 20px; white-space: nowrap;">RECOMENDADO</div>
+        <h4 style="font-size: 1.1rem; margin-bottom: 8px;">Max</h4>
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-1); margin-bottom: 12px;">US$100<span style="font-size: 1rem; font-weight: 400; color: var(--text-muted);">/mês</span></div>
+        <p style="font-size: 0.95rem; color: var(--text-muted);">Uso intenso e diário, com bastante folga de limite</p>
+      </div>
+      <div class="feature-card glass animate-in" style="text-align: left; padding: 28px;">
+        <h4 style="font-size: 1.1rem; margin-bottom: 8px;">Max Premium</h4>
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--accent-2); margin-bottom: 12px;">US$200<span style="font-size: 1rem; font-weight: 400; color: var(--text-muted);">/mês</span></div>
+        <p style="font-size: 0.95rem; color: var(--text-muted);">Uso muito intenso, times ou múltiplas sessões em paralelo</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide--code" data-slide="35">
+  <div class="slide-content">
+    <h2 class="animate-in">O comando mais importante</h2>
+    <div class="code-block animate-in" style="max-width: 360px;">
+      <div class="code-header">
+        <span class="code-dot red"></span>
+        <span class="code-dot yellow"></span>
+        <span class="code-dot green"></span>
+        <span class="code-filename">terminal</span>
+      </div>
+      <pre class="code-body"><code style="font-size: 2rem; color: var(--accent-1);">/init</code></pre>
+    </div>
+    <p class="animate-in" style="margin-top: 24px; color: var(--text-secondary); font-size: 1.15rem;">Claude lê todos os arquivos, entende a estrutura e cria o CLAUDE.md automaticamente.</p>
+  </div>
+</section>
+
+<section class="slide slide--story" data-slide="36">
+  <div class="slide-content">
+    <h2 class="animate-in">Ele faz o próprio onboarding</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 650px; margin: 24px auto 0; line-height: 1.7;">Documenta o que encontrou, as convenções que percebeu, as regras que faz sentido seguir. Você revisa, ajusta, e está pronto.</p>
+  </div>
+</section>
+
+<section class="slide slide--story" data-slide="37">
+  <div class="slide-content split-layout">
+    <div class="split-text">
+      <span class="overline animate-in">Caso real</span>
+      <div class="story-header animate-in" style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+        <div class="story-avatar" style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700; color: #000; flex-shrink: 0;">OM</div>
+        <div>
+          <strong style="font-size: 1.1rem; color: var(--text-primary);">Ondrej Machart</strong>
+          <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0;">Product Manager, nunca programou</p>
+        </div>
+      </div>
+      <p class="animate-in" style="font-size: 1.15rem; color: var(--text-secondary); line-height: 1.7;">Background zero em programação. Decidiu testar Claude Code em noites e fins de semana.</p>
+    </div>
+    <div class="split-visual animate-in">
+      <div class="glass" style="padding: 32px; border-radius: 16px; text-align: center;">
+        <div style="font-size: 3.5rem; margin-bottom: 8px;">🚀</div>
+        <p style="font-size: 0.95rem; color: var(--text-muted);">De zero a fundador em 2 meses</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide slide--list" data-slide="38">
+  <div class="slide-content">
+    <h2 class="animate-in">O resultado de Ondrej</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">01</span>
+        <div><strong>2 meses, noites e fins de semana</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">02</span>
+        <div><strong>App iOS nativo com assinatura e APIs</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">03</span>
+        <div><strong>Publicou na App Store</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">04</span>
+        <div><strong>100 usuários no primeiro mês</strong></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">05</span>
+        <div><strong>Em 6 meses: 13 projetos</strong></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide slide--quote" data-slide="39">
+  <div class="slide-content">
+    <blockquote class="quote-block animate-in">
+      <div class="quote-bar"></div>
+      <div class="quote-body">
+        <p class="quote-text">"A barreira não é técnica. A barreira era acreditar que não era para você."</p>
+        <footer class="quote-author">
+          <strong>Ondrej Machart</strong>
+        </footer>
+      </div>
+    </blockquote>
+  </div>
+</section>
+
+<section class="slide slide--big-number" data-slide="40">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" style="font-size: 4.5rem; line-height: 1.2;">"E essa barreira acabou."</div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SECAO 5: FEATURES CORE (slides 51-75)
+     ============================================================ -->
+
+<!-- Slide 41 — section-divider -->
+<section class="slide slide--section-divider" data-slide="41">
+  <div class="slide-content">
+    <div class="section-marker animate-in">05</div>
+    <span class="badge animate-in">BLOCO 05</span>
+    <h2 class="animate-in">Features Core<br><span class="highlight">O motor</span></h2>
+  </div>
+</section>
+
+<!-- Slide 42 — big-number (texto grande) -->
+<section class="slide slide--big-number" data-slide="42">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" style="font-size: 4.5rem; letter-spacing: -0.03em;">5 features que mudam tudo</div>
+    <p class="big-number-context animate-in">Cada uma com problema, solução, analogia e dado.</p>
+  </div>
+</section>
+
+<!-- ========================
+     FEATURE 1: PLAN MODE
+     ======================== -->
+
+<!-- Slide 43 — story -->
+<section class="slide slide--story" data-slide="43">
+  <div class="slide-content">
+    <span class="badge animate-in">Feature 1 de 5</span>
+    <h2 class="animate-in">O problema sem Plan Mode</h2>
+    <div class="glass animate-in">
+      <p style="font-size: 1.15rem; line-height: 1.7; color: var(--text-secondary);">
+        Quando você dá uma instrução sem planejar, Claude executa imediatamente. Em projetos complexos, corrige uma coisa e quebra outra.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 45 — list -->
+<section class="slide slide--list" data-slide="45">
+  <div class="slide-content">
+    <h2 class="animate-in">Como funciona</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">01</span>
+        <div>
+          <strong>Claude analisa tudo</strong>
+          <p>Le o projeto inteiro e apresenta um plano detalhado antes de tocar em qualquer arquivo</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">02</span>
+        <div>
+          <strong>Você le, aprova ou ajusta</strong>
+          <p>Pode aprovar, pedir revisao ou mandar repensar partes especificas do plano</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">03</span>
+        <div>
+          <strong>So depois ele executa</strong>
+          <p>A implementacao acontece apenas apos aprovacao explícita do plano</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 47 — big-number (texto grande) -->
+<section class="slide slide--big-number" data-slide="47">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" style="font-size: 4rem; letter-spacing: -0.03em;">Use Plan Mode. <span class="highlight">Sempre.</span></div>
+    <p class="big-number-context animate-in">Para qualquer coisa que não seja trivial.</p>
+  </div>
+</section>
+
+<!-- ========================
+     FEATURE 2: CLAUDE.md
+     ======================== -->
+
+<!-- Slide 48 — story -->
+<section class="slide slide--story" data-slide="48">
+  <div class="slide-content">
+    <span class="badge animate-in">Feature 2 de 5</span>
+    <h2 class="animate-in">CLAUDE.md</h2>
+    <p class="animate-in" style="font-size: 1.4rem; color: var(--text-secondary); margin-top: 16px;">
+      O contrato de trabalho do funcionario IA
+    </p>
+  </div>
+</section>
+
+<!-- Slide 49 — list -->
+<section class="slide slide--list" data-slide="49">
+  <div class="slide-content">
+    <h2 class="animate-in">O que vai dentro</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">🚫</span>
+        <div>
+          <strong>Regras</strong>
+          <p>"Nunca altere a pasta /pagamentos"</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">📐</span>
+        <div>
+          <strong>Convenções</strong>
+          <p>"Código em inglês, comentarios em português"</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">🗂️</span>
+        <div>
+          <strong>Contexto</strong>
+          <p>"SaaS de gestão, usuario não e técnico"</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">🔒</span>
+        <div>
+          <strong>Segurança</strong>
+          <p>"Nunca altere produção sem confirmação"</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 50 — comparison -->
+<section class="slide slide--comparison" data-slide="50">
+  <div class="slide-content">
+    <h2 class="animate-in">A diferenca</h2>
+    <div class="comparison-grid">
+      <div class="comparison-col comparison-col--bad animate-in">
+        <div class="comparison-label">Sem CLAUDE.md</div>
+        <p>Cada sessão comeca do zero. Funcionario novo toda semana.</p>
+      </div>
+      <div class="comparison-divider animate-in">vs</div>
+      <div class="comparison-col comparison-col--good animate-in">
+        <div class="comparison-label">Com CLAUDE.md</div>
+        <p>Cada sessão comeca com alguem que conhece tudo e nunca esquece.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================
+     FEATURE 3: MCP SERVERS
+     ======================== -->
+
+<!-- Slide 51 — split -->
+<section class="slide slide--split" data-slide="51">
+  <div class="slide-content split-layout">
+    <div class="split-text">
+      <span class="badge animate-in">Feature 3 de 5</span>
+      <h2 class="animate-in">MCP Servers</h2>
+      <p class="animate-in">Model Context Protocol. Padrão aberto que conecta Claude com qualquer ferramenta.</p>
+    </div>
+    <div class="split-visual animate-in">
+      <div class="illustration-placeholder">
+        <span class="ip-icon">🔌</span>
+        Model Context Protocol: um padrão aberto de conexão
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 53 — list -->
+<section class="slide slide--list" data-slide="53">
+  <div class="slide-content">
+    <h2 class="animate-in">Ferramentas que conectam</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">📋</span>
+        <div><strong>Notion</strong><p>Leitura e escrita de páginas e databases</p></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">✉️</span>
+        <div><strong>Gmail &amp; Calendar</strong><p>Acesso a emails e agenda em tempo real</p></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">💬</span>
+        <div><strong>Slack &amp; GitHub</strong><p>Mensagens e repositorios de código</p></div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">🗄️</span>
+        <div><strong>Jira &amp; Banco de dados</strong><p>Tickets, tarefas e dados estruturados</p></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 54 — comparison -->
+<section class="slide slide--comparison" data-slide="54">
+  <div class="slide-content">
+    <h2 class="animate-in">Com e sem MCP</h2>
+    <div class="comparison-grid">
+      <div class="comparison-col comparison-col--bad animate-in">
+        <div class="comparison-label">Sem MCP</div>
+        <p>Claude trabalha so com arquivos do projeto</p>
+      </div>
+      <div class="comparison-divider animate-in">vs</div>
+      <div class="comparison-col comparison-col--good animate-in">
+        <div class="comparison-label">Com MCP</div>
+        <p>Acessa dados de negocio reais: tickets, emails, banco de dados</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 55 — story -->
+<section class="slide slide--story" data-slide="55">
+  <div class="slide-content">
+    <div class="story-header animate-in">
+      <div class="story-avatar">SR</div>
+      <div>
+        <strong>Sabrina Ramonov ao vivo</strong>
+        <span>90 minutos de build em tempo real</span>
+      </div>
+    </div>
+    <div class="glass animate-in" style="margin-top: 24px;">
+      <p style="font-size: 1.1rem; line-height: 1.7; color: var(--text-secondary);">
+        Uma frase, pesquisa tópico, redige posts dá semana, gera visuais, publica em LinkedIn, Instagram, Twitter e Facebook. Sub-agentes em paralelo via MCP. Construido ao vivo em 90 minutos.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========================
+     FEATURE 4: SUB-AGENTES
+     ======================== -->
+
+<!-- Slide 57 — story (glass card) -->
+<section class="slide slide--story" data-slide="57">
+  <div class="slide-content">
+    <div class="story-header animate-in">
+      <div class="story-avatar">CR</div>
+      <div>
+        <strong>Chris Raroque</strong>
+        <span>Migração iOS para Android</span>
+      </div>
+    </div>
+    <div class="glass animate-in" style="margin-top: 24px;">
+      <p style="font-size: 1.15rem; line-height: 1.7; color: var(--text-secondary);">
+        10 sub-agentes para migrar iOS para Android. Meses de trabalho feitos em horas.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 58 — story (glass card) -->
+<section class="slide slide--story" data-slide="58">
+  <div class="slide-content">
+    <div class="story-header animate-in">
+      <div class="story-avatar">TH</div>
+      <div>
+        <strong>Theo</strong>
+        <span>Natal 2025</span>
+      </div>
+    </div>
+    <div class="glass animate-in" style="margin-top: 24px;">
+      <p style="font-size: 1.15rem; line-height: 1.7; color: var(--text-secondary);">
+        6 instâncias em paralelo, 2 projetos do zero, 11.900 linhas, atingiu 7% do limite semanal.
+      </p>
+    </div>
+    <div class="stat-row animate-in" style="margin-top: 20px;">
+      <div class="stat">
+        <div class="value">11.900</div>
+        <div class="label">linhas de código</div>
+      </div>
+      <div class="stat">
+        <div class="value">6x</div>
+        <div class="label">instâncias paralelas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 59 — story (glass card) -->
+<section class="slide slide--story" data-slide="59">
+  <div class="slide-content">
+    <div class="story-header animate-in">
+      <div class="story-avatar">BC</div>
+      <div>
+        <strong>Boris Cherny</strong>
+        <span>Engenheiro de produto, Anthropic</span>
+      </div>
+    </div>
+    <div class="glass animate-in" style="margin-top: 24px;">
+      <p style="font-size: 1.15rem; line-height: 1.7; color: var(--text-secondary);">
+        5 no terminal + 5-10 na web + iOS, ao mesmo tempo. Chamado de <span class="highlight">"insano"</span> pelos colegas.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ========================
+     FEATURE 5: MEMORIA E CONTEXTO
+     ======================== -->
+
+<!-- Slide 61 — split -->
+<section class="slide slide--split" data-slide="61">
+  <div class="slide-content split-layout">
+    <div class="split-text">
+      <span class="badge animate-in">Feature 5 de 5</span>
+      <h2 class="animate-in">Memória e contexto</h2>
+      <p class="animate-in">A context window é a mesa de trabalho do Claude. Quanto mais papéis empilha, mais difícil encontrar o que precisa.</p>
+    </div>
+    <div class="split-visual animate-in">
+      <div class="glass" style="padding: 40px; border-radius: 20px; text-align: center;">
+        <div style="font-size: 4rem; margin-bottom: 16px;">🗂️</div>
+        <p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.5;">Context window = mesa de trabalho<br>Quanto mais cheia, pior o resultado</p>
+        <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+          <span class="badge" style="font-size: 0.75rem;">50% = limpar</span>
+          <span class="badge" style="font-size: 0.75rem;">/clear</span>
+          <span class="badge" style="font-size: 0.75rem;">/compact</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 62 — feature-card (3 comandos) -->
+<section class="slide slide--feature-card" data-slide="62">
+  <div class="slide-content">
+    <h2 class="animate-in">3 comandos essenciais</h2>
+    <div class="feature-cards-grid">
+      <div class="feature-card animate-in">
+        <div class="icon">/clear</div>
+        <h4>Limpar tudo</h4>
+        <p>Nova tarefa. Comece do zero. Contexto completamente resetado.</p>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="icon">/compact</div>
+        <h4>Compactar</h4>
+        <p>Resume o contexto sem perder o essencial. Ideal para tarefas longas.</p>
+      </div>
+      <div class="feature-card animate-in">
+        <div class="icon">/context</div>
+        <h4>Ver uso</h4>
+        <p>Mostra o uso dá context window. Acima de 50%, hora de limpar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECAO 6: USO AVANCADO (slides 76-87)
+     ============================================================ -->
+
+<!-- Slide 63 — section-divider -->
+<section class="slide slide--section-divider" data-slide="63">
+  <div class="slide-content">
+    <div class="section-marker animate-in">06</div>
+    <span class="badge animate-in">BLOCO 06</span>
+    <h2 class="animate-in">Uso <span class="highlight">Avançado</span></h2>
+  </div>
+</section>
+
+<!-- Slide 64 — story -->
+<section class="slide slide--story" data-slide="64">
+  <div class="slide-content">
+    <h2 class="animate-in">Skills customizadas</h2>
+    <div class="glass animate-in" style="margin-top: 24px;">
+      <p style="font-size: 1.15rem; line-height: 1.7; color: var(--text-secondary);">
+        Tarefas repetitivas viram um comando: <span class="highlight">/deploy</span>, <span class="highlight">/post</span>, <span class="highlight">/relatório</span>. Você define a sequência uma vez, executa com uma palavra.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 65 — big-number (texto grande) -->
+<section class="slide slide--big-number" data-slide="65">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" style="font-size: 3.5rem; letter-spacing: -0.03em;">Seu próprio playbook de IA</div>
+  </div>
+</section>
+
+<!-- Slide 66 — story -->
+<section class="slide slide--story" data-slide="66">
+  <div class="slide-content">
+    <h2 class="animate-in">Hooks de segurança</h2>
+    <div class="glass animate-in" style="margin-top: 24px;">
+      <p style="font-size: 1.1rem; line-height: 1.7; color: var(--text-secondary);">
+        Regras automáticas antes e depois de ações. <span class="highlight">rm -rf</span> bloqueado. Deploy com aprovacao obrigatória. Dados sensíveis com log automático.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 67 — quote -->
+<section class="slide slide--quote" data-slide="67">
+  <div class="slide-content">
+    <blockquote class="quote-block animate-in">
+      <div class="quote-bar"></div>
+      <div class="quote-body">
+        <p class="quote-text">"A autonomia que você dá é proporcional a confiança que você constroi."</p>
+      </div>
+    </blockquote>
+  </div>
+</section>
+
+<!-- Slide 68 — story -->
+<section class="slide slide--story" data-slide="68">
+  <div class="slide-content">
+    <h2 class="animate-in">Extended thinking <span class="purple">(ultrathink)</span></h2>
+    <div class="glass animate-in" style="margin-top: 24px;">
+      <p style="font-size: 1.1rem; line-height: 1.7; color: var(--text-secondary);">
+        Inclua <span class="highlight">"ultrathink"</span> no prompt para raciocínio profundo. Usar para arquitetura e decisoes que afetam muitas partes. Não usar para tarefas simples.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 69 — story -->
+<section class="slide slide--story" data-slide="69">
+  <div class="slide-content">
+    <h2 class="animate-in">Loop de verificação</h2>
+    <div class="glass animate-in" style="margin-top: 24px;">
+      <p style="font-size: 1.1rem; line-height: 1.7; color: var(--text-secondary);">
+        Inclua verificação na instrução: <span class="highlight">"Implemente e depois rode os testes."</span> Claude entrega, verifica, encontra problemas e corrige antes de mostrar.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 70 — big-number (countUp com contexto) -->
+<section class="slide slide--big-number" data-slide="70">
+  <div class="slide-content">
+    <h2 class="animate-in" style="font-size: 1.4rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 16px;">Multiplicador de qualidade</h2>
+    <div class="big-number-value animate-in" data-value="3" data-suffix="x" data-prefix="">0x</div>
+    <p class="big-number-context animate-in">Boris Cherny considera esta a dica mais importante.</p>
+  </div>
+</section>
+
+<!-- Slide 71 — list -->
+<section class="slide slide--list" data-slide="71">
+  <div class="slide-content">
+    <h2 class="animate-in">Integração com IDE</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">⚡</span>
+        <div>
+          <strong>VS Code</strong>
+          <p>Extensao com 4 milhões de downloads</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">🧩</span>
+        <div>
+          <strong>JetBrains</strong>
+          <p>Suporte nativo para todos os IDEs dá suite</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">🔁</span>
+        <div>
+          <strong>GitHub Actions</strong>
+          <p>Code review automático em cada PR</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 72 — quote -->
+<section class="slide slide--quote" data-slide="72">
+  <div class="slide-content">
+    <blockquote class="quote-block animate-in">
+      <div class="quote-bar"></div>
+      <div class="quote-body">
+        <p class="quote-text">"O maior unlock de produtividade que existe hoje."</p>
+        <footer class="quote-author">
+          <strong>Boris Cherny</strong>
+          <span>Sobre Worktrees</span>
+        </footer>
+      </div>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECAO 8 — DICAS PRATICAS (slides 102-113)
+     ============================================================ -->
+
+<!-- Slide 73 — section-divider -->
+<section class="slide slide--section-divider" data-slide="73">
+  <div class="slide-content">
+    <span class="section-marker animate-in">08</span>
+    <span class="badge animate-in">BLOCO 08</span>
+    <h2 class="animate-in">Dicas Práticas + Erros Comuns</h2>
+  </div>
+</section>
+
+<!-- Slide 74 — story (intro 7 rituais) -->
+<section class="slide slide--story" data-slide="74">
+  <div class="slide-content">
+    <h2 class="animate-in">7 rituais para usar bem</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 600px; margin: 24px auto 0;">O que separa quem experimenta de quem domina.</p>
+  </div>
+</section>
+
+<!-- Slide 75 — list (ritual 1) -->
+<section class="slide slide--list" data-slide="75">
+  <div class="slide-content">
+    <span class="badge animate-in">Ritual 1</span>
+    <h2 class="animate-in">Sempre comece em Plan Mode</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">→</span>
+        <div>
+          <strong>Shift + Tab</strong>
+          <p>Ler plano, aprovar, executar. Sempre.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 76 — list (ritual 2) -->
+<section class="slide slide--list" data-slide="76">
+  <div class="slide-content">
+    <span class="badge animate-in">Ritual 2</span>
+    <h2 class="animate-in">Mantenha o CLAUDE.md atualizado</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">→</span>
+        <div>
+          <strong>Ao final de cada sessão</strong>
+          <p>Escreva o que aprendeu. Documento que cresce com o projeto.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 77 — list (ritual 3) -->
+<section class="slide slide--list" data-slide="77">
+  <div class="slide-content">
+    <span class="badge animate-in">Ritual 3</span>
+    <h2 class="animate-in">Limpe o contexto a cada nova tarefa</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">→</span>
+        <div>
+          <strong>/clear</strong>
+          <p>Quando terminou.</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">→</span>
+        <div>
+          <strong>/compact</strong>
+          <p>Quando está pesado.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 78 — list (ritual 4) -->
+<section class="slide slide--list" data-slide="78">
+  <div class="slide-content">
+    <span class="badge animate-in">Ritual 4</span>
+    <h2 class="animate-in">Revise como PR de outro dev</h2>
+    <blockquote class="quote-block animate-in" style="margin-top: 32px;">
+      <div class="quote-bar"></div>
+      <div class="quote-body">
+        <p class="quote-text" style="font-size: 1.3rem;">"Eu reviso tudo como se fosse um pull request de outro desenvolvedor."</p>
+        <footer class="quote-author">
+          <strong>Chris Raroque</strong>
+        </footer>
+      </div>
+    </blockquote>
+  </div>
+</section>
+
+<!-- Slide 79 — list (ritual 5) -->
+<section class="slide slide--list" data-slide="79">
+  <div class="slide-content">
+    <span class="badge animate-in">Ritual 5</span>
+    <h2 class="animate-in">Dê ao Claude uma forma de verificar</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">→</span>
+        <div>
+          <strong>"Implemente e depois rode os testes."</strong>
+          <p>Multiplica qualidade em 2-3x.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 80 — list (ritual 6) -->
+<section class="slide slide--list" data-slide="80">
+  <div class="slide-content">
+    <span class="badge animate-in">Ritual 6</span>
+    <h2 class="animate-in">Use sub-agentes para tarefas independentes</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">→</span>
+        <div>
+          <strong>Dois terminais, duas instâncias</strong>
+          <p>Metade do tempo.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 81 — list (ritual 7) -->
+<section class="slide slide--list" data-slide="81">
+  <div class="slide-content">
+    <span class="badge animate-in">Ritual 7</span>
+    <h2 class="animate-in">Git como checkpoint</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">→</span>
+        <div>
+          <strong>Commit quando satisfeito, revert quando não</strong>
+          <p>"Git virou meu sistema de segurança ao lado de AI." — Chris Raroque</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 82 — feature-card (erros) -->
+<section class="slide slide--feature-card" data-slide="82">
+  <div class="slide-content">
+    <h2 class="animate-in">Erros que você vai querer evitar</h2>
+    <div class="feature-grid" style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 900px; margin-left: auto; margin-right: auto;">
+      <div class="feature-card animate-in" style="border-color: rgba(239,68,68,0.35);">
+        <div class="icon" style="color: #DC2626;">✕</div>
+        <h4>Não usar Plan Mode</h4>
+        <p>Custo alto em projetos complexos.</p>
+      </div>
+      <div class="feature-card animate-in" style="border-color: rgba(239,68,68,0.35);">
+        <div class="icon" style="color: #DC2626;">✕</div>
+        <h4>Contexto sujo</h4>
+        <p>"A mesa estava cheia de papéis velhos."</p>
+      </div>
+      <div class="feature-card animate-in" style="border-color: rgba(239,68,68,0.35);">
+        <div class="icon" style="color: #DC2626;">✕</div>
+        <h4>Instruções vagas</h4>
+        <p>"Melhora esse código" não é instrução.</p>
+      </div>
+      <div class="feature-card animate-in" style="border-color: rgba(239,68,68,0.35);">
+        <div class="icon" style="color: #DC2626;">✕</div>
+        <h4>Não revisar</h4>
+        <p>O maior risco do "vibe coding".</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 83 — list (quando NAO usar) -->
+<section class="slide slide--list" data-slide="83">
+  <div class="slide-content">
+    <h2 class="animate-in">Quando <span class="highlight">NÃO</span> usar</h2>
+    <ul class="styled-list">
+      <li class="animate-in">
+        <span class="list-icon">01</span>
+        <div>
+          <strong>Decisões críticas de negócio</strong>
+          <p>Apoio, não executor.</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">02</span>
+        <div>
+          <strong>Dados sensíveis</strong>
+          <p>Configurar permissões antes.</p>
+        </div>
+      </li>
+      <li class="animate-in">
+        <span class="list-icon">03</span>
+        <div>
+          <strong>Produção sem supervisão</strong>
+          <p>Nunca.</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Slide 84 — big-number texto -->
+<section class="slide slide--big-number" data-slide="84">
+  <div class="slide-content">
+    <div class="big-number-value animate-in" style="font-size: 3rem; line-height: 1.3;">"Não é sobre substituir.<br>É sobre <span class="highlight">multiplicar</span>."</div>
+    <p class="big-number-context animate-in">Você muda de função: de executor para revisor, de codificador para tomador de decisão.</p>
+  </div>
+</section>
+
+<!-- Slide 85 — story -->
+<section class="slide slide--story" data-slide="85">
+  <div class="slide-content">
+    <h2 class="animate-in">O que resta é humano</h2>
+    <p class="animate-in" style="font-size: 1.3rem; color: var(--text-secondary); max-width: 660px; margin: 24px auto 0;">Saber o que construir. Entender o cliente. Decidir onde investir. Nenhuma ferramenta vai substituir isso.</p>
+  </div>
+</section>
+
+<!-- Slide 86 — big-number com stat-row -->
+<section class="slide slide--big-number" data-slide="86">
+  <div class="slide-content">
+    <h2 class="animate-in">A janela ainda está aberta</h2>
+    <div class="glass animate-in" style="margin: 32px auto; max-width: 560px; padding: 32px;">
+      <div class="stat-row">
+        <div class="stat">
+          <span class="value highlight">4%</span>
+          <span class="label">hoje</span>
+        </div>
+        <div class="stat" style="font-size: 2rem; color: var(--text-muted);">→</div>
+        <div class="stat">
+          <span class="value purple">20%</span>
+          <span class="label">até fim de 2026</span>
+        </div>
+      </div>
+    </div>
+    <p class="big-number-context animate-in">O trem saiu em 2024. A janela de aprender ainda está aberta.</p>
+  </div>
+</section>
+
+<!-- Slide 87 — title (fechamento) -->
+<section class="slide slide--title" data-slide="87">
+  <div class="slide-content">
+    <h1 class="animate-in">"Aquela tarefa não espera mais um dev."</h1>
+    <p class="subtitle animate-in">"Ela espera você decidir começar. E o resto, você delega."</p>
+    <span class="badge animate-in" style="margin-top: 32px; display: inline-block;">Não é sobre substituir. É sobre multiplicar.</span>
+  </div>
+</section>
+
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+  <script>
+gsap.registerPlugin(ScrollTrigger);
+
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+const counter = document.getElementById('counter');
+const progress = document.getElementById('progress');
+
+slides.forEach((slide, i) => {
+  const elements = slide.querySelectorAll('.animate-in');
+
+  gsap.fromTo(elements,
+    { opacity: 0, y: 60 },
+    {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.12,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: slide,
+        start: 'top 80%',
+        end: 'top 20%',
+        toggleActions: 'play none none reverse'
+      }
+    }
+  );
+
+  // CountUp for big-number-value with data-value
+  const numEl = slide.querySelector('.big-number-value[data-value]');
+  if (numEl) {
+    const target = parseFloat(numEl.dataset.value);
+    const suffix = numEl.dataset.suffix || '';
+    const prefix = numEl.dataset.prefix || '';
+    const obj = { val: 0 };
+
+    gsap.to(obj, {
+      val: target,
+      duration: 1.5,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: slide,
+        start: 'top 60%',
+        toggleActions: 'play none none reverse',
+        onLeaveBack: () => { obj.val = 0; numEl.textContent = prefix + '0' + suffix; }
+      },
+      onUpdate: () => {
+        numEl.textContent = prefix + Math.round(obj.val).toLocaleString('pt-BR') + suffix;
+      }
+    });
+  }
+
+  // Update counter and progress
+  ScrollTrigger.create({
+    trigger: slide,
+    start: 'top center',
+    onEnter: () => updateUI(i),
+    onEnterBack: () => updateUI(i)
+  });
+});
+
+function updateUI(index) {
+  const num = String(index + 1).padStart(3, '0');
+  const total = String(totalSlides).padStart(3, '0');
+  counter.textContent = num + ' / ' + total;
+  progress.style.width = ((index + 1) / totalSlides * 100) + '%';
+}
+
+// Keyboard nav
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Home') { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (e.key === 'End') { e.preventDefault(); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }
+});
+  </script>
+</body>
+</html>

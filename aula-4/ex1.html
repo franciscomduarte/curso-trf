@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SISPROT - Protocolos (Mock)</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        background: #f4f6f9;
+        color: #333;
+        padding: 40px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    h1 {
+        color: #1f3c88;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    th {
+        background: #1f3c88;
+        color: #fff;
+        padding: 14px;
+        text-align: left;
+    }
+
+    td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #e4e4e4;
+    }
+
+    tbody tr:hover {
+        background: #f3f7ff;
+    }
+
+    /* STATUS */
+
+    .status,
+    .prioridade {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 14px;
+        color: white;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .aberto {
+        background: #1976d2;
+    }
+
+    .analise {
+        background: #f9a825;
+    }
+
+    .deferido {
+        background: #2e7d32;
+    }
+
+    .indeferido {
+        background: #d32f2f;
+    }
+
+    .arquivado {
+        background: #616161;
+    }
+
+    /* PRIORIDADE */
+
+    .alta {
+        background: #c62828;
+    }
+
+    .media {
+        background: #ef6c00;
+    }
+
+    .baixa {
+        background: #388e3c;
+    }
+
+    .rodape {
+        margin-top: 15px;
+        color: #666;
+        font-size: 14px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>SISPROT - Protocolos (Mock)</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Assunto</th>
+                <th>Requerente</th>
+                <th>Data de Abertura</th>
+                <th>Área</th>
+                <th>Prioridade</th>
+                <th>Status</th>
+                <th>Observações</th>
+            </tr>
+        </thead>
+
+        <tbody id="tabelaProtocolos"></tbody>
+
+    </table>
+
+    <div class="rodape">
+        Total de protocolos:
+        <strong id="totalProtocolos"></strong>
+    </div>
+
+</div>
+
+<script>
+
+const protocolos = [
+
+{
+    numero: "2026/000001",
+    assunto: "Solicitação de Certidão",
+    requerente: "João da Silva",
+    dataAbertura: "01/08/2026",
+    area: "Recursos Humanos",
+    prioridade: "Alta",
+    status: "Aberto",
+    observacoes: "Urgente"
+},
+
+{
+    numero: "2026/000002",
+    assunto: "Pedido de Isenção de Taxa",
+    requerente: "Maria Oliveira",
+    dataAbertura: "28/07/2026",
+    area: "Financeiro",
+    prioridade: "Média",
+    status: "Em Análise",
+    observacoes: ""
+},
+
+{
+    numero: "2026/000003",
+    assunto: "Recurso Administrativo",
+    requerente: "Carlos Pereira",
+    dataAbertura: "20/07/2026",
+    area: "Jurídico",
+    prioridade: "Alta",
+    status: "Deferido",
+    observacoes: "Documentação completa"
+},
+
+{
+    numero: "2026/000004",
+    assunto: "Atualização Cadastral",
+    requerente: "Ana Souza",
+    dataAbertura: "15/07/2026",
+    area: "Cadastro",
+    prioridade: "Baixa",
+    status: "Indeferido",
+    observacoes: ""
+},
+
+{
+    numero: "2026/000005",
+    assunto: "Emissão de Documento",
+    requerente: "Fernanda Costa",
+    dataAbertura: "10/07/2026",
+    area: "Secretaria",
+    prioridade: "Baixa",
+    status: "Arquivado",
+    observacoes: "Processo encerrado"
+}
+
+];
+
+function classeStatus(status){
+
+    switch(status){
+
+        case "Aberto":
+            return "aberto";
+
+        case "Em Análise":
+            return "analise";
+
+        case "Deferido":
+            return "deferido";
+
+        case "Indeferido":
+            return "indeferido";
+
+        case "Arquivado":
+            return "arquivado";
+
+        default:
+            return "";
+    }
+
+}
+
+function classePrioridade(prioridade){
+
+    switch(prioridade){
+
+        case "Alta":
+            return "alta";
+
+        case "Média":
+            return "media";
+
+        case "Baixa":
+            return "baixa";
+
+        default:
+            return "";
+    }
+
+}
+
+function renderizarTabela(){
+
+    const tbody = document.getElementById("tabelaProtocolos");
+
+    tbody.innerHTML = "";
+
+    protocolos.forEach(function(protocolo){
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${protocolo.numero}</td>
+            <td>${protocolo.assunto}</td>
+            <td>${protocolo.requerente}</td>
+            <td>${protocolo.dataAbertura}</td>
+
+            <td>${protocolo.area}</td>
+
+            <td>
+                <span class="prioridade ${classePrioridade(protocolo.prioridade)}">
+                    ${protocolo.prioridade}
+                </span>
+            </td>
+
+            <td>
+                <span class="status ${classeStatus(protocolo.status)}">
+                    ${protocolo.status}
+                </span>
+            </td>
+            <td>${protocolo.observacoes || "-"}</td>
+        `;
+
+        tbody.appendChild(tr);
+
+    });
+
+    document.getElementById("totalProtocolos").textContent = protocolos.length;
+
+}
+
+renderizarTabela();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 0 · Fundamentos de Engenharia de Prompt · SISPROT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#0F1C36">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1C36;
+    --ink-2:#16274a;
+    --paper:#FFFFFF;
+    --surface:#F3F5F9;
+    --surface-2:#EAEDF3;
+    --line:#DEE2EA;
+    --text:#1A2233;
+    --text-muted:#5B6478;
+    --gold:#B8892B;
+    --gold-soft:#E9D9B4;
+    --teal:#0E7C7B;
+    --teal-soft:#D6ECEB;
+    --radius:14px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; color-scheme:light only; background:#FFFFFF;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    margin:0;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;line-height:1.6;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  section{padding:96px 0;}
+  @media (max-width:640px){ section{padding:64px 0;} .wrap{padding:0 20px;} }
+
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px;
+    background:rgba(15,28,54,0.88);
+    backdrop-filter:blur(8px);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:600;}
+  .topbar .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .topbar .step{color:#9fb0d1;}
+  @media (max-width:640px){
+    .topbar{padding:12px 20px;}
+    .topbar .step{display:none;}
+  }
+  #progress{
+    position:fixed; top:0; left:0; height:2px; background:var(--gold); z-index:60; width:0%;
+    transition:width .1s linear;
+  }
+
+  .hero{
+    background:radial-gradient(120% 140% at 78% -10%, #1c3568 0%, var(--ink) 55%, #0a1428 100%);
+    color:#fff;
+    padding:180px 0 120px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; right:-180px; top:-120px;
+    width:640px; height:640px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-60px; top:60px;
+    width:420px; height:420px;
+    border-radius:50%;
+    border:1px solid rgba(184,137,43,0.22);
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero .eyebrow{color:var(--gold-soft); margin-bottom:22px; display:block;}
+  .hero h1{font-size:clamp(2.1rem, 4.6vw, 3.6rem); font-weight:600; max-width:760px;}
+  .hero .lede{
+    margin-top:26px; font-size:1.15rem; color:#c7d2ea; max-width:620px; line-height:1.65;
+  }
+  .hero .meta-row{
+    margin-top:52px; display:flex; gap:36px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:#8fa0c4;
+  }
+  .hero .meta-row strong{color:#fff; display:block; font-family:'Fraunces',serif; font-size:1.3rem; font-weight:600; margin-bottom:2px;}
+
+  .sec-head{max-width:680px; margin-bottom:52px;}
+  .sec-head .eyebrow{display:block; margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem); font-weight:600; color:var(--ink);}
+  .sec-head .sub{margin-top:14px; color:var(--text-muted); font-size:1.03rem;}
+
+  .why{background:var(--surface);}
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:800px){ .why-grid{grid-template-columns:1fr;} }
+  .why-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 26px;
+  }
+  .why-card .tag{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:14px;}
+  .why-card h3{font-size:1.15rem; font-weight:600; color:var(--ink); margin-bottom:10px;}
+  .why-card p{color:var(--text-muted); font-size:0.96rem;}
+
+  .shift .grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .shift .grid{grid-template-columns:1fr;} }
+  .shift-card{border-radius:var(--radius); padding:30px 28px; border:1px solid var(--line);}
+  .shift-card.old{background:var(--surface);}
+  .shift-card.new{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .shift-card h3{font-size:1.05rem; margin-bottom:12px;}
+  .shift-card.old h3{color:var(--ink);}
+  .shift-card.new h3{color:var(--gold-soft);}
+  .shift-card p{font-size:0.96rem; color:var(--text-muted); line-height:1.65;}
+  .shift-card.new p{color:#c7d2ea;}
+
+  .callout{
+    background:var(--surface); border-radius:var(--radius); padding:26px 28px;
+    display:flex; gap:18px; align-items:flex-start;
+  }
+  .callout .icn{flex:none; width:26px; height:26px; color:var(--gold); margin-top:2px;}
+  .callout p{color:var(--text); font-size:0.97rem; line-height:1.65;}
+
+  .pullquote{padding:100px 0; text-align:center;}
+  .pullquote blockquote{
+    max-width:760px; margin:0 auto; font-family:'Fraunces',serif; font-size:clamp(1.3rem,2.6vw,1.9rem);
+    font-weight:500; color:var(--ink); line-height:1.5;
+  }
+  .pullquote .rule{width:44px; height:2px; background:var(--gold); margin:0 auto 30px;}
+  footer{background:var(--ink); color:#8fa0c4; padding:44px 0; font-size:0.82rem; font-family:'JetBrains Mono',monospace;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; row-gap:14px;}
+
+  .reveal{opacity:1; transform:none;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  .agenda-list{position:relative; margin-top:12px;}
+  .agenda-list::before{content:""; position:absolute; left:15px; top:6px; bottom:6px; width:1px; background:var(--line);}
+  .agenda-row{display:flex; gap:16px; padding:8px 0; align-items:flex-start;}
+  .agenda-row .dotm{flex:none; width:30px;height:30px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--ink); position:relative; z-index:1;}
+  .agenda-row p{font-size:0.94rem; color:var(--text); padding-top:5px;}
+
+  .module-divider{
+    background:linear-gradient(120deg, var(--ink) 0%, #1c3568 100%); color:#fff;
+    padding:72px 0 56px; position:relative; overflow:hidden;
+  }
+  .module-divider::before{content:""; position:absolute; right:-140px; top:-100px; width:420px; height:420px; border-radius:50%; border:1px solid rgba(255,255,255,0.08);}
+  .module-divider .modnum{font-family:'JetBrains Mono',monospace; color:var(--gold-soft); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:16px;}
+  .module-divider h2{font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:600; max-width:760px; color:#fff;}
+  .module-divider .modsub{margin-top:14px; color:#c7d2ea; font-size:1.02rem; max-width:640px; line-height:1.6;}
+
+  .anatomy-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:800px){ .anatomy-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .anatomy-grid{grid-template-columns:1fr;} }
+  .anatomy-card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px 20px;}
+  .anatomy-card .anum{font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gold); letter-spacing:0.1em; display:block; margin-bottom:10px;}
+  .anatomy-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px;}
+  .anatomy-card p{font-size:0.88rem; color:var(--text-muted); line-height:1.55;}
+
+  .tech-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:700px){ .tech-grid{grid-template-columns:1fr;} }
+  .tech-card{border:1px solid var(--line); border-radius:12px; padding:22px 22px; background:var(--paper);}
+  .tech-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .tech-card .tnum{
+    flex:none; width:26px;height:26px; border-radius:50%; background:var(--ink); color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; display:flex; align-items:center; justify-content:center;
+  }
+  .tech-card p{font-size:0.9rem; color:var(--text-muted); line-height:1.6;}
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .checklist li{
+    display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line);
+    border-radius:10px; padding:16px 18px; font-size:0.94rem; color:var(--text); line-height:1.55;
+  }
+  .checklist li .xicn{flex:none; width:20px;height:20px; color:var(--teal); margin-top:1px;}
+
+  .callout-alert{ background:var(--ink); color:#fff; border-radius:var(--radius); padding:28px 26px; margin-top:24px; }
+  .callout-alert .eyebrow{color:var(--gold-soft); display:block; margin-bottom:10px;}
+  .callout-alert p{color:#dce3f2; font-size:0.95rem; line-height:1.68;}
+</style>
+<style>
+  /* complementos desta aula (padrão reaproveitado das aulas do projeto) */
+  a{color:var(--teal); text-decoration:underline; text-underline-offset:2px; font-weight:600;}
+  a:hover{color:var(--ink);}
+  .promptbox{background:var(--ink); color:#e8edf6; border-radius:12px; padding:20px 22px; margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; line-height:1.7; white-space:pre-wrap; overflow-x:auto;}
+  .promptbox .plabel{display:block; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:12px; font-weight:600;}
+  .promptbox .blk{color:var(--gold-soft); font-weight:600;}
+  .copy-hint{margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted);}
+  code.inline{font-family:'JetBrains Mono',monospace; font-size:0.85em; background:var(--surface-2); padding:2px 6px; border-radius:5px; color:var(--ink);}
+
+  .block-card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:36px; margin-bottom:40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
+  .block-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:1px solid var(--line); padding-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .block-title-area h3{font-size:1.4rem; color:var(--ink); font-weight:600;}
+  .block-badge{font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px; border-radius:20px; font-weight:600;}
+  .badge-teal{background:var(--teal-soft); color:var(--teal);}
+  .badge-gold{background:var(--gold-soft); color:var(--ink);}
+
+  .concept-box{background:var(--surface); border-left:4px solid var(--ink); border-radius:0 8px 8px 0; padding:20px; margin:20px 0;}
+  .concept-box h4{font-size:1.05rem; color:var(--ink); margin-bottom:8px;}
+  .concept-box p{color:var(--text); font-size:0.95rem; line-height:1.6;}
+
+  .insight-box{background:var(--teal-soft); border:1px solid var(--teal); border-radius:8px; padding:20px; margin:20px 0; color:var(--ink);}
+  .insight-box .insight-tag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); font-weight:600; display:block; margin-bottom:6px;}
+  .insight-box p{font-size:0.93rem; line-height:1.55;}
+
+  .instruction-step{margin:28px 0;}
+  .instruction-step .step-num{font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:600; color:var(--gold); display:block; margin-bottom:4px;}
+  .instruction-step h4{font-size:1.1rem; color:var(--ink); margin-bottom:8px;}
+
+  .code-box{background:var(--ink); color:#f0f4fc; font-family:'JetBrains Mono',monospace; font-size:0.82rem; padding:18px 20px; border-radius:10px; margin:16px 0; overflow-x:auto; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--gold);}
+  .code-box .comment{color:#7e93ba;}
+
+  .value-table-wrapper{margin-top:28px; overflow-x:auto; border:1px solid var(--line); border-radius:10px;}
+  .value-table{width:100%; border-collapse:collapse; font-size:0.9rem; text-align:left;}
+  .value-table th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; padding:14px 16px;}
+  .value-table td{padding:14px 16px; border-bottom:1px solid var(--line); color:var(--text); line-height:1.5; vertical-align:top;}
+  .value-table tr:last-child td{border-bottom:none;}
+  .value-table tr:nth-child(even){background:var(--surface);}
+  .value-table strong{color:var(--ink);}
+
+  /* --- elementos visuais (ícones, diagramas, fotos) --- */
+  .icon-badge{
+    display:inline-flex; align-items:center; justify-content:center; flex:none;
+    width:38px; height:38px; border-radius:50%; background:var(--ink); color:#fff;
+  }
+  .icon-badge svg{width:20px; height:20px;}
+  .icon-badge.gold{background:var(--gold-soft); color:var(--ink);}
+  .icon-badge.teal{background:var(--teal-soft); color:var(--teal);}
+  .icon-badge.sm{width:26px; height:26px;}
+  .icon-badge.sm svg{width:14px; height:14px;}
+
+  .legend-row{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:18px;}
+  .legend-chip{display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text);}
+
+  .acard-head{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .acard-head h3{margin:0;}
+  .anatomy-card .anum{display:none;} /* substituído por icon-badge */
+
+  .concept-box > summary{display:flex; align-items:center; gap:14px; cursor:pointer; list-style:none;}
+  .concept-box > summary::-webkit-details-marker{display:none;}
+  .concept-box > summary h4{margin:0; flex:1;}
+  .concept-box > summary .chev{flex:none; width:18px; height:18px; color:var(--text-muted); transition:transform .2s ease;}
+  .concept-box[open] > summary .chev{transform:rotate(180deg);}
+  .concept-box > p{margin-top:14px;}
+
+  .divider-head{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+  .divider-head .modnum{margin-bottom:0;}
+  .divider-icon{flex:none; width:34px; height:34px; color:var(--gold-soft);}
+
+  .diagram-frame{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:24px; margin:24px 0; overflow-x:auto;}
+  .diagram-frame svg{width:100%; height:auto; display:block;}
+  .diagram-frame .diagram-caption{margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted); text-align:center;}
+  .diagram-pair{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .diagram-pair{grid-template-columns:1fr;} }
+  .diagram-pair .diagram-frame{margin:0; height:100%;}
+
+  .photo-frame{
+    width:100%; aspect-ratio:4/3; border-radius:14px;
+    background:linear-gradient(135deg, var(--surface), rgba(184,137,43,0.08));
+    border:1px dashed var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--text-muted); font-size:0.85rem; padding:24px; text-align:center; gap:10px;
+    margin:24px 0;
+  }
+  .photo-frame.wide{aspect-ratio:16/9;}
+  .photo-frame .pf-icon{width:40px; height:40px; color:var(--gold);}
+  .photo-frame .pf-label{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted);}
+  .photo-frame.has-img{padding:0; border:1px solid var(--line); border-style:solid; overflow:hidden;}
+  .photo-frame.has-img img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  .demo-head-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:28px; align-items:center; margin:44px 0 20px;}
+  @media (max-width:800px){ .demo-head-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> SISPROT · Aula 4</div>
+  <div class="step">Fundamentos de Engenharia de Prompt</div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Curso · IA aplicada ao desenvolvimento de software · Aula 0</span>
+    <h1>Fundamentos de Engenharia de Prompt</h1>
+    <p class="lede">Quatro aulas, um projeto único: o <strong>SISPROT</strong>, sistema de protocolo administrativo. Hoje começaremos pela base de tudo que virá depois — como estruturar um prompt para obter resultados precisos, consistentes e revisáveis, em vez de depender de sorte.</p>
+    <div class="meta-row">
+      <div><strong>4</strong>aulas · 1 projeto</div>
+      <div><strong>5</strong>blocos do prompt</div>
+      <div><strong>2</strong>demonstrações ao vivo</div>
+      <div><strong>SISPROT</strong>v0 · CRUD</div>
+    </div>
+  </div>
+</header>
+
+<!-- AGENDA -->
+<section class="why reveal" id="agenda">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sobre o curso</span>
+      <h2>Um projeto, quatro aulas</h2>
+      <p class="sub">O SISPROT evoluirá a cada aula: hoje ganhará o modelo de dados e o CRUD de protocolos; a Aula 1 acrescentará o fluxo de tramitação entre setores (Spec-Driven Development); a Aula 2 construirá uma API comparando copilotos de IA; a Aula 3 fechará com testes e documentação.</p>
+    </div>
+    <div class="agenda-list">
+      <div class="agenda-row"><div class="dotm">01</div><p>O que é engenharia de prompt, e por que o mesmo pedido pode dar resultados muito diferentes</p></div>
+      <div class="agenda-row"><div class="dotm">02</div><p>Anatomia de um prompt eficaz: papel, contexto, tarefa, restrições, formato</p></div>
+      <div class="agenda-row"><div class="dotm">03</div><p>Zero-shot vs. few-shot prompting</p></div>
+      <div class="agenda-row"><div class="dotm">04</div><p>XML Prompting e Markdown Prompting — estruturar sem ambiguidade</p></div>
+      <div class="agenda-row"><div class="dotm">05</div><p>Prompt templates reutilizáveis</p></div>
+      <div class="agenda-row"><div class="dotm">06</div><p>Técnicas para reduzir alucinação e aumentar precisão</p></div>
+      <div class="agenda-row"><div class="dotm">07</div><p>Desafio final: aplicar tudo, com um prompt escrito do zero</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Regra de ouro do curso:</strong> nunca cole dados reais ou sensíveis — de processos, pessoas ou setores reais — em nenhuma ferramenta de IA, especialmente as gratuitas. Todos os exemplos usam números de protocolo, nomes e assuntos fictícios.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 1 -->
+<section class="module-divider reveal" id="etapa1">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v11H9l-5 4V5z"/></svg>
+      <span class="modnum">Etapa 1</span>
+    </div>
+    <h2>O que é engenharia de prompt</h2>
+    <p class="modsub">A mesma IA, com o mesmo modelo, produz resultados muito diferentes dependendo de como a tarefa é descrita.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição</h4>
+      <p>Engenharia de prompt é a prática de estruturar deliberadamente a instrução dada a uma IA, para obter um resultado mais preciso, consistente e revisável — em vez de depender de sorte na primeira tentativa.</p>
+    </div>
+    <div class="insight-box">
+      <span class="insight-tag">Quando NÃO vale o esforço</span>
+      <p>Tarefas triviais e de baixo risco ("resuma este parágrafo") não precisam de todo o aparato de estrutura. Engenharia de prompt é investimento proporcional à importância e complexidade da tarefa — e ao quanto o resultado será reaproveitado sem revisão detalhada.</p>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Panorama · antes de escolher um modelo</span>
+          <h3>Frameworks conhecidos de engenharia de prompt</h3>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);">Não existe um único "jeito certo" de estruturar um prompt — vários frameworks populares organizam basicamente as mesmas ideias (quem responde, o que fazer, como a resposta deve chegar) em siglas diferentes. Conhecer mais de um ajuda a reconhecer o padrão por trás de qualquer um deles — inclusive o PACIF.</p>
+
+      <div class="value-table-wrapper">
+        <table class="value-table">
+          <thead><tr><th>Framework</th><th>Blocos</th><th>Diferencial</th><th>Quando escolher</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>PACIF</strong></td>
+              <td>Papel, Ação, Contexto, Intenção, Formato</td>
+              <td>Separa a Ação (o quê) da Intenção (para quê) — deixa o objetivo final explícito, não só a tarefa.</td>
+              <td>Uso geral — bom ponto de partida para quem já conhece a sigla.</td>
+            </tr>
+            <tr>
+              <td><strong>CO-STAR</strong></td>
+              <td>Context, Objective, Style, Tone, Audience, Response format</td>
+              <td>Único que controla Estilo, Tom e Audiência de forma explícita e separada.</td>
+              <td>Textos voltados a comunicação/redação, onde o "como soa" importa tanto quanto o conteúdo.</td>
+            </tr>
+            <tr>
+              <td><strong>CRISPE</strong></td>
+              <td>Capacity/Role, Insight, Statement, Personality, Experiment</td>
+              <td>Único com uma etapa de iteração embutida — pede múltiplas variações para comparar.</td>
+              <td>Tarefas abertas ou criativas, quando vale a pena gerar 2-3 versões antes de escolher.</td>
+            </tr>
+            <tr>
+              <td><strong>RTF</strong></td>
+              <td>Role, Task, Format</td>
+              <td>O mais enxuto dos quatro — só 3 blocos, sem Contexto nem Restrições dedicados.</td>
+              <td>Tarefas triviais e de baixo risco (ver caixa acima) — rápido de escrever, rápido de revisar.</td>
+            </tr>
+            <tr>
+              <td><strong>Modelo deste curso</strong></td>
+              <td>Papel, Contexto, Tarefa, Restrições, Formato <span style="color:var(--text-muted);">(+ Exemplos, opcional)</span></td>
+              <td>Único com Restrições como bloco próprio — o que <em>não</em> fazer, essencial em projetos de código que já existem.</td>
+              <td>Projetos de software que evoluem ao longo do tempo — como o SISPROT ao longo destas 4 aulas.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="insight-box">
+        <span class="insight-tag">O que todos têm em comum</span>
+        <p>Debaixo de siglas diferentes, o núcleo se repete: <strong>quem</strong> responde (papel/capacidade), <strong>o que</strong> fazer (ação/tarefa/objetivo) e <strong>como</strong> a resposta deve chegar (formato). O que muda é qual dimensão extra cada framework decide destacar — tom e audiência no CO-STAR, iteração no CRISPE, restrições explícitas no modelo que usaremos daqui em diante. Adotaremos o modelo de 5 blocos deste curso como referência — mas qualquer um destes serve, contanto que seja usado com consistência.</p>
+      </div>
+
+      <div class="instruction-step" style="margin-top:32px;">
+        <span class="step-num">Exemplo 1 · mesma tarefa, dois frameworks</span>
+        <h4>Adicionar um filtro de busca por período na listagem de protocolos</h4>
+      </div>
+      <div class="diagram-pair">
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">PACIF</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em sistemas administrativos
+para o setor público.
+
+<span class="blk">[AÇÃO]</span> Adicione um filtro de busca por período (data inicial e data final) na
+listagem de protocolos.
+
+<span class="blk">[CONTEXTO]</span> O SISPROT já tem index.php listando protocolos via PDO com prepared
+statements, sem filtros até agora.
+
+<span class="blk">[INTENÇÃO]</span> O servidor precisa encontrar rapidamente protocolos abertos num
+intervalo de datas, sem rolar a listagem inteira.
+
+<span class="blk">[FORMATO]</span> Só o trecho de código alterado em index.php, com um comentário
+indicando onde inserir.</div>
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">Modelo deste curso</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em sistemas administrativos
+para o setor público.
+
+<span class="blk">[CONTEXTO]</span> O SISPROT já tem index.php listando protocolos via PDO com prepared
+statements, sem filtros até agora.
+
+<span class="blk">[TAREFA]</span> Adicione um filtro de busca por período (data inicial e data final) na
+listagem de protocolos.
+
+<span class="blk">[RESTRIÇÕES]</span> Não altere as colunas já exibidas nem a ordenação atual; mantenha
+prepared statements para as datas.
+
+<span class="blk">[FORMATO]</span> Só o trecho de código alterado em index.php, com um comentário
+indicando onde inserir.</div>
+      </div>
+      <p class="copy-hint">Quase idênticos — a diferença está no quinto bloco. <code class="inline">[INTENÇÃO]</code> explica o "para quê" (pode ajudar a IA a decidir detalhes, como um intervalo padrão); <code class="inline">[RESTRIÇÕES]</code> trava explicitamente o que não pode mudar. Em código que já funciona, essa segunda garantia costuma valer mais.</p>
+
+      <div class="instruction-step" style="margin-top:36px;">
+        <span class="step-num">Exemplo 2 · mesma tarefa, dois frameworks</span>
+        <h4>Escrever a mensagem de confirmação após arquivar um protocolo</h4>
+      </div>
+      <div class="diagram-pair">
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">RTF</span><span class="blk">[PAPEL]</span> Redator de interface para sistemas administrativos.
+
+<span class="blk">[TAREFA]</span> Escreva a mensagem de confirmação exibida depois que um protocolo é
+arquivado.
+
+<span class="blk">[FORMATO]</span> Uma frase curta, tom neutro, sem emojis.</div>
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">CRISPE</span><span class="blk">[PAPEL/CAPACIDADE]</span> Redator de interface para sistemas administrativos, com
+experiência em linguagem institucional.
+
+<span class="blk">[INSIGHT]</span> O SISPROT já exibe mensagens de sucesso via querystring; o tom usado
+no resto do sistema é institucional, mas não burocrático.
+
+<span class="blk">[DECLARAÇÃO]</span> Escreva a mensagem de confirmação exibida depois que um protocolo
+é arquivado.
+
+<span class="blk">[PERSONALIDADE]</span> Tom institucional, mas acolhedor — não robótico, não informal
+demais.
+
+<span class="blk">[EXPERIMENTO]</span> Gere 3 variações da mensagem para eu escolher.</div>
+      </div>
+      <p class="copy-hint">Para uma frase de interface, o RTF resolve em 3 linhas. O CRISPE só compensa o texto a mais quando o tom importa e vale a pena comparar opções — exatamente o critério da coluna "Quando escolher" da tabela acima.</p>
+
+      <div class="instruction-step" style="margin-top:36px;">
+        <span class="step-num">Exemplo 3 · mesma tarefa, dois frameworks</span>
+        <h4>Gerar a user story e os critérios de aceitação da funcionalidade de anexos</h4>
+        <p style="color:var(--text-muted); font-size:0.92rem; margin-top:6px;">Prompts não servem só para gerar código. Hoje começaremos a trabalhar também nas primeiras fases do processo de desenvolvimento de software — documentação e especificação, antes mesmo da primeira linha de código.</p>
+      </div>
+      <div class="diagram-pair">
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">CO-STAR</span><span class="blk">[CONTEXT]</span> O SISPROT vai ganhar um campo de anexos (referência textual, sem
+upload real) associado a cada protocolo — é o desafio final de hoje.
+
+<span class="blk">[OBJECTIVE]</span> Gerar a user story e os critérios de aceitação dessa
+funcionalidade, no mesmo formato usado para o CRUD de protocolos.
+
+<span class="blk">[STYLE]</span> Direto, no formato "Como / quero / para que" seguido de lista
+de critérios.
+
+<span class="blk">[TONE]</span> Institucional, sem jargão técnico desnecessário.
+
+<span class="blk">[AUDIENCE]</span> Servidores da recepção de documentos (usuários finais) e o
+instrutor, que vai revisar antes de aprovar o desafio.
+
+<span class="blk">[RESPONSE FORMAT]</span> Markdown: user story em bloco de citação, critérios
+como lista "- [ ]".</div>
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">Modelo deste curso</span><span class="blk">[PAPEL]</span> Você é um analista de requisitos especializado em sistemas
+administrativos para o setor público.
+
+<span class="blk">[CONTEXTO]</span> O SISPROT vai ganhar um campo de anexos (referência textual,
+sem upload real) associado a cada protocolo.
+
+<span class="blk">[TAREFA]</span> Escreva a user story e os critérios de aceitação dessa
+funcionalidade, no mesmo formato usado para o CRUD de protocolos (Como/quero/para
+que + lista de critérios).
+
+<span class="blk">[RESTRIÇÕES]</span> Não inclua critérios sobre upload real de arquivo — é só
+uma referência textual. Não decida sozinho se um protocolo pode ter mais de um
+anexo; deixe isso como pergunta em aberto.
+
+<span class="blk">[FORMATO]</span> Markdown: user story em bloco de citação, critérios como
+lista "- [ ]".</div>
+      </div>
+      <p class="copy-hint">Documentação tem uma variável que código não tem: quem vai ler. O bloco <code class="inline">[AUDIENCE]</code> do CO-STAR força pensar nisso de forma explícita; o <code class="inline">[RESTRIÇÕES]</code> do modelo do curso, em vez disso, impede que a IA "resolva sozinha" uma decisão de design que ainda está em aberto — exatamente o tipo de armadilha que aparece no Desafio final, mais adiante.</p>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Mão na massa · individual · agora, com sua própria IA</span>
+          <h3>Cartão de visita animado em HTML</h3>
+        </div>
+        <span class="block-badge badge-teal">10 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Para fechar esta parte, testaremos um dos frameworks vistos — na prática, com uma ferramenta de IA gratuita (ChatGPT, Gemini, Claude, Copilot ou similar) e uma tarefa rápida, visual e de baixíssimo risco.</p>
+
+      <div class="callout" style="margin-top:20px;">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+        <p><strong>Dica antes de começar:</strong> como um cartão de visita é feito pra circular, podemos usar dados reais — nome, cargo, e-mail e redes profissionais. Vale só conferir antes: usaremos apenas informação que toparíamos ver publicada, sem dado mais sensível (telefone pessoal, endereço) no meio.</p>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>Escolheremos <strong>um</strong> framework entre os apresentados hoje: PACIF, CO-STAR, CRISPE, RTF ou o modelo deste curso.</li>
+          <li>Escreveremos, com esse framework, um prompt pedindo um <strong>cartão de visita digital animado</strong> — com nosso nome, cargo, uma frase de efeito e 2-3 contatos que toparíamos deixar públicos (e-mail profissional, LinkedIn, GitHub), além de pelo menos uma animação (entrada, hover, gradiente em movimento).</li>
+          <li>Rodaremos o prompt numa IA gratuita disponível e pediremos um único arquivo HTML autocontido (CSS e JavaScript inline), sem dependências externas.</li>
+          <li>Salvaremos o arquivo e abriremos direto no navegador para testar a animação.</li>
+          <li>Publicaremos o resultado (ver dica abaixo) para termos um link pronto para mostrar.</li>
+          <li>Voluntários apresentarão seus resultados.</li>
+        </ol>
+      </div>
+
+      <div class="insight-box">
+        <span class="insight-tag">Dica: publicar para gerar um link</span>
+        <p>Não precisamos de servidor para isso. Forma mais rápida: abrir <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">app.netlify.com/drop</a> e arrastar o arquivo <code class="inline">.html</code> para a página — em segundos ela devolve um link público, sem instalar nada e sem cadastro. Alternativa: colar o código em <a href="https://codepen.io" target="_blank" rel="noopener">codepen.io</a> ou <a href="https://jsfiddle.net" target="_blank" rel="noopener">jsfiddle.net</a> e usar o botão "Save"/"Share" para gerar o link.</p>
+      </div>
+
+      <div class="promptbox" style="margin-top:20px;">
+<span class="plabel">Exemplo de prompt · framework RTF</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor front-end especializado em animações CSS.
+
+<span class="blk">[TAREFA]</span> Crie um cartão de visita digital para "Ana Beatriz Rocha, Analista de
+Sistemas" — com nome, cargo, uma frase de efeito curta e 3 ícones de contato
+(e-mail, LinkedIn, GitHub). Adicione uma animação de entrada (fade-in ou slide) e um
+efeito ao passar o mouse sobre o cartão.
+
+<span class="blk">[FORMATO]</span> Um único arquivo HTML autocontido — CSS e JavaScript inline,
+sem bibliotecas externas — pronto para abrir direto no navegador.</div>
+      <p class="copy-hint">RTF combina bem aqui: é uma tarefa visual, de baixíssimo risco e sem continuidade com código existente — exatamente o cenário indicado na tabela para o framework mais enxuto. Trocaremos o nome, o cargo e o framework pelos nossos antes de rodar.</p>
+
+      <div class="instruction-step">
+        <span class="step-num">Critério de sucesso</span>
+        <ul class="checklist" style="margin-top:12px;">
+          <li><span class="xicn">&#10003;</span>O arquivo abre direto no navegador, sem erros no console.</li>
+          <li><span class="xicn">&#10003;</span>Existe pelo menos uma animação visível (entrada, hover ou gradiente em movimento).</li>
+          <li><span class="xicn">&#10003;</span>Os dados usados no cartão são informações que toparíamos ver publicadas (nome, cargo, contatos profissionais).</li>
+          <li><span class="xicn">&#10003;</span>Conseguimos dizer qual framework usamos e o que cada bloco do prompt pediu.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="demo-head-grid">
+      <div class="sec-head" style="margin:0;">
+        <span class="eyebrow">Demonstração ao vivo 1</span>
+        <h2 style="font-size:1.5rem;">Prompt fraco vs. prompt estruturado</h2>
+        <p class="sub">Pediremos exatamente a mesma coisa — o modelo de dados inicial do SISPROT — dos dois jeitos.</p>
+      </div>
+      <div class="photo-frame has-img">
+        <img src="images/image0.png" alt="Mesa de trabalho com notebook aberto num editor de código">
+      </div>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Prompt fraco</span>cria um sistema de protocolo</div>
+    <p class="copy-hint">O que falta: linguagem, banco de dados, campos, formato de saída. A IA preencherá cada lacuna com uma suposição própria.</p>
+
+    <div class="promptbox" style="margin-top:20px;">
+<span class="plabel">Prompt estruturado</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em sistemas administrativos
+para o setor público.
+
+<span class="blk">[CONTEXTO]</span> Vou construir o SISPROT, um sistema de protocolo administrativo para um
+órgão público. Ele vai rodar em PHP puro (sem framework) + MySQL, ambiente XAMPP,
+usando PDO com prepared statements.
+
+<span class="blk">[TAREFA]</span> Crie o modelo de dados inicial: uma tabela "protocolos" que registre número
+do protocolo, assunto, nome do requerente, data de abertura e status atual (valores
+possíveis: Aberto, Em Análise, Deferido, Indeferido, Arquivado).
+
+<span class="blk">[RESTRIÇÕES]</span> Não use frameworks. Não crie autenticação ainda. Gere apenas o SQL de
+criação da tabela e o arquivo de conexão PDO.
+
+<span class="blk">[FORMATO]</span> Primeiro o SQL completo e comentado; depois o arquivo conexao.php.</div>
+
+    <div class="diagram-pair" style="margin-top:28px;">
+      <div class="diagram-frame">
+        <svg viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="10" width="340" height="40" fill="var(--ink)"/>
+          <text x="180" y="35" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" letter-spacing="1" fill="#fff">PROTOCOLOS</text>
+          <rect x="10" y="50" width="340" height="240" fill="var(--paper)" stroke="var(--line)" stroke-width="1.5"/>
+          <line x1="10" y1="90" x2="350" y2="90" stroke="var(--line)"/>
+          <line x1="10" y1="130" x2="350" y2="130" stroke="var(--line)"/>
+          <line x1="10" y1="170" x2="350" y2="170" stroke="var(--line)"/>
+          <line x1="10" y1="210" x2="350" y2="210" stroke="var(--line)"/>
+          <line x1="10" y1="250" x2="350" y2="250" stroke="var(--line)"/>
+          <circle cx="35" cy="65" r="6" fill="none" stroke="var(--gold)" stroke-width="1.5"/>
+          <rect x="31" y="65" width="8" height="12" fill="var(--gold)"/>
+          <text x="55" y="75" font-family="'JetBrains Mono',monospace" font-size="12" fill="var(--gold)" font-weight="600">id</text>
+          <text x="330" y="75" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--text-muted)">PK · int</text>
+          <text x="30" y="115" font-family="'JetBrains Mono',monospace" font-size="12" fill="var(--ink)">numero</text>
+          <text x="330" y="115" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--text-muted)">string</text>
+          <text x="30" y="155" font-family="'JetBrains Mono',monospace" font-size="12" fill="var(--ink)">assunto</text>
+          <text x="330" y="155" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--text-muted)">string</text>
+          <text x="30" y="195" font-family="'JetBrains Mono',monospace" font-size="12" fill="var(--ink)">requerente</text>
+          <text x="330" y="195" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--text-muted)">string</text>
+          <text x="30" y="235" font-family="'JetBrains Mono',monospace" font-size="12" fill="var(--ink)">data_abertura</text>
+          <text x="330" y="235" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--text-muted)">date</text>
+          <text x="30" y="275" font-family="'JetBrains Mono',monospace" font-size="12" fill="var(--ink)">status</text>
+          <text x="330" y="275" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--text-muted)">string</text>
+        </svg>
+        <p class="diagram-caption">Modelo de dados gerado pelo prompt estruturado — 1 tabela, sem relacionamentos ainda.</p>
+      </div>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow-states" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+            </marker>
+          </defs>
+          <circle cx="30" cy="95" r="8" fill="var(--ink)"/>
+          <line x1="38" y1="95" x2="68" y2="95" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrow-states)"/>
+          <rect x="70" y="70" width="110" height="50" rx="25" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.5"/>
+          <text x="125" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="var(--ink)">Aberto</text>
+          <line x1="180" y1="95" x2="328" y2="95" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrow-states)"/>
+          <text x="254" y="85" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="var(--text-muted)">encerrar.php</text>
+          <rect x="330" y="70" width="120" height="50" rx="25" fill="var(--surface-2)" stroke="var(--text-muted)" stroke-width="1.5"/>
+          <text x="390" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="var(--text)">Arquivado</text>
+          <rect x="95" y="150" width="90" height="30" rx="15" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.55"/>
+          <text x="140" y="169" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="var(--teal)" opacity="0.8">Em Análise</text>
+          <rect x="200" y="150" width="90" height="30" rx="15" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.55"/>
+          <text x="245" y="169" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="var(--teal)" opacity="0.8">Deferido</text>
+          <rect x="305" y="150" width="100" height="30" rx="15" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.55"/>
+          <text x="355" y="169" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="var(--teal)" opacity="0.8">Indeferido</text>
+        </svg>
+        <p class="diagram-caption">Hoje: só Aberto → Arquivado. Os estados tracejados chegarão na Aula 1.</p>
+      </div>
+    </div>
+
+    <div class="shift" style="margin-top:32px;">
+      <div class="grid">
+        <div class="shift-card old">
+          <h3>Resultado do prompt fraco</h3>
+          <p>Genérico — às vezes em outra stack, às vezes sem banco de dados, quase sempre sem os campos certos. A IA terá que adivinhar tudo.</p>
+        </div>
+        <div class="shift-card new">
+          <h3>Resultado do prompt estruturado</h3>
+          <p>Exatamente o schema e a conexão que o projeto precisa. A IA não "ficará mais inteligente" — receberá a informação que faltava.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-frame">
+      <svg viewBox="0 0 860 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-cycle" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--gold)"/>
+          </marker>
+        </defs>
+        <rect x="20" y="110" width="140" height="60" rx="8" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="90" y="145" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="var(--ink)">Requisito/ideia</text>
+
+        <rect x="195" y="110" width="140" height="60" rx="8" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="265" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="var(--ink)">Prompt</text>
+        <text x="265" y="155" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="var(--ink)">estruturado</text>
+
+        <rect x="370" y="110" width="140" height="60" rx="8" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"/>
+        <text x="440" y="145" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="var(--ink)">IA gera código</text>
+
+        <polygon points="615,80 705,140 615,200 525,140" fill="var(--gold-soft)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="615" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--ink)">Validação</text>
+        <text x="615" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--ink)">humana</text>
+
+        <rect x="735" y="110" width="110" height="60" rx="8" fill="var(--teal)" stroke="var(--teal)" stroke-width="1.5"/>
+        <text x="790" y="138" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#fff">Código</text>
+        <text x="790" y="153" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#fff">aceito</text>
+
+        <line x1="160" y1="140" x2="192" y2="140" stroke="var(--gold)" stroke-width="1.5" marker-end="url(#arrow-cycle)"/>
+        <line x1="335" y1="140" x2="367" y2="140" stroke="var(--gold)" stroke-width="1.5" marker-end="url(#arrow-cycle)"/>
+        <line x1="510" y1="140" x2="522" y2="140" stroke="var(--gold)" stroke-width="1.5" marker-end="url(#arrow-cycle)"/>
+        <line x1="708" y1="140" x2="732" y2="140" stroke="var(--teal)" stroke-width="1.5" marker-end="url(#arrow-cycle)"/>
+        <text x="720" y="124" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="var(--teal)">aprovado</text>
+
+        <path d="M615,80 C 615,15 265,15 265,108" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow-cycle)"/>
+        <text x="440" y="30" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="var(--text-muted)">reprovado — refina o prompt</text>
+      </svg>
+      <p class="diagram-caption">Ciclo básico: do requisito ao código aceito, com loop de retrabalho quando a validação reprova.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ANATOMIA -->
+<section class="reveal" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Depois da demonstração</span>
+      <h2>Anatomia de um prompt eficaz</h2>
+      <p class="sub">Cinco blocos que, juntos, eliminam a maior parte da ambiguidade.</p>
+    </div>
+
+    <div class="diagram-frame">
+      <svg viewBox="0 0 820 280" xmlns="http://www.w3.org/2000/svg">
+        <rect x="310" y="15" width="200" height="50" rx="10" fill="var(--ink)"/>
+        <text x="410" y="45" text-anchor="middle" fill="#fff" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="600">Prompt estruturado</text>
+
+        <line x1="410" y1="65" x2="98"  y2="165" stroke="var(--gold)" stroke-width="1.5"/>
+        <line x1="410" y1="65" x2="223" y2="165" stroke="var(--gold)" stroke-width="1.5"/>
+        <line x1="410" y1="65" x2="348" y2="165" stroke="var(--gold)" stroke-width="1.5"/>
+        <line x1="410" y1="65" x2="473" y2="165" stroke="var(--gold)" stroke-width="1.5"/>
+        <line x1="410" y1="65" x2="598" y2="165" stroke="var(--gold)" stroke-width="1.5"/>
+        <line x1="410" y1="65" x2="723" y2="165" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+        <rect x="43"  y="165" width="110" height="60" rx="8" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="98" y="200" text-anchor="middle" fill="var(--ink)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Papel</text>
+
+        <rect x="168" y="165" width="110" height="60" rx="8" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="223" y="200" text-anchor="middle" fill="var(--ink)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Contexto</text>
+
+        <rect x="293" y="165" width="110" height="60" rx="8" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="348" y="200" text-anchor="middle" fill="var(--ink)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Tarefa</text>
+
+        <rect x="418" y="165" width="110" height="60" rx="8" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="473" y="200" text-anchor="middle" fill="var(--ink)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Restrições</text>
+
+        <rect x="543" y="165" width="110" height="60" rx="8" fill="var(--surface)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="598" y="200" text-anchor="middle" fill="var(--ink)" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600">Formato</text>
+
+        <rect x="668" y="165" width="110" height="60" rx="8" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <text x="723" y="195" text-anchor="middle" fill="var(--teal)" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="600">Exemplos</text>
+        <text x="723" y="210" text-anchor="middle" fill="var(--teal)" font-family="'JetBrains Mono',monospace" font-size="9">(few-shot)</text>
+      </svg>
+      <p class="diagram-caption">O bloco de Exemplos (few-shot) é opcional — chegará na Etapa 2 de hoje.</p>
+    </div>
+
+    <div class="anatomy-grid">
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></span><h3>Papel</h3></div>
+        <p>Quem a IA deve "ser" ao responder — ancora vocabulário e convenções esperadas.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="14" width="14" height="4" rx="1"/><rect x="6" y="10" width="14" height="4" rx="1"/><rect x="7" y="6" width="14" height="4" rx="1"/></svg></span><h3>Contexto</h3></div>
+        <p>O que ela precisa saber antes de agir — o que já existe, o que já foi decidido.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M8 12l3 3 5-6"/></svg></span><h3>Tarefa</h3></div>
+        <p>O que fazer, exatamente — sem deixar a ambição da tarefa em aberto.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><line x1="6.5" y1="17.5" x2="17.5" y2="6.5"/></svg></span><h3>Restrições</h3></div>
+        <p>O que não fazer, ou os limites da resposta — o bloco mais esquecido.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4h4"/><path d="M16 4h4v4"/><path d="M20 16v4h-4"/><path d="M8 20H4v-4"/></svg></span><h3>Formato</h3></div>
+        <p>Como a resposta deve chegar — essencial quando o resultado alimenta um processo.</p>
+      </div>
+    </div>
+
+    <p class="copy-hint" style="margin:28px 0 4px;">Clique em cada bloco abaixo para ver o detalhamento — por que funciona, quando é indispensável, erro comum.</p>
+
+    <details class="concept-box" open>
+      <summary><span class="icon-badge sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></span><h4>Papel (persona) — quando funciona, quando não</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <p><strong>Por que funciona:</strong> uma persona específica ("especialista em sistemas administrativos") ancora o nível de detalhe e as convenções esperadas — lembra de auditoria e histórico, por exemplo. <strong>Erro comum:</strong> personas genéricas ("você é um bom programador") não mudam nada no resultado — só ajudam quando são específicas ao domínio da tarefa.</p>
+    </details>
+    <details class="concept-box">
+      <summary><span class="icon-badge sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="14" width="14" height="4" rx="1"/><rect x="6" y="10" width="14" height="4" rx="1"/><rect x="7" y="6" width="14" height="4" rx="1"/></svg></span><h4>Contexto — o bloco crítico em qualquer evolução</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <p><strong>Quando é indispensável:</strong> sempre que a tarefa evolui algo que já existe. Sem contexto, a IA não sabe o que já foi decidido. <strong>Boa prática:</strong> prefira contexto específico e verificável ("a tabela X tem os campos Y, Z") a descrições vagas ("já temos um sistema").</p>
+    </details>
+    <details class="concept-box">
+      <summary><span class="icon-badge sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M8 12l3 3 5-6"/></svg></span><h4>Tarefa — descrevendo o "o quê" sem ambiguidade</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <p><strong>Por que importa:</strong> a tarefa é o verbo de ação da instrução — "crie", "adicione", "corrija" — e precisa vir acompanhada do alcance exato (o que muda, o que não muda). <strong>Erro comum:</strong> descrever o objetivo final sem dizer o passo esperado ("melhore isso" em vez de "adicione validação de e-mail").</p>
+    </details>
+    <details class="concept-box">
+      <summary><span class="icon-badge sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><line x1="6.5" y1="17.5" x2="17.5" y2="6.5"/></svg></span><h4>Restrições — o bloco mais esquecido</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <p>É fácil descrever o que se quer e esquecer de dizer o que <em>não</em> se quer — o resultado tende a "passar dos limites" (reescrever código que já funcionava, usar uma biblioteca não desejada). Neste curso, restrições recorrentes são: <code class="inline">não use frameworks</code>, <code class="inline">sempre use prepared statements</code>, <code class="inline">não altere nada que já funciona</code>.</p>
+    </details>
+    <details class="concept-box">
+      <summary><span class="icon-badge sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4h4"/><path d="M16 4h4v4"/><path d="M20 16v4h-4"/><path d="M8 20H4v-4"/></svg></span><h4>Formato de saída — pensando em quem vai usar a resposta</h4><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <p>Sem formato definido, cada execução do mesmo prompt pode vir organizada de um jeito diferente. Quanto mais a resposta for usada por um processo (copiar para arquivos específicos, por exemplo), mais vale a pena ser explícito.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="module-divider reveal" id="etapa2">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="5" cy="12" r="2.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="2.6" fill="currentColor" stroke="none"/></svg>
+      <span class="modnum">Etapa 2</span>
+    </div>
+    <h2>Zero-shot vs. few-shot prompting</h2>
+    <p class="modsub">Pedir direto funciona — até que o seu projeto tenha convenções próprias a seguir.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição</h4>
+      <p><strong>Zero-shot prompting</strong> é pedir a tarefa diretamente, sem nenhum exemplo — o modelo usa só o que já aprendeu no treinamento para responder (<a href="https://www.promptingguide.ai/techniques/zeroshot" target="_blank" rel="noopener">promptingguide.ai/techniques/zeroshot</a>). <strong>Few-shot prompting</strong> inclui um ou mais exemplos dentro do próprio prompt, para o modelo aprender o padrão "em contexto" antes de responder (<a href="https://www.promptingguide.ai/techniques/fewshot" target="_blank" rel="noopener">promptingguide.ai/techniques/fewshot</a>) — técnica que ficou conhecida com o artigo <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noopener">"Language Models are Few-Shot Learners"</a>, o mesmo paper que apresentou o GPT-3.</p>
+    </div>
+
+    <div class="legend-row">
+      <span class="legend-chip"><span class="icon-badge sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></span> Zero-shot · pedir direto</span>
+      <span class="legend-chip"><span class="icon-badge sm teal"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="19" cy="12" r="3" fill="currentColor"/></svg></span> Few-shot · pedir com exemplo</span>
+    </div>
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Cenário</th><th>Zero-shot</th><th>Few-shot</th></tr></thead>
+        <tbody>
+          <tr><td>Tarefa genérica, sem convenção própria</td><td>✅ ideal</td><td>dispensável</td></tr>
+          <tr><td>Precisa seguir um padrão específico do projeto</td><td>⚠️ arriscado</td><td>✅ ideal</td></tr>
+          <tr><td>Prompt precisa ser curto</td><td>✅</td><td>⚠️ mais texto</td></tr>
+          <tr><td>Primeira vez pedindo algo (sem padrão ainda)</td><td>✅ único caminho</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="insight-box">
+      <span class="insight-tag">Custo do few-shot</span>
+      <p>Exemplos ocupam espaço no prompt — mais texto, mais contexto consumido. Vale a pena quando a consistência de estilo importa mais do que a brevidade do prompt.</p>
+    </div>
+
+    <div class="instruction-step">
+      <span class="step-num">Na prática</span>
+      <h4>O padrão de few-shot é sempre o mesmo: um exemplo pronto + um pedido para replicar</h4>
+      <p style="color:var(--text-muted);">Mostraremos um exemplo já no padrão desejado e pediremos que a IA gere algo <strong>associado</strong> — não uma cópia, mas o próximo item da mesma família — seguindo exatamente o mesmo estilo.</p>
+    </div>
+
+    <div class="promptbox" style="margin-top:20px;">
+<span class="plabel">Exemplo 1 · Documentação (few-shot)</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em documentação de código
+para sistemas administrativos.
+
+<span class="blk">[CONTEXTO]</span> O SISPROT documenta toda função PHP com um bloco de comentário no
+padrão abaixo:
+
+/**
+ * Busca um protocolo pelo número.
+ * @param string $numero Número do protocolo (ex: "2026/000123").
+ * @return array|null Dados do protocolo ou null se não encontrado.
+ */
+function buscarProtocoloPorNumero(string $numero): ?array { ... }
+
+<span class="blk">[TAREFA]</span> Gere, no mesmo padrão do exemplo acima, o bloco de comentário para a
+função abaixo:
+
+function arquivarProtocolo(int $id): bool { ... }
+
+<span class="blk">[FORMATO]</span> Só o bloco de comentário, no mesmo estilo do exemplo — sem reescrever
+o corpo da função.</div>
+    <p class="copy-hint">O exemplo ensina o padrão (tags, tom, nível de detalhe); a IA só precisa aplicá-lo a uma função nova e relacionada — é exatamente o "aprender em contexto" da definição lá em cima.</p>
+
+    <div class="promptbox" style="margin-top:28px;">
+<span class="plabel">Exemplo 2 · Código (few-shot)</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em sistemas
+administrativos para o setor público.
+
+<span class="blk">[CONTEXTO]</span> O SISPROT valida campos obrigatórios sempre no mesmo padrão, como
+neste exemplo:
+
+// Validação do campo "assunto"
+if ($assunto === '') {
+    $erros[] = 'Assunto é obrigatório.';
+}
+
+<span class="blk">[TAREFA]</span> Siga esse mesmo padrão para validar o campo "prioridade", que só
+aceita os valores "Baixa", "Média" ou "Alta".
+
+<span class="blk">[FORMATO]</span> Só o trecho de validação, pronto para colar em
+protocolo_form.php.</div>
+    <p class="copy-hint">Mesma lógica do Exemplo 1, agora em código: um trecho já validado mostra a convenção (nome da variável de erro, mensagem, estilo do <code class="inline">if</code>); a IA replica para um campo novo, com regra diferente (lista fechada de valores em vez de "não vazio").</p>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="module-divider reveal" id="etapa3">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6l-5 6 5 6"/><path d="M15 6l5 6-5 6"/></svg>
+      <span class="modnum">Etapa 3</span>
+    </div>
+    <h2>XML Prompting e Markdown Prompting</h2>
+    <p class="modsub">Duas formas de estruturar um prompt sem ambiguidade — a marcação não tem poder mágico, o que importa é a separação clara de seções.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Antes do prompt · prévia leve de Spec-Driven Development</span>
+          <h3>Especificar o CRUD de protocolos</h3>
+        </div>
+      </div>
+      <p style="color:var(--text-muted);">Aqui, Spec-Driven Development é apenas <strong style="color:var(--ink);">introduzido</strong> — o tratamento completo (requisitos, casos de uso, modelagem de fluxos) é o núcleo da Aula 1. O objetivo agora é só plantar a ideia: um prompt melhora muito quando nasce de uma descrição clara do que "pronto" significa.</p>
+
+      <div class="concept-box">
+        <h4>User story informal do CRUD de protocolos</h4>
+        <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.05rem; color:var(--ink);">
+          <strong>Como</strong> servidor responsável pela recepção de documentos,<br>
+          <strong>quero</strong> registrar um novo protocolo administrativo,<br>
+          <strong>para que</strong> ele fique disponível para consulta e, futuramente, tramitação entre setores.
+        </p>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Critérios de aceitação (versão simples)</span>
+        <ul class="checklist" style="margin-top:12px;">
+          <li><span class="xicn">&#10003;</span>É possível registrar um protocolo informando número, assunto, requerente e data de abertura.</li>
+          <li><span class="xicn">&#10003;</span>O número do protocolo não pode se repetir (é a identificação única do processo).</li>
+          <li><span class="xicn">&#10003;</span>Todo protocolo novo nasce com status "Aberto".</li>
+          <li><span class="xicn">&#10003;</span>É possível listar todos os protocolos, com status visível.</li>
+          <li><span class="xicn">&#10003;</span>É possível editar os dados de um protocolo existente.</li>
+          <li><span class="xicn">&#10003;</span>É possível arquivar um protocolo (status muda para "Arquivado").</li>
+          <li><span class="xicn">&#10003;</span>Um protocolo já arquivado não deve exibir o link "Arquivar" novamente.</li>
+        </ul>
+      </div>
+
+      <div class="insight-box">
+        <span class="insight-tag">Por que isso importa mesmo numa aula "só de prompt"</span>
+        <p>Repare que os critérios de aceitação acima são, quase palavra por palavra, o bloco <code class="inline">&lt;restricoes&gt;</code> e <code class="inline">&lt;tarefa&gt;</code> do prompt logo abaixo. Especificar antes de pedir não é uma etapa extra — é o que torna o prompt possível de escrever bem. Na Aula 1, esse formato de user story + critérios de aceitação virará o ponto de partida oficial de todo prompt do curso, aplicado ao fluxo de tramitação de protocolos.</p>
+      </div>
+    </div>
+
+    <p style="color:var(--text); max-width:760px; font-size:1.02rem;">Na Demonstração 2, evoluiremos o SISPROT para o CRUD completo de protocolos — usando XML Prompting para estruturar o pedido e <strong>few-shot</strong> para fixar o estilo de validação já usado no projeto.</p>
+
+    <div class="promptbox" style="margin-top:24px;">
+<span class="plabel">Demonstração 2 · XML Prompting + few-shot</span>&lt;prompt&gt;
+  &lt;papel&gt;Desenvolvedor PHP sênior, especialista em sistemas administrativos para o setor público.&lt;/papel&gt;
+
+  &lt;contexto&gt;
+    Projeto SISPROT. Já existem a tabela "protocolos" e o arquivo conexao.php com PDO.
+  &lt;/contexto&gt;
+
+  &lt;tarefa&gt;
+    Gere o CRUD completo de protocolos: index.php (listagem), protocolo_form.php
+    (criar/editar), encerrar.php (arquivar).
+  &lt;/tarefa&gt;
+
+  &lt;exemplo&gt;
+    &lt;descricao&gt;Estilo de validação já usado no projeto — siga o mesmo padrão:&lt;/descricao&gt;
+    &lt;codigo&gt;if ($campo === '') { $erros[] = 'Campo obrigatório.'; }&lt;/codigo&gt;
+  &lt;/exemplo&gt;
+
+  &lt;restricoes&gt;
+    - Sempre usar prepared statements.
+    - Mensagens de sucesso via querystring.
+    - Não usar frameworks.
+  &lt;/restricoes&gt;
+
+  &lt;formato&gt;Um arquivo por vez, com o nome antes do código.&lt;/formato&gt;
+&lt;/prompt&gt;</div>
+    <p class="copy-hint">Enunciado completo, prompt equivalente em Markdown e resultado esperado: ver <code class="inline">prompts.md</code>.</p>
+
+    <div class="tech-grid" style="margin-top:28px;">
+      <div class="tech-card"><h3><span class="tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M9 6l-5 6 5 6"/><path d="M15 6l5 6-5 6"/></svg></span> XML Prompting</h3><p>Tags delimitam cada seção sem ambiguidade — mesmo que o conteúdo tenha código, listas ou quebras de linha. Vale a pena em prompts longos e complexos.</p></div>
+      <div class="tech-card"><h3><span class="tnum"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><line x1="9" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="15" y2="20"/><line x1="5" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="19" y2="15"/></svg></span> Markdown Prompting</h3><p>Mesma finalidade, usando <code class="inline">##</code> e listas — mais rápido de escrever para quem já usa Markdown no dia a dia.</p></div>
+    </div>
+    <div class="insight-box">
+      <span class="insight-tag">Não é sintaxe mágica</span>
+      <p>Use o que sua equipe já lê com mais naturalidade. XML tende a ganhar quando o conteúdo de uma seção já contém headers ou código Markdown — nesses casos, evita confusão sobre onde a seção "de fato" termina.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 4 -->
+<section class="module-divider reveal" id="etapa4">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4c-2 0-3 1-3 3v3c0 1-1 2-2 2 1 0 2 1 2 2v3c0 2 1 3 3 3"/><path d="M16 4c2 0 3 1 3 3v3c0 1 1 2 2 2-1 0-2 1-2 2v3c0 2-1 3-3 3"/></svg>
+      <span class="modnum">Etapa 4</span>
+    </div>
+    <h2>Templates, alucinação e precisão</h2>
+    <p class="modsub">Fechando os fundamentos antes do desafio final.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <div class="acard-head"><span class="icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4c-2 0-3 1-3 3v3c0 1-1 2-2 2 1 0 2 1 2 2v3c0 2 1 3 3 3"/><path d="M16 4c2 0 3 1 3 3v3c0 1 1 2 2 2-1 0-2 1-2 2v3c0 2-1 3-3 3"/><line x1="9" y1="12" x2="15" y2="12" stroke-dasharray="2 2"/></svg></span><h4 style="margin:0;">Definição: Prompt templates</h4></div>
+      <p>Um prompt reutilizável, escrito uma vez com placeholders (<code class="inline">{{CAMPO}}</code>) no lugar das partes que variam de uma chamada para outra — o resto da estrutura (papel, contexto, restrições, formato) fica fixo (<a href="https://docs.langchain.com/langsmith/prompt-engineering-concepts" target="_blank" rel="noopener">docs.langchain.com/langsmith/prompt-engineering-concepts</a>). Vamos ver como isso funciona na prática agora, e aplicaremos no Exercício 2, mais adiante.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:24px;">
+      <span class="step-num">Exemplo</span>
+      <h4>O esqueleto do template</h4>
+      <p style="color:var(--text-muted);">Papel, contexto, restrições e formato ficam fixos; só a tarefa varia — através de dois placeholders.</p>
+    </div>
+    <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Exemplo · esqueleto do template</span>## Papel
+Desenvolvedor front-end especializado em HTML, CSS e JavaScript puro.
+
+## Contexto
+Tenho a página protocolos-mock.html, que lista protocolos num array de
+objetos JavaScript e os renderiza numa tabela.
+
+## Tarefa
+Adicione o campo "<span class="blk">{{NOME_DO_CAMPO}}</span>" (<span class="blk">{{TIPO_E_REGRA}}</span>) a cada protocolo:
+no array de dados e como nova coluna na tabela.
+
+## Restrições
+- Não altere as colunas já existentes nem a estrutura da tabela.
+- Não use frameworks nem bibliotecas externas — HTML, CSS e JavaScript puro,
+  num único arquivo.
+
+## Formato
+O arquivo protocolos-mock.html completo e atualizado.</div>
+
+    <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Exemplo de uso · mesmo template, preenchido para um campo hipotético</span>## Papel
+Desenvolvedor front-end especializado em HTML, CSS e JavaScript puro.
+
+## Contexto
+Tenho a página protocolos-mock.html, que lista protocolos num array de
+objetos JavaScript e os renderiza numa tabela.
+
+## Tarefa
+Adicione o campo "<span class="blk">observacoes</span>" (<span class="blk">texto livre, opcional</span>) a cada
+protocolo: no array de dados e como nova coluna na tabela.
+
+## Restrições
+- Não altere as colunas já existentes nem a estrutura da tabela.
+- Não use frameworks nem bibliotecas externas — HTML, CSS e JavaScript puro,
+  num único arquivo.
+
+## Formato
+O arquivo protocolos-mock.html completo e atualizado.</div>
+    <p class="copy-hint">Isso é só um exemplo do <em>uso</em> do template — mostra como só <code class="inline">{{NOME_DO_CAMPO}}</code> e <code class="inline">{{TIPO_E_REGRA}}</code> mudam, o resto fica igual. No Exercício 2, o campo será outro: <code class="inline">setor_origem</code>, com sua própria regra.</p>
+
+    <div class="instruction-step">
+      <span class="step-num">Na prática</span>
+      <h4>A chamada real que mandaremos para a IA</h4>
+      <p style="color:var(--text-muted);">Não existe um passo de "carregar o template" — a IA não guarda nada de uma chamada para a outra além do que está na própria mensagem. A "chamada" é só isto: <strong style="color:var(--ink);">uma única mensagem</strong>, colada de uma vez no chat, que contém o template inteiro (com os placeholders ainda visíveis) seguido dos valores desta vez. A IA lê tudo de uma vez, substitui e já executa a tarefa — numa resposta só.</p>
+    </div>
+    <div class="callout" style="margin-bottom:0;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Sem atalho:</strong> a cada campo novo, colaremos o bloco inteiro de novo (template + valores) — só os dois valores no final mudam. Não existe "lembrar" o template de uma chamada para a próxima.</p>
+    </div>
+    <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Chamada na IA · template + valores dos placeholders</span>Aqui está meu template de prompt. Substitua os placeholders pelos valores
+abaixo e execute a tarefa resultante.
+
+## Papel
+Desenvolvedor front-end especializado em HTML, CSS e JavaScript puro.
+
+## Contexto
+Tenho a página protocolos-mock.html, que lista protocolos num array de
+objetos JavaScript e os renderiza numa tabela.
+
+## Tarefa
+Adicione o campo "<span class="blk">{{NOME_DO_CAMPO}}</span>" (<span class="blk">{{TIPO_E_REGRA}}</span>) a cada protocolo:
+no array de dados e como nova coluna na tabela.
+
+## Restrições
+- Não altere as colunas já existentes nem a estrutura da tabela.
+- Não use frameworks nem bibliotecas externas — HTML, CSS e JavaScript puro,
+  num único arquivo.
+
+## Formato
+O arquivo protocolos-mock.html completo e atualizado.
+
+---
+Valores para esta chamada:
+<span class="blk">{{NOME_DO_CAMPO}}</span> = observacoes
+<span class="blk">{{TIPO_E_REGRA}}</span> = texto livre, opcional</div>
+    <p class="copy-hint">No Exercício 2, mais adiante, repetiremos essa mesma chamada trocando só os dois valores no final — <code class="inline">{{NOME_DO_CAMPO}}</code> = <code class="inline">setor_origem</code>, <code class="inline">{{TIPO_E_REGRA}}</code> = <code class="inline">texto, obrigatório</code>.</p>
+
+    <div class="insight-box" style="margin-top:24px;">
+      <span class="insight-tag">Erro comum</span>
+      <p>Template genérico demais perde precisão; específico demais deixa de ser reutilizável — o equilíbrio só se confirma testando com mais de um caso (é o que faremos no Exercício 2: testar mentalmente com um segundo campo hipotético antes de considerar pronto).</p>
+    </div>
+
+    <div class="sec-head" style="margin:44px 0 20px;">
+      <span class="eyebrow">Fechando os fundamentos</span>
+      <h2 style="font-size:1.5rem;">Reduzir alucinação, aumentar precisão</h2>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: Alucinação</h4>
+      <p>É quando a IA produz uma resposta que <em>parece</em> confiante e coerente, mas não é sustentada por fatos, pela fonte fornecida ou pelo código real — ela "inventa" o que faltou (<a href="https://docs.claude.com/en/docs/test-and-evaluate/strengthen-guardrails/reduce-hallucinations" target="_blank" rel="noopener">docs.claude.com/.../reduce-hallucinations</a>). Quanto mais ambíguo o prompt, mais espaço a IA tem para preencher as lacunas com suposições — por isso essa técnica fecha a aula: ela depende de tudo que já vimos hoje.</p>
+    </div>
+
+    <div class="diagram-pair" style="margin-top:20px;">
+      <div class="promptbox" style="margin:0;">
+<span class="plabel">Risco de alucinação</span>Qual é o prazo legal para arquivamento de um protocolo administrativo
+indeferido?</div>
+      <div class="promptbox" style="margin:0;">
+<span class="plabel">Reduzindo o risco</span><span class="blk">[PAPEL]</span> Você é um assistente jurídico-administrativo.
+
+<span class="blk">[TAREFA]</span> Informe o prazo legal para arquivamento de um protocolo
+administrativo indeferido.
+
+<span class="blk">[RESTRIÇÕES]</span> Se não tiver certeza absoluta da fonte normativa exata,
+diga "não tenho certeza" em vez de inventar um prazo ou número de lei. Cite a fonte
+(lei, decreto, norma interna) sempre que afirmar um prazo.
+
+<span class="blk">[FORMATO]</span> Resposta + fonte citada (ou "não tenho certeza
+suficiente para citar uma fonte").</div>
+    </div>
+    <p class="copy-hint">A pergunta da esquerda tem uma armadilha: se a IA não souber o prazo exato, ela pode inventar um número plausível em vez de admitir a lacuna. As restrições da direita fecham essa saída — "não sei" vira uma resposta aceitável, e toda afirmação passa a exigir fonte.</p>
+
+    <div class="anatomy-grid" style="margin-top:28px;">
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 17a4 4 0 0 1-1-7.87A5 5 0 0 1 15.9 7.1 4.5 4.5 0 0 1 16 16"/><path d="M6 17h10"/></svg></span><h3>Reduzir alucinação</h3></div>
+        <p>Contexto completo, permitir "não sei", pedir citação da origem, pedir verificação antes de responder.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span><h3>Aumentar precisão</h3></div>
+        <p>Exemplos concretos, formato exato, decompor tarefas grandes, critérios de sucesso explícitos.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge" style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1rem;">✕</span><h3>Erro mais comum</h3></div>
+        <p>Contexto incompleto — a causa mais frequente de a IA "inventar" o que faltou.</p>
+      </div>
+    </div>
+
+    <div class="sec-head" style="margin:44px 0 20px;">
+      <span class="eyebrow">Recapitulando</span>
+      <h2 style="font-size:1.5rem;">Erros mais comuns de quem começa</h2>
+    </div>
+    <ul class="checklist">
+      <li><span class="xicn">&#10003;</span>Prompt sem restrições → a IA "corrige" ou reescreve o que já funcionava.</li>
+      <li><span class="xicn">&#10003;</span>Persona genérica → nenhuma mudança real no resultado.</li>
+      <li><span class="xicn">&#10003;</span>Sem formato de saída definido → resultado difícil de aplicar.</li>
+      <li><span class="xicn">&#10003;</span>Zero-shot quando havia um padrão a seguir → inconsistência de estilo.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- PRÁTICA -->
+<section class="reveal" id="pratica" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Mão na massa</span>
+      <h2>Dois exercícios, ao vivo com a turma</h2>
+    </div>
+
+    <div class="callout" style="margin-bottom:24px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Por que HTML/CSS/JS aqui:</strong> os dois exercícios a seguir não vão depender do SISPROT em PHP rodando na nossa máquina, nem de IA paga. Praticaremos os mesmos princípios de prompt num mock visual simples — dados fictícios num array de JavaScript, tudo em um único arquivo HTML que abre em qualquer navegador, sem instalar nada.</p>
+    </div>
+
+    <div class="photo-frame wide has-img">
+      <img src="images/image1.png" alt="Momento de prática em aula, testando prompts no notebook">
+    </div>
+
+    <div class="instruction-step">
+      <span class="step-num">Ponto de partida · 2 min · rodaremos juntos</span>
+      <h4>Gerar a base: uma página HTML que lista protocolos fictícios</h4>
+      <p style="color:var(--text-muted);">Antes dos dois exercícios, rodaremos este prompt uma única vez — o resultado é o arquivo que usaremos como ponto de partida nos dois exercícios a seguir.</p>
+    </div>
+    <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt · base para os exercícios</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor front-end especializado em HTML, CSS e JavaScript
+puro.
+
+<span class="blk">[CONTEXTO]</span> Estou simulando o SISPROT sem banco de dados, só para praticar
+prompts — os dados ficam num array de objetos em JavaScript, direto no HTML.
+
+<span class="blk">[TAREFA]</span> Crie uma página que lista protocolos fictícios numa tabela, com as
+colunas: número, assunto, requerente, data de abertura e status (Aberto, Em Análise,
+Deferido, Indeferido, Arquivado). Inclua uns 5 protocolos de exemplo no array.
+
+<span class="blk">[RESTRIÇÕES]</span> Não use frameworks nem bibliotecas externas (React, jQuery,
+Bootstrap etc.) — só HTML, CSS e JavaScript puro, tudo em um único arquivo.
+
+<span class="blk">[FORMATO]</span> Um único arquivo HTML autocontido, chamado
+<code class="inline">protocolos-mock.html</code>, pronto para abrir no navegador.</div>
+    <p class="copy-hint">Guardaremos esse arquivo — é a base dos dois exercícios a seguir.</p>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 1 · individual · 25 min</span>
+          <h3>Reescrever um prompt fraco</h3>
+        </div>
+        <span class="block-badge badge-teal">25 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Praticar a transformação de um prompt vago em um prompt estruturado, usando os blocos papel / contexto / tarefa / restrições / formato apresentados na Demonstração 1 — agora sobre o nosso mock em HTML/JS.</p>
+      <div class="concept-box">
+        <h4>Contexto</h4>
+        <p>Já temos, salva no computador, a página <code class="inline">protocolos-mock.html</code> gerada no "Ponto de partida" acima — uma tabela de protocolos renderizada a partir de um array JavaScript, sem banco de dados.</p>
+      </div>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <h4>Prompt fraco fornecido: <code class="inline">"adiciona um campo de prioridade no protocolo"</code></h4>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Reescreveremos o prompt como um prompt estruturado, decidindo: quais valores a prioridade poderá ter, se será obrigatória, e onde deverá aparecer (no array de dados e/ou na tabela).</li>
+          <li>Rodaremos o prompt reescrito na ferramenta de IA disponível.</li>
+          <li>Aplicaremos o resultado (substituiremos o conteúdo de <code class="inline">protocolos-mock.html</code>) e confirmaremos abrindo o arquivo no navegador.</li>
+          <li>Compararemos mentalmente: o que teria acontecido se tivéssemos rodado só o prompt fraco original?</li>
+        </ol>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;"><strong style="color:var(--ink);">Arquivo utilizado:</strong> <code class="inline">protocolos-mock.html</code> (gerado no "Ponto de partida" acima).</p>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Esquecer de dizer que o campo é opcional ou que tem valores fixos (a IA pode gerar um campo de texto livre em vez de um conjunto fechado de opções).</li>
+            <li>Não incluir a restrição "não altere nada que já funciona" — o resultado pode reescrever arquivos inteiros em vez de só adicionar o campo.</li>
+            <li>Prompt estruturado, mas ainda genérico demais no bloco <code class="inline">[TAREFA]</code> (ex.: "adicione prioridade" sem dizer onde e como).</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Releremos o prompt estruturado da Demonstração 1 como modelo de estrutura.</li>
+            <li>Perguntaremos: das cinco partes (papel/contexto/tarefa/restrições/formato), quais estarão ausentes no prompt fraco original?</li>
+            <li>Se a IA devolver uma pergunta de esclarecimento em vez de código, isso será sinal de que o prompt ainda está ambíguo — refinaremos e tentaremos de novo.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 2 · individual · 30 min</span>
+          <h3>Prompt template reutilizável</h3>
+        </div>
+        <span class="block-badge badge-teal">30 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Criar um prompt template parametrizável — com placeholders — que sirva para adicionar qualquer novo campo ao protocolo, sem reescrever a estrutura do prompt do zero a cada vez.</p>
+      <div class="concept-box">
+        <h4>Contexto</h4>
+        <p>Já temos <code class="inline">protocolos-mock.html</code> do Exercício 1, com o campo de prioridade (se tiver dado certo).</p>
+      </div>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <h4>Criar um template com placeholders e aplicá-lo ao campo "setor_origem"</h4>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Criaremos um template de prompt (em XML ou Markdown, à escolha) com placeholders como <code class="inline">{{NOME_DO_CAMPO}}</code> e <code class="inline">{{TIPO_E_REGRA}}</code> — os dois pontos que mudam de uma tarefa para outra.</li>
+          <li>O template manterá fixos os blocos que não mudam entre uma tarefa e outra (papel, restrições, formato) e deixará variável apenas o que de fato varia.</li>
+          <li>Preencheremos o template para adicionar o campo <code class="inline">setor_origem</code> (texto, obrigatório) ao protocolo.</li>
+          <li>Rodaremos o prompt resultante na ferramenta de IA, aplicaremos o resultado (substituindo <code class="inline">protocolos-mock.html</code>) e testaremos abrindo no navegador.</li>
+        </ol>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;">Usaremos exatamente o padrão de chamada visto na Etapa 4: colar o template inteiro (com os placeholders) e listar os valores no final, numa única mensagem para a IA.</p>
+
+      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;"><strong style="color:var(--ink);">Arquivo utilizado:</strong> <code class="inline">protocolos-mock.html</code> (estado atual do exercício).</p>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Template genérico demais: perde precisão porque tenta cobrir qualquer tipo de mudança, não só campos novos.</li>
+            <li>Template específico demais: só funcionará para o caso exato que tínhamos em mente, não será reutilizável.</li>
+            <li>Esquecer de manter a restrição "não usar frameworks nem bibliotecas externas" fixa no template — é regra do projeto, não da tarefa específica.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Pensaremos no template como uma receita de bolo: o que é ingrediente fixo (papel, restrições, formato) e o que é "a gosto" (o campo específico)?</li>
+            <li>Testaremos o template mentalmente com um segundo campo hipotético antes de considerar pronto — se não funcionar para outro caso, ainda não será reutilizável.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESAFIO -->
+<section class="reveal" id="desafio" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Desafio final · sem roteiro</span>
+          <h3>Adicionar anexos ao protocolo</h3>
+        </div>
+        <span class="block-badge badge-gold">10 min</span>
+      </div>
+      <p style="color:var(--text-muted); margin-bottom:20px;">Consolidar, sem roteiro pronto, as técnicas de engenharia de prompt vistas hoje: estrutura clara, restrições explícitas, formato de saída definido, e (opcionalmente) exemplo ou template.</p>
+
+      <div class="demo-head-grid" style="margin:0 0 24px;">
+        <div>
+          <p style="color:var(--text-muted);">Adicione ao nosso <code class="inline">protocolos-mock.html</code> um campo de <strong style="color:var(--ink);">anexos</strong> — uma referência textual simples (por exemplo, o nome de um arquivo, sem upload real de arquivo) associada a cada protocolo.</p>
+        </div>
+        <div class="photo-frame has-img">
+          <img src="images/image2.png" alt="Close-up de tela de terminal ou IDE com código">
+        </div>
+      </div>
+
+      <div class="instruction-step" style="margin-top:0;">
+        <span class="step-num">Regras</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>Escreveremos, <strong>nós mesmos</strong>, do zero, o prompt que usaremos — sem copiar os prompts das demonstrações.</li>
+          <li>O prompt deverá aplicar <strong>pelo menos 4</strong> das técnicas vistas na aula: estrutura em blocos (papel/contexto/tarefa/restrições/formato), restrições explícitas, formato de saída definido, few-shot ou template reutilizável.</li>
+          <li>Decidiremos os detalhes de design: um protocolo poderá ter mais de um anexo? Como isso aparecerá na listagem?</li>
+          <li>Depois de gerar o código, <strong>testaremos manualmente</strong> — criaremos um protocolo com anexo, editaremos e confirmaremos que aparece na listagem.</li>
+        </ol>
+      </div>
+
+      <div class="callout-alert">
+        <span class="eyebrow">Critério de sucesso</span>
+        <ul class="checklist" style="margin-top:12px;">
+          <li><span class="xicn">&#10003;</span>O prompt utilizado será registrado (num arquivo de texto ou no chat da turma).</li>
+          <li><span class="xicn">&#10003;</span>O código gerado funcionará de ponta a ponta (testaremos manualmente, não vai bastar só "parecer certo").</li>
+          <li><span class="xicn">&#10003;</span>O aluno conseguirá explicar, em 1-2 frases, por que terá estruturado o prompt daquele jeito específico.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Demonstração final · depois do tempo de execução · protocolos-mock.html, com Claude Code</span>
+          <h3>Anexos no mock, ao vivo</h3>
+        </div>
+        <span class="block-badge badge-gold">IA paga</span>
+      </div>
+      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos a aula reconstruindo o <code class="inline">protocolos-mock.html</code> do zero, ao vivo, com os <strong style="color:var(--ink);">quatro prompts</strong> usados hoje, em sequência — do "Ponto de partida" até os anexos — só que desta vez com uma IA paga, o Claude Code. O quarto prompt ainda vai além do texto único, modelando anexos como um array por protocolo, o "próximo passo" citado na nota acima. Continua tudo no frontend — sem servidor, sem banco de dados.</p>
+
+      <div class="instruction-step">
+        <span class="step-num">Pré-requisitos</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Uma pasta vazia para a demonstração (ex.: <code class="inline">protocolos-mock-desafio/</code>) — vamos construir o arquivo do zero, com os 4 prompts a seguir, em vez de reaproveitar o que a turma já gerou.</li>
+          <li>Abriremos um terminal dentro dessa pasta e rodaremos <code class="inline">claude</code> para iniciar o Claude Code.</li>
+          <li>Se preferir pular direto para os anexos (usando o arquivo que a turma já gerou na Mão na massa), basta ir direto ao Prompt 4.</li>
+        </ol>
+      </div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Prompt 1 de 4 · Ponto de partida</span>
+        <h4>A base do mock, do zero</h4>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt 1 · base para os exercícios</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor front-end especializado em HTML, CSS e JavaScript
+puro.
+
+<span class="blk">[CONTEXTO]</span> Estou simulando o SISPROT sem banco de dados, só para praticar
+prompts — os dados ficam num array de objetos em JavaScript, direto no HTML.
+
+<span class="blk">[TAREFA]</span> Crie uma página que lista protocolos fictícios numa tabela, com as
+colunas: número, assunto, requerente, data de abertura e status (Aberto, Em Análise,
+Deferido, Indeferido, Arquivado). Inclua uns 5 protocolos de exemplo no array.
+
+<span class="blk">[RESTRIÇÕES]</span> Não use frameworks nem bibliotecas externas (React, jQuery,
+Bootstrap etc.) — só HTML, CSS e JavaScript puro, tudo em um único arquivo.
+
+<span class="blk">[FORMATO]</span> Um único arquivo HTML autocontido, chamado
+<code class="inline">protocolos-mock.html</code>, pronto para abrir no navegador.</div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Prompt 2 de 4 · Exercício 1</span>
+        <h4>Campo "prioridade"</h4>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt 2 · estruturado, papel/contexto/tarefa/restrições/formato</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor front-end especializado em HTML, CSS e JavaScript
+puro.
+
+<span class="blk">[CONTEXTO]</span> Tenho a página protocolos-mock.html, que lista protocolos fictícios
+numa tabela, com os dados num array de objetos JavaScript (sem banco de dados). Colunas
+atuais: número, assunto, requerente, data de abertura, status.
+
+<span class="blk">[TAREFA]</span> Adicione um campo "prioridade" a cada protocolo, com três valores
+possíveis: Baixa, Média, Alta. Todo protocolo novo deve nascer com prioridade "Média".
+O campo deve aparecer como uma nova coluna na tabela, depois de "Status".
+
+<span class="blk">[RESTRIÇÕES]</span> Não altere as colunas já existentes nem a estrutura da tabela.
+Não use frameworks nem bibliotecas externas — continue em HTML, CSS e JavaScript puro,
+num único arquivo.
+
+<span class="blk">[FORMATO]</span> O arquivo protocolos-mock.html completo e atualizado.</div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Prompt 3 de 4 · Exercício 2</span>
+        <h4>Campo "setor_origem", via template reutilizável</h4>
+        <p style="color:var(--text-muted);">Este é o padrão de "chamada" visto na Etapa 4: o template inteiro, colado de novo, com os valores desta vez no final.</p>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt 3 · template + valores dos placeholders</span>Aqui está meu template de prompt. Substitua os placeholders pelos valores
+abaixo e execute a tarefa resultante.
+
+## Papel
+Desenvolvedor front-end especializado em HTML, CSS e JavaScript puro.
+
+## Contexto
+Tenho a página protocolos-mock.html, que lista protocolos num array de
+objetos JavaScript e os renderiza numa tabela.
+
+## Tarefa
+Adicione o campo "<span class="blk">{{NOME_DO_CAMPO}}</span>" (<span class="blk">{{TIPO_E_REGRA}}</span>) a cada protocolo:
+no array de dados e como nova coluna na tabela.
+
+## Restrições
+- Não altere as colunas já existentes nem a estrutura da tabela.
+- Não use frameworks nem bibliotecas externas — HTML, CSS e JavaScript puro,
+  num único arquivo.
+
+## Formato
+O arquivo protocolos-mock.html completo e atualizado.
+
+---
+Valores para esta chamada:
+<span class="blk">{{NOME_DO_CAMPO}}</span> = setor_origem
+<span class="blk">{{TIPO_E_REGRA}}</span> = texto, obrigatório</div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Prompt 4 de 4 · Desafio final</span>
+        <h4>Anexos, como array por protocolo</h4>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt 4 · anexos como array por protocolo</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor front-end especializado em HTML, CSS e JavaScript
+puro.
+
+<span class="blk">[CONTEXTO]</span> Este é o protocolos-mock.html: uma página HTML autocontida, sem banco
+de dados, que lista protocolos fictícios a partir de um array de objetos JavaScript,
+renderizados numa tabela.
+
+<span class="blk">[TAREFA]</span> Adicione uma funcionalidade de anexos: cada protocolo pode ter um ou mais
+anexos, cada um sendo apenas uma referência textual (nome do arquivo), sem upload real.
+Modele como um array "anexos" dentro de cada protocolo (pode iniciar vazio) — não como um
+campo de texto único. Na tabela, mostre a quantidade de anexos de cada protocolo. Permita
+adicionar e remover um anexo diretamente na página, sem recarregar.
+
+<span class="blk">[RESTRIÇÕES]</span> Não altere as colunas já existentes nem a estrutura da tabela. Não
+use frameworks nem bibliotecas externas — HTML, CSS e JavaScript puro, num único arquivo.
+Sem upload real de arquivo — só o nome como texto. Os dados não precisam persistir depois
+de recarregar a página.
+
+<span class="blk">[FORMATO]</span> O arquivo protocolos-mock.html completo e atualizado.</div>
+      <p class="copy-hint">Reparem: os quatro prompts seguem o mesmo formato — só o conteúdo de <code class="inline">[TAREFA]</code> (ou "Tarefa", no Prompt 3) muda a cada passo. A estrutura se repete porque funciona.</p>
+
+      <div class="insight-box">
+        <span class="insight-tag">Chat vs. agente de código</span>
+        <p>Com uma IA de chat, colamos o prompt inteiro numa mensagem e copiamos o código de volta. O Claude Code é diferente: ele já enxerga o arquivo na pasta (não precisamos colar o conteúdo dele no contexto) e edita diretamente no disco — normalmente pedindo confirmação antes de alterar o arquivo ou rodar um comando. Vale mostrar isso à turma como o próximo degrau depois do prompt em chat: mesma estrutura de prompt, ferramenta mais autônoma.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FECHAMENTO -->
+<section class="pullquote reveal">
+  <div class="wrap" style="text-align:center;">
+    <div class="rule"></div>
+    <blockquote>Hoje, a estrutura do prompt nasceu da nossa cabeça. Na Aula 1, ela passará a nascer de uma especificação formal — user story e critérios de aceitação — aplicada ao fluxo de tramitação de protocolos entre setores.</blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-left" style="display:flex; align-items:center; gap:14px;">
+      <span>SISPROT · Aula 4 · Fundamentos de Engenharia de Prompt</span>
+    </div>
+    <div class="footer-right"><span>Aula 0 de 4</span></div>
+  </div>
+</footer>
+
+<script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = scrolled + '%';
+  });
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  items.forEach(i => io.observe(i));
+</script>
+</body>
+</html>
