@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 5 · Spec-Driven Development · SISPROT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#0F1C36">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1C36;
+    --ink-2:#16274a;
+    --paper:#FFFFFF;
+    --surface:#F3F5F9;
+    --surface-2:#EAEDF3;
+    --line:#DEE2EA;
+    --text:#1A2233;
+    --text-muted:#5B6478;
+    --gold:#B8892B;
+    --gold-soft:#E9D9B4;
+    --teal:#0E7C7B;
+    --teal-soft:#D6ECEB;
+    --radius:14px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; color-scheme:light only; background:#FFFFFF;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    margin:0;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;line-height:1.6;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  section{padding:96px 0;}
+  @media (max-width:640px){ section{padding:64px 0;} .wrap{padding:0 20px;} }
+
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px;
+    background:rgba(15,28,54,0.88);
+    backdrop-filter:blur(8px);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:600;}
+  .topbar .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .topbar .step{color:#9fb0d1;}
+  @media (max-width:640px){
+    .topbar{padding:12px 20px;}
+    .topbar .step{display:none;}
+  }
+  #progress{
+    position:fixed; top:0; left:0; height:2px; background:var(--gold); z-index:60; width:0%;
+    transition:width .1s linear;
+  }
+
+  .hero{
+    background:radial-gradient(120% 140% at 78% -10%, #1c3568 0%, var(--ink) 55%, #0a1428 100%);
+    color:#fff;
+    padding:180px 0 120px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; right:-180px; top:-120px;
+    width:640px; height:640px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-60px; top:60px;
+    width:420px; height:420px;
+    border-radius:50%;
+    border:1px solid rgba(184,137,43,0.22);
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero .eyebrow{color:var(--gold-soft); margin-bottom:22px; display:block;}
+  .hero h1{font-size:clamp(2.1rem, 4.6vw, 3.6rem); font-weight:600; max-width:760px;}
+  .hero .lede{
+    margin-top:26px; font-size:1.15rem; color:#c7d2ea; max-width:620px; line-height:1.65;
+  }
+  .hero .meta-row{
+    margin-top:52px; display:flex; gap:36px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:#8fa0c4;
+  }
+  .hero .meta-row strong{color:#fff; display:block; font-family:'Fraunces',serif; font-size:1.3rem; font-weight:600; margin-bottom:2px;}
+
+  .sec-head{max-width:680px; margin-bottom:52px;}
+  .sec-head .eyebrow{display:block; margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem); font-weight:600; color:var(--ink);}
+  .sec-head .sub{margin-top:14px; color:var(--text-muted); font-size:1.03rem;}
+
+  .why{background:var(--surface);}
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:800px){ .why-grid{grid-template-columns:1fr;} }
+  .why-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 26px;
+  }
+  .why-card .tag{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:14px;}
+  .why-card h3{font-size:1.15rem; font-weight:600; color:var(--ink); margin-bottom:10px;}
+  .why-card p{color:var(--text-muted); font-size:0.96rem;}
+
+  .shift .grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .shift .grid{grid-template-columns:1fr;} }
+  .shift-card{border-radius:var(--radius); padding:30px 28px; border:1px solid var(--line);}
+  .shift-card.old{background:var(--surface);}
+  .shift-card.new{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .shift-card h3{font-size:1.05rem; margin-bottom:12px;}
+  .shift-card.old h3{color:var(--ink);}
+  .shift-card.new h3{color:var(--gold-soft);}
+  .shift-card p{font-size:0.96rem; color:var(--text-muted); line-height:1.65;}
+  .shift-card.new p{color:#c7d2ea;}
+
+  .callout{
+    background:var(--surface); border-radius:var(--radius); padding:26px 28px;
+    display:flex; gap:18px; align-items:flex-start;
+  }
+  .callout .icn{flex:none; width:26px; height:26px; color:var(--gold); margin-top:2px;}
+  .callout p{color:var(--text); font-size:0.97rem; line-height:1.65;}
+
+  .pullquote{padding:100px 0; text-align:center;}
+  .pullquote blockquote{
+    max-width:760px; margin:0 auto; font-family:'Fraunces',serif; font-size:clamp(1.3rem,2.6vw,1.9rem);
+    font-weight:500; color:var(--ink); line-height:1.5;
+  }
+  .pullquote .rule{width:44px; height:2px; background:var(--gold); margin:0 auto 30px;}
+  footer{background:var(--ink); color:#8fa0c4; padding:44px 0; font-size:0.82rem; font-family:'JetBrains Mono',monospace;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; row-gap:14px;}
+
+  .reveal{opacity:1; transform:none;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  .agenda-list{position:relative; margin-top:12px;}
+  .agenda-list::before{content:""; position:absolute; left:15px; top:6px; bottom:6px; width:1px; background:var(--line);}
+  .agenda-row{display:flex; gap:16px; padding:8px 0; align-items:flex-start;}
+  .agenda-row .dotm{flex:none; width:30px;height:30px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--ink); position:relative; z-index:1;}
+  .agenda-row p{font-size:0.94rem; color:var(--text); padding-top:5px;}
+
+  .module-divider{
+    background:linear-gradient(120deg, var(--ink) 0%, #1c3568 100%); color:#fff;
+    padding:72px 0 56px; position:relative; overflow:hidden;
+  }
+  .module-divider::before{content:""; position:absolute; right:-140px; top:-100px; width:420px; height:420px; border-radius:50%; border:1px solid rgba(255,255,255,0.08);}
+  .module-divider .modnum{font-family:'JetBrains Mono',monospace; color:var(--gold-soft); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:16px;}
+  .module-divider h2{font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:600; max-width:760px; color:#fff;}
+  .module-divider .modsub{margin-top:14px; color:#c7d2ea; font-size:1.02rem; max-width:640px; line-height:1.6;}
+
+  .anatomy-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:800px){ .anatomy-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .anatomy-grid{grid-template-columns:1fr;} }
+  .anatomy-card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px 20px;}
+  .anatomy-card .anum{font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gold); letter-spacing:0.1em; display:block; margin-bottom:10px;}
+  .anatomy-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px;}
+  .anatomy-card p{font-size:0.88rem; color:var(--text-muted); line-height:1.55;}
+
+  .tech-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:700px){ .tech-grid{grid-template-columns:1fr;} }
+  .tech-card{border:1px solid var(--line); border-radius:12px; padding:22px 22px; background:var(--paper);}
+  .tech-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .tech-card .tnum{
+    flex:none; width:26px;height:26px; border-radius:50%; background:var(--ink); color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; display:flex; align-items:center; justify-content:center;
+  }
+  .tech-card p{font-size:0.9rem; color:var(--text-muted); line-height:1.6;}
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .checklist li{
+    display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line);
+    border-radius:10px; padding:16px 18px; font-size:0.94rem; color:var(--text); line-height:1.55;
+  }
+  .checklist li .xicn{flex:none; width:20px;height:20px; color:var(--teal); margin-top:1px;}
+
+  .callout-alert{ background:var(--ink); color:#fff; border-radius:var(--radius); padding:28px 26px; margin-top:24px; }
+  .callout-alert .eyebrow{color:var(--gold-soft); display:block; margin-bottom:10px;}
+  .callout-alert p{color:#dce3f2; font-size:0.95rem; line-height:1.68;}
+</style>
+<style>
+  /* complementos desta aula (padrão reaproveitado das aulas do projeto) */
+  a{color:var(--teal); text-decoration:underline; text-underline-offset:2px; font-weight:600;}
+  a:hover{color:var(--ink);}
+  .promptbox{background:var(--ink); color:#e8edf6; border-radius:12px; padding:20px 22px; margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; line-height:1.7; white-space:pre-wrap; overflow-x:auto;}
+  .promptbox .plabel{display:block; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:12px; font-weight:600;}
+  .promptbox .blk{color:var(--gold-soft); font-weight:600;}
+  .copy-hint{margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted);}
+  code.inline{font-family:'JetBrains Mono',monospace; font-size:0.85em; background:var(--surface-2); padding:2px 6px; border-radius:5px; color:var(--ink);}
+
+  .block-card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:36px; margin-bottom:40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
+  .block-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:1px solid var(--line); padding-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .block-title-area h3{font-size:1.4rem; color:var(--ink); font-weight:600;}
+  .block-badge{font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px; border-radius:20px; font-weight:600;}
+  .badge-teal{background:var(--teal-soft); color:var(--teal);}
+  .badge-gold{background:var(--gold-soft); color:var(--ink);}
+
+  .concept-box{background:var(--surface); border-left:4px solid var(--ink); border-radius:0 8px 8px 0; padding:20px; margin:20px 0;}
+  .concept-box h4{font-size:1.05rem; color:var(--ink); margin-bottom:8px;}
+  .concept-box p{color:var(--text); font-size:0.95rem; line-height:1.6;}
+
+  .insight-box{background:var(--teal-soft); border:1px solid var(--teal); border-radius:8px; padding:20px; margin:20px 0; color:var(--ink);}
+  .insight-box .insight-tag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); font-weight:600; display:block; margin-bottom:6px;}
+  .insight-box p{font-size:0.93rem; line-height:1.55;}
+
+  .instruction-step{margin:28px 0;}
+  .instruction-step .step-num{font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:600; color:var(--gold); display:block; margin-bottom:4px;}
+  .instruction-step h4{font-size:1.1rem; color:var(--ink); margin-bottom:8px;}
+
+  .code-box{background:var(--ink); color:#f0f4fc; font-family:'JetBrains Mono',monospace; font-size:0.82rem; padding:18px 20px; border-radius:10px; margin:16px 0; overflow-x:auto; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--gold);}
+  .code-box .comment{color:#7e93ba;}
+
+  .value-table-wrapper{margin-top:28px; overflow-x:auto; border:1px solid var(--line); border-radius:10px;}
+  .value-table{width:100%; border-collapse:collapse; font-size:0.9rem; text-align:left;}
+  .value-table th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; padding:14px 16px;}
+  .value-table td{padding:14px 16px; border-bottom:1px solid var(--line); color:var(--text); line-height:1.5; vertical-align:top;}
+  .value-table tr:last-child td{border-bottom:none;}
+  .value-table tr:nth-child(even){background:var(--surface);}
+  .value-table strong{color:var(--ink);}
+
+  /* --- elementos visuais (ícones, diagramas, fotos) --- */
+  .icon-badge{
+    display:inline-flex; align-items:center; justify-content:center; flex:none;
+    width:38px; height:38px; border-radius:50%; background:var(--ink); color:#fff;
+  }
+  .icon-badge svg{width:20px; height:20px;}
+  .icon-badge.gold{background:var(--gold-soft); color:var(--ink);}
+  .icon-badge.teal{background:var(--teal-soft); color:var(--teal);}
+  .icon-badge.sm{width:26px; height:26px;}
+  .icon-badge.sm svg{width:14px; height:14px;}
+
+  .legend-row{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:18px;}
+  .legend-chip{display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text);}
+
+  .acard-head{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .acard-head h3{margin:0;}
+  .anatomy-card .anum{display:none;}
+
+  .concept-box > summary{display:flex; align-items:center; gap:14px; cursor:pointer; list-style:none;}
+  .concept-box > summary::-webkit-details-marker{display:none;}
+  .concept-box > summary h4{margin:0; flex:1;}
+  .concept-box > summary .chev{flex:none; width:18px; height:18px; color:var(--text-muted); transition:transform .2s ease;}
+  .concept-box[open] > summary .chev{transform:rotate(180deg);}
+  .concept-box > p{margin-top:14px;}
+
+  .divider-head{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+  .divider-head .modnum{margin-bottom:0;}
+  .divider-icon{flex:none; width:34px; height:34px; color:var(--gold-soft);}
+
+  .diagram-frame{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:24px; margin:24px 0; overflow-x:auto;}
+  .diagram-frame svg{width:100%; height:auto; display:block;}
+  .diagram-frame .diagram-caption{margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted); text-align:center;}
+  .diagram-pair{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .diagram-pair{grid-template-columns:1fr;} }
+  .diagram-pair .diagram-frame{margin:0; height:100%;}
+
+  .photo-frame{
+    width:100%; aspect-ratio:4/3; border-radius:14px;
+    background:linear-gradient(135deg, var(--surface), rgba(184,137,43,0.08));
+    border:1px dashed var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--text-muted); font-size:0.85rem; padding:24px; text-align:center; gap:10px;
+    margin:24px 0;
+  }
+  .photo-frame.wide{aspect-ratio:16/9;}
+  .photo-frame .pf-icon{width:40px; height:40px; color:var(--gold);}
+  .photo-frame .pf-label{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted);}
+  .photo-frame.has-img{padding:0; border:1px solid var(--line); border-style:solid; overflow:hidden;}
+  .photo-frame.has-img img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  .demo-head-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:28px; align-items:center; margin:44px 0 20px;}
+  @media (max-width:800px){ .demo-head-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> SISPROT · Aula 5</div>
+  <div class="step">Spec-Driven Development</div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Curso · IA aplicada ao desenvolvimento de software · Aula 5</span>
+    <h1>Spec-Driven Development: da Especificação ao Código Testável</h1>
+    <p class="lede">O SISPROT ganhou o CRUD de protocolos na Aula 4. Hoje ele ganhará o <strong>fluxo de tramitação entre setores</strong> — só que desta vez, todo prompt nascerá de uma especificação estruturada: user story, critérios de aceitação, modelagem de estados. Especificar deixa de ser um extra e vira o ponto de partida oficial.</p>
+    <div class="meta-row">
+      <div><strong>4</strong>aulas · 1 projeto</div>
+      <div><strong>4</strong>etapas teóricas</div>
+      <div><strong>1</strong>máquina de estados</div>
+      <div><strong>SISPROT</strong>v1 · Tramitação</div>
+    </div>
+  </div>
+</header>
+
+<!-- AGENDA -->
+<section class="why reveal" id="agenda">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sobre esta aula</span>
+      <h2>Da especificação ao código testável</h2>
+      <p class="sub">Na Aula 4, especificar foi só uma prévia leve — uma seção, um exemplo. Hoje formalizaremos o ciclo completo: requisito → spec → prompt → código → verificação contra os critérios, aplicado ao fluxo de tramitação de protocolos entre setores.</p>
+    </div>
+    <div class="agenda-list">
+      <div class="agenda-row"><div class="dotm">01</div><p>O ciclo Spec-Driven Development: por que especificar antes de pedir</p></div>
+      <div class="agenda-row"><div class="dotm">02</div><p>Requisitos funcionais e não funcionais, casos de uso</p></div>
+      <div class="agenda-row"><div class="dotm">03</div><p>User stories e critérios de aceitação, a fundo</p></div>
+      <div class="agenda-row"><div class="dotm">04</div><p>Modelagem de fluxos e estados: a tramitação de protocolos</p></div>
+      <div class="agenda-row"><div class="dotm">05</div><p>Mão na massa: da spec ao código, no nosso mock</p></div>
+      <div class="agenda-row"><div class="dotm">06</div><p>Desafio final: especificar e prompt-ar uma regra nova, sozinho</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Regra de ouro do curso (continua valendo):</strong> nunca cole dados reais ou sensíveis em nenhuma ferramenta de IA, especialmente as gratuitas. Todos os exemplos usam números de protocolo, setores e nomes fictícios.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 1 -->
+<section class="module-divider reveal" id="etapa1">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="modnum">Etapa 1</span>
+    </div>
+    <h2>O ciclo Spec-Driven Development</h2>
+    <p class="modsub">Especificar antes de pedir não é uma etapa extra — é o que faz o prompt possível de escrever bem.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: Spec-Driven Development</h4>
+      <p>É a prática de descrever, numa especificação estruturada, o que o sistema deve fazer <em>antes</em> de pedir para a IA implementar — fechando o ciclo requisito → spec → prompt → código → verificação contra os critérios (<a href="https://github.github.com/spec-kit/" target="_blank" rel="noopener">github.github.com/spec-kit</a>, toolkit oficial de SDD do GitHub, compatível com Claude Code, Copilot e Gemini CLI). A Aula 4 já plantou essa ideia — hoje ela vira o ponto de partida oficial de todo prompt do curso.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Onde já vimos isso</span>
+      <p>Na Aula 4, a seção "Especificar o CRUD de protocolos" mostrou que os critérios de aceitação eram, quase palavra por palavra, os blocos <code class="inline">[TAREFA]</code> e <code class="inline">[RESTRIÇÕES]</code> do prompt. Hoje formalizaremos esse hábito com nome, estrutura e um fluxo mais complexo: a tramitação entre setores.</p>
+    </div>
+
+    <div class="sec-head" style="margin:44px 0 20px;">
+      <span class="eyebrow">Exemplo</span>
+      <h2 style="font-size:1.5rem;">Pedir direto vs. pedir a partir de uma spec</h2>
+      <p class="sub">Mesmo pedido — adicionar tramitação entre setores — dos dois jeitos.</p>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Sem spec</span>adiciona um jeito de mudar o status do protocolo entre os setores</div>
+    <p class="copy-hint">O que falta: quais status existem, quais transições são permitidas, quem pode fazer cada uma, o que fica registrado. A IA vai preencher cada lacuna com uma suposição própria — exatamente como na Aula 4.</p>
+
+    <div class="promptbox" style="margin-top:20px;">
+<span class="plabel">Nascido de uma spec</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em sistemas administrativos
+para o setor público.
+
+<span class="blk">[CONTEXTO]</span> Projeto SISPROT. A tabela "protocolos" já existe, com status atual
+(Aberto, Em Análise, Deferido, Indeferido, Arquivado), mas sem histórico nem controle de
+quem pode mudar cada status.
+
+<span class="blk">[TAREFA]</span> Implemente a transição "Aberto → Em Análise". Critério de aceitação:
+toda mudança de status fica registrada num histórico (status anterior, novo status, data,
+setor responsável) e visível na tela do protocolo, do mais recente para o mais antigo.
+
+<span class="blk">[RESTRIÇÕES]</span> Não permita pular direto para "Deferido" ou "Indeferido" sem
+passar por "Em Análise". Sempre usar prepared statements. Não usar frameworks.
+
+<span class="blk">[FORMATO]</span> SQL da nova tabela de histórico primeiro; depois cada arquivo
+alterado, com o nome antes do código.</div>
+    <p class="copy-hint">Reparem: o bloco <code class="inline">[TAREFA]</code> já <em>é</em> um critério de aceitação disfarçado — "fica visível no histórico, do mais recente para o mais antigo" é literalmente algo que dá para testar depois, item por item.</p>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="module-divider reveal" id="etapa2">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6M7 17h8"/></svg>
+      <span class="modnum">Etapa 2</span>
+    </div>
+    <h2>Requisitos e casos de uso</h2>
+    <p class="modsub">O que o sistema faz, e como ele se comporta enquanto faz — duas perguntas diferentes.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: requisito funcional vs. não funcional</h4>
+      <p><strong>Requisito funcional (RF)</strong> descreve o que o sistema faz — uma ação, uma regra de negócio. <strong>Requisito não funcional (RNF)</strong> descreve como o sistema se comporta enquanto faz isso — desempenho, segurança, auditabilidade (<a href="https://en.wikipedia.org/wiki/Functional_requirement" target="_blank" rel="noopener">en.wikipedia.org/wiki/Functional_requirement</a>). Os dois viram blocos diferentes dentro do prompt.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Tipo</th><th>Exemplo aplicado à tramitação</th><th>Vira, no prompt</th></tr></thead>
+        <tbody>
+          <tr><td><strong>RF</strong></td><td>O sistema deve permitir mudar o status de um protocolo, respeitando as transições permitidas.</td><td><code class="inline">[TAREFA]</code></td></tr>
+          <tr><td><strong>RNF</strong></td><td>Toda mudança de status deve ficar registrada, com data e responsável.</td><td><code class="inline">[TAREFA]</code> / <code class="inline">[FORMATO]</code></td></tr>
+          <tr><td><strong>RNF</strong></td><td>Só usuários do setor responsável podem mudar o status de um protocolo.</td><td><code class="inline">[RESTRIÇÕES]</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Caso de uso</span>
+      <p>Um <strong>caso de uso</strong> descreve uma interação completa entre um ator e o sistema, com um objetivo (<a href="https://en.wikipedia.org/wiki/Use_case" target="_blank" rel="noopener">en.wikipedia.org/wiki/Use_case</a>). "Servidor do setor Jurídico defere um protocolo em análise" é um caso de uso — vira a base da user story da próxima etapa.</p>
+    </div>
+
+    <div class="block-card" style="margin-top:32px;">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício rápido · individual · 10 min</span>
+          <h3>RF e RNF do cartão de visita animado</h3>
+        </div>
+        <span class="block-badge badge-teal">10 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Vamos retomar o cartão de visita animado da Aula 4 e aplicar o que acabamos de ver: separar requisito funcional de requisito não funcional, antes de escrever qualquer prompt.</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>Escolheremos uma função nova para adicionar ao cartão: um botão "copiar e-mail" que dá uma confirmação visual ao ser clicado.</li>
+          <li>Escreveremos 2 requisitos funcionais (RF) e 2 requisitos não funcionais (RNF) para essa função — sem pensar em código ainda.</li>
+          <li>Traduziremos cada RF/RNF para um bloco do prompt: RF vira <code class="inline">[TAREFA]</code>; RNF vira <code class="inline">[RESTRIÇÕES]</code> ou <code class="inline">[FORMATO]</code>, conforme o caso.</li>
+          <li>Rodaremos o prompt resultante numa IA gratuita e testaremos o botão no navegador.</li>
+        </ol>
+      </div>
+      <div class="callout" style="margin-top:20px;">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+        <p><strong>Se você não fez o exercício da Aula 4:</strong> tudo bem — descreva o cartão em 1-2 frases (nome, cargo, uma animação) antes do passo 1, ou peça para a IA recriá-lo rapidamente a partir dessa descrição.</p>
+      </div>
+      <div class="instruction-step">
+        <span class="step-num">Critério de sucesso</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="xicn">&#10003;</span>Cada RF descreve uma ação; cada RNF descreve uma qualidade (desempenho, aparência, robustez).</li>
+        <li><span class="xicn">&#10003;</span>Conseguimos apontar, no prompt final, qual bloco veio de qual requisito.</li>
+        <li><span class="xicn">&#10003;</span>O botão funciona no navegador exatamente como os critérios descreveram.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="module-divider reveal" id="etapa3">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 4c-2 0-3 1-3 3v3c0 1-1 2-2 2 1 0 2 1 2 2v3c0 2 1 3 3 3"/><path d="M16 4c2 0 3 1 3 3v3c0 1 1 2 2 2-1 0-2 1-2 2v3c0 2-1 3-3 3"/></svg>
+      <span class="modnum">Etapa 3</span>
+    </div>
+    <h2>User stories e critérios de aceitação</h2>
+    <p class="modsub">A Aula 4 usou o formato uma vez, de leve. Hoje entendemos por que ele funciona.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: user story + critérios de aceitação</h4>
+      <p>Uma <strong>user story</strong> descreve uma necessidade do ponto de vista de quem usa o sistema ("Como / quero / para que"), pequena e testável o bastante para caber num prompt. Os <strong>critérios de aceitação</strong> são a lista do que precisa ser verdade para a história estar pronta (<a href="https://www.atlassian.com/agile/project-management/user-stories" target="_blank" rel="noopener">atlassian.com/agile/project-management/user-stories</a>). Boas user stories seguem o critério <strong>INVEST</strong>: independentes, negociáveis, valiosas, estimáveis, pequenas, testáveis.</p>
+    </div>
+
+    <div class="instruction-step">
+      <span class="step-num">Exemplo</span>
+      <h4>User story: mudar o status de um protocolo</h4>
+    </div>
+    <div class="concept-box">
+      <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.05rem; color:var(--ink);">
+        <strong>Como</strong> servidor do setor responsável,<br>
+        <strong>quero</strong> mudar o status de um protocolo que está sob minha análise,<br>
+        <strong>para que</strong> o andamento fique visível para quem consulta o protocolo depois.
+      </p>
+    </div>
+
+    <div class="instruction-step">
+      <span class="step-num">Critérios de aceitação</span>
+    </div>
+    <ul class="checklist">
+      <li><span class="xicn">&#10003;</span>Só é possível mudar para um status que seja uma transição permitida a partir do status atual.</li>
+      <li><span class="xicn">&#10003;</span>Toda mudança de status grava, no histórico: status anterior, novo status, data e setor responsável.</li>
+      <li><span class="xicn">&#10003;</span>O histórico aparece na tela do protocolo, do mais recente para o mais antigo.</li>
+      <li><span class="xicn">&#10003;</span>Um protocolo "Arquivado" não aceita mais nenhuma mudança de status.</li>
+    </ul>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Parte da user story</th><th>Texto</th><th>Vira, no prompt</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Como</strong></td><td>servidor do setor responsável</td><td><code class="inline">[CONTEXTO]</code> / <code class="inline">[RESTRIÇÕES]</code></td></tr>
+          <tr><td><strong>Quero</strong></td><td>mudar o status de um protocolo que está sob minha análise</td><td><code class="inline">[TAREFA]</code></td></tr>
+          <tr><td><strong>Para que</strong></td><td>o andamento fique visível para quem consulta o protocolo depois</td><td><code class="inline">[TAREFA]</code> / <code class="inline">[FORMATO]</code></td></tr>
+          <tr><td><strong>Critério 1</strong></td><td>Só é possível mudar para um status que seja uma transição permitida a partir do status atual.</td><td><code class="inline">[RESTRIÇÕES]</code></td></tr>
+          <tr><td><strong>Critério 2</strong></td><td>Toda mudança de status grava, no histórico: status anterior, novo status, data e setor responsável.</td><td><code class="inline">[TAREFA]</code></td></tr>
+          <tr><td><strong>Critério 3</strong></td><td>O histórico aparece na tela do protocolo, do mais recente para o mais antigo.</td><td><code class="inline">[FORMATO]</code></td></tr>
+          <tr><td><strong>Critério 4</strong></td><td>Um protocolo "Arquivado" não aceita mais nenhuma mudança de status.</td><td><code class="inline">[RESTRIÇÕES]</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Por que isso importa</span>
+      <p>Repare: os critérios acima já <em>são</em> o roteiro de teste manual depois que a IA gerar o código. Especificar bem não é trabalho a mais — é o trabalho de decidir o que "pronto" significa, feito uma vez só, antes do prompt.</p>
+    </div>
+
+    <div class="block-card" style="margin-top:32px;">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício rápido · individual · 10 min</span>
+          <h3>User story do cartão de visita animado</h3>
+        </div>
+        <span class="block-badge badge-teal">10 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Mesma função do exercício anterior (o botão "copiar e-mail") — agora contada do ponto de vista de quem usa o cartão, não do sistema.</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>Escreveremos a user story ("Como / quero / para que") para o botão "copiar e-mail", usando o exemplo desta etapa como modelo de estrutura.</li>
+          <li>Listaremos de 3 a 4 critérios de aceitação — cada um precisa ser algo que dê para testar clicando no botão.</li>
+          <li>Compararemos com os RF/RNF do exercício da Etapa 2: os critérios de aceitação deveriam cobrir os mesmos requisitos, só que na perspectiva de quem usa.</li>
+        </ol>
+      </div>
+      <div class="instruction-step">
+        <span class="step-num">Critério de sucesso</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="xicn">&#10003;</span>A user story segue o formato Como/quero/para que, sem menção a código.</li>
+        <li><span class="xicn">&#10003;</span>Cada critério de aceitação é testável manualmente (dá pra marcar "sim" ou "não" olhando o botão).</li>
+        <li><span class="xicn">&#10003;</span>Nenhum critério é vago ("deve funcionar bem") — todos descrevem um comportamento específico.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 4 -->
+<section class="module-divider reveal" id="etapa4">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+      <span class="modnum">Etapa 4</span>
+    </div>
+    <h2>Modelagem de fluxos e estados</h2>
+    <p class="modsub">A tramitação de protocolos, do início ao fim: os cinco status e quem pode mover cada um.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: Step-Back Prompting</h4>
+      <p>Técnica de pedir (ou fazer você mesmo) o princípio geral antes de aplicar a um caso específico — abstrair primeiro, especificar depois (<a href="https://arxiv.org/abs/2310.06117" target="_blank" rel="noopener">arxiv.org/abs/2310.06117</a>, "Take a Step Back: Evoking Reasoning via Abstraction in LLMs"). É exatamente o que faremos agora: em vez de especificar uma transição isolada (Aberto → Em Análise, depois Em Análise → Deferido, uma de cada vez), damos um passo atrás e modelamos o fluxo inteiro primeiro — a máquina de estados abaixo é o princípio geral; a spec de uma transição específica, logo depois, é o caso concreto aplicado a ele.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: máquina de estados</h4>
+      <p>Modelo que descreve os estados possíveis de algo (aqui, um protocolo) e as transições permitidas entre eles — deixando explícito o que <em>não</em> é permitido, não só o que é. Na Aula 4, só existia uma transição (Aberto → Arquivado). Hoje o fluxo completo entra em cena.</p>
+    </div>
+
+    <div class="diagram-frame">
+      <svg viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-flow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/>
+          </marker>
+        </defs>
+
+        <circle cx="10" cy="130" r="6" fill="var(--ink)"/>
+        <line x1="16" y1="130" x2="28" y2="130" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrow-flow)"/>
+
+        <rect x="30" y="105" width="150" height="50" rx="25" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="1.5"/>
+        <text x="105" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="var(--ink)">Aberto</text>
+
+        <line x1="180" y1="130" x2="248" y2="130" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrow-flow)"/>
+        <text x="214" y="118" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="var(--text-muted)">Recepção</text>
+
+        <rect x="250" y="105" width="170" height="50" rx="25" fill="var(--teal-soft)" stroke="var(--teal)" stroke-width="1.5"/>
+        <text x="335" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="var(--ink)">Em Análise</text>
+
+        <line x1="420" y1="118" x2="498" y2="65" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrow-flow)"/>
+        <text x="460" y="80" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="var(--text-muted)">Jurídico</text>
+
+        <line x1="420" y1="145" x2="498" y2="200" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrow-flow)"/>
+        <text x="460" y="190" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="var(--text-muted)">Jurídico</text>
+
+        <rect x="500" y="35" width="150" height="50" rx="25" fill="none" stroke="var(--teal)" stroke-width="1.5"/>
+        <text x="575" y="65" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="var(--ink)">Deferido</text>
+
+        <rect x="500" y="180" width="150" height="50" rx="25" fill="none" stroke="var(--text-muted)" stroke-width="1.5"/>
+        <text x="575" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="var(--ink)">Indeferido</text>
+
+        <line x1="650" y1="65" x2="700" y2="118" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrow-flow)"/>
+        <line x1="650" y1="205" x2="700" y2="150" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrow-flow)"/>
+
+        <rect x="690" y="105" width="120" height="50" rx="25" fill="var(--surface-2)" stroke="var(--text-muted)" stroke-width="1.5"/>
+        <text x="750" y="135" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="600" fill="var(--text)">Arquivado</text>
+      </svg>
+      <p class="diagram-caption">Fluxo completo de tramitação — cada seta é uma transição permitida; o resto é proibido por padrão.</p>
+    </div>
+
+    <div class="instruction-step">
+      <span class="step-num">Exemplo</span>
+      <h4>Spec de uma transição específica</h4>
+      <p style="color:var(--text-muted);">Em Análise → Deferido, restrita ao setor Jurídico.</p>
+    </div>
+    <div class="concept-box">
+      <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.05rem; color:var(--ink);">
+        <strong>Como</strong> servidor do setor Jurídico,<br>
+        <strong>quero</strong> deferir um protocolo que está em análise,<br>
+        <strong>para que</strong> o requerente saiba que o pedido foi aprovado.
+      </p>
+    </div>
+    <ul class="checklist">
+      <li><span class="xicn">&#10003;</span>Só um protocolo com status "Em Análise" pode ser deferido.</li>
+      <li><span class="xicn">&#10003;</span>Só o setor "Jurídico" tem a opção de deferir disponível na tela.</li>
+      <li><span class="xicn">&#10003;</span>Deferir grava o histórico e muda o status para "Deferido".</li>
+    </ul>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Parte da user story</th><th>Texto</th><th>Vira, no prompt</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Como</strong></td><td>servidor do setor Jurídico</td><td><code class="inline">[RESTRIÇÕES]</code></td></tr>
+          <tr><td><strong>Quero</strong></td><td>deferir um protocolo que está em análise</td><td><code class="inline">[TAREFA]</code></td></tr>
+          <tr><td><strong>Para que</strong></td><td>o requerente saiba que o pedido foi aprovado</td><td><code class="inline">[CONTEXTO]</code></td></tr>
+          <tr><td><strong>Critério 1</strong></td><td>Só um protocolo com status "Em Análise" pode ser deferido.</td><td><code class="inline">[RESTRIÇÕES]</code></td></tr>
+          <tr><td><strong>Critério 2</strong></td><td>Só o setor "Jurídico" tem a opção de deferir disponível na tela.</td><td><code class="inline">[RESTRIÇÕES]</code> / <code class="inline">[FORMATO]</code></td></tr>
+          <tr><td><strong>Critério 3</strong></td><td>Deferir grava o histórico e muda o status para "Deferido".</td><td><code class="inline">[TAREFA]</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="block-card" style="margin-top:32px;">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício rápido · individual · 10 min</span>
+          <h3>Estados de interação do cartão de visita animado</h3>
+        </div>
+        <span class="block-badge badge-teal">10 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Um cartão animado também tem "estados" — não de um registro no banco, mas de interação na tela. Vamos aplicar o mesmo passo atrás (step-back) que usamos na tramitação.</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>Modelaremos, em texto ou desenho simples, os estados de interação do cartão: por exemplo, Oculto → Visível (animação de entrada) → Hover → Clicado (copia e-mail ou abre link).</li>
+          <li>Marcaremos quais transições são permitidas e quais não fazem sentido (ex.: não dá pra "clicar" num cartão ainda Oculto).</li>
+          <li>Escolheremos uma transição específica (ex.: Hover → Clicado) e escreveremos a spec dela — user story + critérios de aceitação — como fizemos na Etapa 3.</li>
+        </ol>
+      </div>
+      <div class="instruction-step">
+        <span class="step-num">Critério de sucesso</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="xicn">&#10003;</span>O diagrama (ou lista) de estados cobre pelo menos 3 estados e deixa claro o que não é permitido.</li>
+        <li><span class="xicn">&#10003;</span>A spec da transição escolhida segue o mesmo formato usado na Etapa 3.</li>
+        <li><span class="xicn">&#10003;</span>Conseguimos explicar por que modelamos o fluxo inteiro antes de especificar só uma transição.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 5 (DEMO NOME) -->
+<section class="module-divider reveal" id="etapa5">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v11H9l-5 4V5z"/></svg>
+      <span class="modnum">Etapa 5</span>
+    </div>
+    <h2>Da spec ao código, no nosso mock</h2>
+    <p class="modsub">Continuamos sem instalação e sem IA paga — o mesmo mock da Aula 4, agora com tramitação.</p>
+  </div>
+</section>
+
+<!-- PRÁTICA -->
+<section class="reveal" id="pratica" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Mão na massa</span>
+      <h2>Dois exercícios, ao vivo com a turma</h2>
+    </div>
+
+    <div class="callout" style="margin-bottom:24px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Continuamos no frontend:</strong> vamos evoluir o mesmo <code class="inline">protocolos-mock.html</code> da Aula 4 — array em JavaScript, sem servidor, sem instalação, com IA gratuita.</p>
+    </div>
+
+    <div class="instruction-step">
+      <span class="step-num">Ponto de partida · rodaremos juntos</span>
+      <h4>Preparar o mock para a tramitação</h4>
+      <p style="color:var(--text-muted);">Antes dos exercícios, rodaremos este prompt uma vez — ele só prepara o terreno (dados), sem regra de negócio ainda.</p>
+    </div>
+    <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt · preparar o mock para tramitação</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor front-end especializado em HTML, CSS e JavaScript
+puro.
+
+<span class="blk">[CONTEXTO]</span> Tenho a página protocolos-mock.html da aula anterior, com protocolos
+num array de objetos JavaScript, renderizados numa tabela.
+
+<span class="blk">[TAREFA]</span> Adicione dois campos a cada protocolo: "setorAtual" (texto, valor
+inicial "Recepção") e "historico" (array de objetos { de, para, data, setor }, começando
+vazio). Não precisa exibir nada novo na tela ainda — só preparar os dados.
+
+<span class="blk">[RESTRIÇÕES]</span> Não altere as colunas já existentes nem a estrutura da tabela.
+Não use frameworks nem bibliotecas externas.
+
+<span class="blk">[FORMATO]</span> O arquivo protocolos-mock.html completo e atualizado.</div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 1 · individual · 25 min</span>
+          <h3>Da spec ao prompt: Aberto → Em Análise</h3>
+        </div>
+        <span class="block-badge badge-teal">25 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Praticar o ciclo completo: escrever a spec primeiro, só depois o prompt — e verificar o código contra os critérios, um por um.</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Escreveremos a user story + critérios de aceitação para a transição "Aberto → Em Análise" (podemos adaptar o exemplo da Etapa 3).</li>
+          <li>A partir da spec, escreveremos o prompt estruturado — cada critério deve aparecer, em algum bloco do prompt.</li>
+          <li>Rodaremos o prompt na IA disponível e aplicaremos o resultado em protocolos-mock.html.</li>
+          <li>Testaremos cada critério de aceitação manualmente, um por um, como um checklist.</li>
+        </ol>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;"><strong style="color:var(--ink);">Arquivo utilizado:</strong> <code class="inline">protocolos-mock.html</code> (gerado no "Ponto de partida" acima).</p>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Escrever a spec depois do prompt, "para justificar" — a ordem importa: spec primeiro.</li>
+            <li>Critério vago demais ("deve funcionar bem") em vez de algo testável ("aparece no histórico, na ordem certa").</li>
+            <li>Esquecer de transformar a restrição de transição ("só a partir de Aberto") em bloco <code class="inline">[RESTRIÇÕES]</code> do prompt.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Reaproveitaremos a user story da Etapa 3 como modelo de estrutura.</li>
+            <li>Cada critério de aceitação deveria virar uma linha do checklist de teste manual — se não conseguir, ele está vago demais.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 2 · individual · 30 min</span>
+          <h3>Template reutilizável para novas transições</h3>
+        </div>
+        <span class="block-badge badge-teal">30 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Criar um template — spec + prompt — reutilizável para qualquer transição nova, e aplicá-lo a "Em Análise → Deferido" e "Em Análise → Indeferido".</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Criaremos um template de prompt com placeholders como <code class="inline">{{STATUS_ORIGEM}}</code>, <code class="inline">{{STATUS_DESTINO}}</code> e <code class="inline">{{SETOR_RESPONSAVEL}}</code> — o mesmo padrão de "chamada" da Aula 4 (template colado + valores no final).</li>
+          <li>Preencheremos o template duas vezes: uma para Em Análise → Deferido (setor Jurídico), outra para Em Análise → Indeferido (setor Jurídico).</li>
+          <li>Para cada uma, rodaremos a chamada na IA e aplicaremos o resultado ao mesmo protocolos-mock.html.</li>
+          <li>Testaremos as duas transições e confirmaremos que o setor Recepção não consegue mais deferir/indeferir diretamente.</li>
+        </ol>
+      </div>
+      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:8px;"><strong style="color:var(--ink);">Arquivo utilizado:</strong> <code class="inline">protocolos-mock.html</code> (estado atual do exercício).</p>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Template de spec genérico demais: não distingue "quem" pode fazer a transição.</li>
+            <li>Esquecer de repetir a restrição "não pular estados" em cada preenchimento — ela é fixa, não parte do que varia.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>É a mesma "chamada" ensinada na Aula 4: colar o template inteiro de novo a cada transição, só trocando os valores no final.</li>
+            <li>Testaremos o template mentalmente com uma terceira transição hipotética antes de considerar pronto.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESAFIO -->
+<section class="reveal" id="desafio" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Desafio final · sem roteiro</span>
+          <h3>Uma nova regra de permissão, do zero</h3>
+        </div>
+        <span class="block-badge badge-gold">15 min</span>
+      </div>
+      <p style="color:var(--text-muted); margin-bottom:20px;">Consolidar o ciclo completo — spec antes de prompt — com uma regra que a aula não cobriu.</p>
+      <p style="color:var(--text-muted);">Adicione ao nosso <code class="inline">protocolos-mock.html</code> uma nova regra: <strong style="color:var(--ink);">só o setor que abriu o protocolo pode arquivá-lo diretamente a partir de "Deferido" ou "Indeferido"</strong> — qualquer outro setor só pode visualizar.</p>
+
+      <div class="instruction-step" style="margin-top:0;">
+        <span class="step-num">Regras</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>Escreveremos, nós mesmos, a spec (user story + critérios) do zero — sem copiar os exemplos da aula.</li>
+          <li>Só depois escreveremos o prompt, a partir da nossa própria spec.</li>
+          <li>Decidiremos os detalhes: o que a tela mostra para quem não tem permissão? Uma mensagem, ou o botão some?</li>
+          <li>Testaremos manualmente, item por item, contra os critérios que escrevemos.</li>
+        </ol>
+      </div>
+
+      <div class="callout-alert">
+        <span class="eyebrow">Critério de sucesso</span>
+        <ul class="checklist" style="margin-top:12px;">
+          <li><span class="xicn">&#10003;</span>A spec (user story + critérios) foi escrita antes do prompt, não depois.</li>
+          <li><span class="xicn">&#10003;</span>O código gerado passa em todos os critérios, testados manualmente.</li>
+          <li><span class="xicn">&#10003;</span>Conseguimos explicar, em 1-2 frases, qual critério cada bloco do prompt resolve.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Demonstração final · depois do tempo de execução · SISPROT real, com Claude Code</span>
+          <h3>Tramitação completa no SISPROT, ao vivo</h3>
+        </div>
+        <span class="block-badge badge-gold">IA paga</span>
+      </div>
+      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos a aula evoluindo o SISPROT de verdade (PHP + MySQL) — com o Claude Code, e cada prompt nascendo de uma spec, fechando o ciclo completo do SDD.</p>
+
+      <div class="instruction-step">
+        <span class="step-num">Pré-requisitos</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>XAMPP com Apache e MySQL rodando; banco <code class="inline">sisprot</code> já criado.</li>
+          <li>Usaremos o projeto em <code class="inline">C:\xampp2\htdocs\protocolo</code> — o estado do SISPROT ao final da Aula 4 (CRUD completo), pronto para evoluir.</li>
+          <li>Abriremos um terminal dentro dessa pasta e rodaremos <code class="inline">claude</code> para iniciar o Claude Code.</li>
+        </ol>
+      </div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Spec 1 → Prompt 1</span>
+        <h4>Histórico de movimentações + setor atual</h4>
+      </div>
+      <div class="concept-box">
+        <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.05rem; color:var(--ink);">
+          <strong>Como</strong> servidor de qualquer setor,<br>
+          <strong>quero</strong> ver o histórico completo de um protocolo,<br>
+          <strong>para que</strong> eu entenda por onde ele já passou antes de agir.
+        </p>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt 1 · schema de histórico</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em sistemas administrativos
+para o setor público.
+
+<span class="blk">[CONTEXTO]</span> Este é o SISPROT: PHP puro + MySQL, com PDO e prepared statements.
+A tabela "protocolos" já existe (listar.php, form.php, salvar.php, excluir.php,
+includes/protocolos_db.php).
+
+<span class="blk">[TAREFA]</span> Adicione uma coluna "setor_atual" (texto, valor padrão "Recepção") à
+tabela protocolos, e uma nova tabela "protocolo_historico" (protocolo_id, status_anterior,
+status_novo, setor, data). Toda mudança de status deve gravar uma linha no histórico.
+
+<span class="blk">[RESTRIÇÕES]</span> Não altere nada que já funciona. Sempre usar prepared
+statements. Não usar frameworks.
+
+<span class="blk">[FORMATO]</span> SQL primeiro (ALTER TABLE + CREATE TABLE), depois cada arquivo
+alterado, com o nome antes do código.</div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Spec 2 → Prompt 2</span>
+        <h4>Transições controladas, com validação</h4>
+      </div>
+      <div class="concept-box">
+        <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.05rem; color:var(--ink);">
+          <strong>Como</strong> responsável por manter a integridade do fluxo,<br>
+          <strong>quero</strong> que só as transições previstas sejam aceitas,<br>
+          <strong>para que</strong> nenhum protocolo pule etapas do processo.
+        </p>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt 2 · validação de transição</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em sistemas administrativos
+para o setor público.
+
+<span class="blk">[CONTEXTO]</span> O SISPROT agora tem protocolo_historico e a coluna setor_atual
+(Prompt 1). As transições válidas são: Aberto → Em Análise; Em Análise → Deferido; Em
+Análise → Indeferido; Deferido → Arquivado; Indeferido → Arquivado.
+
+<span class="blk">[TAREFA]</span> Crie tramitar.php: recebe id do protocolo e novo status, valida
+se a transição é permitida a partir do status atual, grava o histórico e atualiza o status.
+Se a transição não for permitida, não altera nada e mostra uma mensagem de erro.
+
+<span class="blk">[RESTRIÇÕES]</span> Não permita nenhuma transição fora da lista acima. Sempre
+usar prepared statements. Não usar frameworks.
+
+<span class="blk">[FORMATO]</span> Só o arquivo tramitar.php, comentado indicando onde fica a
+validação das transições.</div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Spec 3 → Prompt 3</span>
+        <h4>Tela de tramitação, com histórico visível</h4>
+      </div>
+      <div class="concept-box">
+        <p style="font-family:'Fraunces',serif; font-style:italic; font-size:1.05rem; color:var(--ink);">
+          <strong>Como</strong> servidor do setor responsável,<br>
+          <strong>quero</strong> ver as próximas transições possíveis e o histórico completo na
+          tela do protocolo,<br>
+          <strong>para que</strong> eu não precise adivinhar o que posso fazer.
+        </p>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt 3 · tela de tramitação</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em sistemas administrativos
+para o setor público.
+
+<span class="blk">[CONTEXTO]</span> tramitar.php (Prompt 2) já processa a mudança de status.
+listar.php lista os protocolos.
+
+<span class="blk">[TAREFA]</span> Na listagem (listar.php), mostre o setor_atual como coluna, e
+adicione botões com as próximas transições válidas para aquele status ao lado dos botões
+já existentes (Editar/Excluir), apontando para tramitar.php. Na tela de edição (form.php),
+exiba o histórico completo do protocolo, do mais recente para o mais antigo.
+
+<span class="blk">[RESTRIÇÕES]</span> Não altere as colunas já existentes na listagem. Sempre
+usar prepared statements. Não usar frameworks.
+
+<span class="blk">[FORMATO]</span> Para cada arquivo alterado, o nome antes do código.</div>
+
+      <p class="copy-hint">Reparem no padrão: cada prompt veio de uma spec (user story + critério), não do nada — é o ciclo fechado que hoje formalizamos.</p>
+
+      <div class="insight-box">
+        <span class="insight-tag">Chat vs. agente de código</span>
+        <p>Com uma IA de chat, colamos o prompt inteiro numa mensagem e copiamos o código de volta. O Claude Code é diferente: ele já enxerga os arquivos da pasta e edita diretamente no disco — normalmente pedindo confirmação antes de alterar um arquivo ou rodar um comando.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FECHAMENTO -->
+<section class="pullquote reveal">
+  <div class="wrap" style="text-align:center;">
+    <div class="rule"></div>
+    <blockquote>Hoje, a especificação nasceu de nós, revisada à mão, antes de cada prompt. Na Aula 2, comparamos ferramentas — Claude Code, Copilot, Cursor e outras — construindo a mesma API a partir das mesmas specs, para entender onde cada uma se destaca.</blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-left" style="display:flex; align-items:center; gap:14px;">
+      <span>SISPROT · Aula 5 · Spec-Driven Development</span>
+    </div>
+    <div class="footer-right"><span>Aula 5 de 4</span></div>
+  </div>
+</footer>
+
+<script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = scrolled + '%';
+  });
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  items.forEach(i => io.observe(i));
+</script>
+</body>
+</html>

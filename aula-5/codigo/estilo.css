@@ -1,0 +1,12 @@
+.container { max-width: 860px; margin: 40px auto; font-family: Arial, sans-serif; }
+table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+th, td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }
+.btn { display: inline-block; background: #0E7C7B; color: #fff; padding: 8px 14px; text-decoration: none; border-radius: 6px; }
+.sucesso { background: #D6ECEB; color: #0b4b4a; padding: 10px; border-radius: 6px; }
+.erro { background: #f6e3e1; color: #a3382d; padding: 8px; border-radius: 6px; }
+.status { padding: 3px 10px; border-radius: 12px; font-size: 0.85em; }
+.status-aberto { background: #E9D9B4; color: #6b4f14; }
+.status-em_análise { background: #D6ECEB; color: #0b4b4a; }
+.status-deferido { background: #d7f0d0; color: #2c6b1f; }
+.status-indeferido { background: #f6e3e1; color: #a3382d; }
+.status-arquivado { background: #e2e5eb; color: #444; }
