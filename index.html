@@ -83,6 +83,11 @@
     font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
     color:var(--text-muted); background:var(--surface-2); border:1px solid var(--line); border-radius:20px; padding:4px 10px;
   }
+  .badge-extra{
+    font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:#fff; background:var(--gold); border-radius:20px; padding:4px 10px;
+  }
+  .aula-card.is-extra{border-color:var(--gold-soft);}
 
   .aula-card h3{font-size:1.12rem; font-weight:600; color:var(--ink); margin-bottom:10px;}
   .aula-card.is-disabled h3{color:var(--text-muted);}
@@ -176,14 +181,24 @@
     { numero: 10, titulo: "Em breve", descricao: "Conteúdo desta aula ainda está em preparação.", links: [] },
   ];
 
+  const aulaExtra = {
+    numero: "EX", isExtra: true,
+    titulo: "Preparando o Ambiente: VS Code, GitHub e Copilot",
+    descricao: "Guia autocontido de instalação para quem está começando do zero: instalar o VS Code, criar uma conta no GitHub e instalar/integrar o GitHub Copilot antes das demais aulas.",
+    links: [
+      { label: "Acessar Aula", href: "aula-extra/Aula_6_Instalacao_e_Integracao_Copilot_VSCode.html" },
+    ],
+  };
+
   const grid = document.getElementById('aulas-grid');
 
-  aulas.forEach(aula => {
+  function criarCard(aula) {
     const temLinks = aula.links.length > 0;
     const card = document.createElement('article');
-    card.className = 'aula-card' + (temLinks ? '' : ' is-disabled');
+    card.className = 'aula-card' + (temLinks ? '' : ' is-disabled') + (aula.isExtra ? ' is-extra' : '');
 
-    const numero = String(aula.numero).padStart(2, '0');
+    const numero = aula.isExtra ? aula.numero : String(aula.numero).padStart(2, '0');
+    const titulo = aula.isExtra ? `Aula Extra — ${aula.titulo}` : `Aula ${aula.numero} — ${aula.titulo}`;
     const acao = temLinks
       ? aula.links.map((l, i) => `
           <a class="btn${i > 0 ? ' secondary' : ''}" href="${l.href}">${l.label}
@@ -191,17 +206,24 @@
           </a>`).join('')
       : `<span class="btn is-disabled" aria-disabled="true">Em breve</span>`;
 
+    const badge = aula.isExtra
+      ? '<span class="badge-extra">Aula Extra</span>'
+      : (temLinks ? '' : '<span class="badge-soon">Em breve</span>');
+
     card.innerHTML = `
       <div class="aula-card-head">
         <span class="aula-num">${numero}</span>
-        ${temLinks ? '' : '<span class="badge-soon">Em breve</span>'}
+        ${badge}
       </div>
-      <h3>Aula ${aula.numero} — ${aula.titulo}</h3>
+      <h3>${titulo}</h3>
       <p>${aula.descricao}</p>
       <div class="btn-group">${acao}</div>
     `;
-    grid.appendChild(card);
-  });
+    return card;
+  }
+
+  aulas.forEach(aula => grid.appendChild(criarCard(aula)));
+  grid.appendChild(criarCard(aulaExtra));
 
   document.getElementById('stat-disponiveis').textContent =
     aulas.filter(a => a.links.length > 0).length;

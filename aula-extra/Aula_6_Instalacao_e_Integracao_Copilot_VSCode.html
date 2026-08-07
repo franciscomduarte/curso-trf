@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula Extra · Instalação do VS Code, GitHub e GitHub Copilot · SISPROT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#0F1C36">
+<meta name="description" content="Aula extra do curso: como instalar o VS Code, criar uma conta no GitHub e instalar/integrar o GitHub Copilot, passo a passo.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1C36;
+    --ink-2:#16274a;
+    --paper:#FFFFFF;
+    --surface:#F3F5F9;
+    --surface-2:#EAEDF3;
+    --line:#DEE2EA;
+    --text:#1A2233;
+    --text-muted:#5B6478;
+    --gold:#B8892B;
+    --gold-soft:#E9D9B4;
+    --teal:#0E7C7B;
+    --teal-soft:#D6ECEB;
+    --radius:14px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; color-scheme:light only; background:#FFFFFF;}
+  body{margin:0; font-family:'Inter',sans-serif; color:var(--text); background:var(--paper); -webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Fraunces',serif; margin:0; line-height:1.08; letter-spacing:-0.01em;}
+  p{margin:0; line-height:1.6;}
+  a{color:var(--teal); text-decoration:underline; text-underline-offset:2px; font-weight:600;}
+  a:hover{color:var(--ink);}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold); font-weight:600;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  section{padding:96px 0;}
+  @media (max-width:640px){ section{padding:64px 0;} .wrap{padding:0 20px;} }
+
+  .topbar{position:fixed; top:0; left:0; right:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(15,28,54,0.88); backdrop-filter:blur(8px); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase;}
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:600;}
+  .topbar .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .topbar .step{color:#9fb0d1;}
+  @media (max-width:640px){ .topbar{padding:12px 20px;} .topbar .step{display:none;} }
+  #progress{position:fixed; top:0; left:0; height:2px; background:var(--gold); z-index:60; width:0%; transition:width .1s linear;}
+
+  .hero{background:radial-gradient(120% 140% at 78% -10%, #1c3568 0%, var(--ink) 55%, #0a1428 100%); color:#fff; padding:180px 0 120px; position:relative; overflow:hidden;}
+  .hero::before{content:""; position:absolute; right:-180px; top:-120px; width:640px; height:640px; border-radius:50%; border:1px solid rgba(255,255,255,0.08);}
+  .hero::after{content:""; position:absolute; right:-60px; top:60px; width:420px; height:420px; border-radius:50%; border:1px solid rgba(184,137,43,0.22);}
+  .hero .wrap{position:relative; z-index:2;}
+  .hero .eyebrow{color:var(--gold-soft); margin-bottom:22px; display:block;}
+  .hero h1{font-size:clamp(2.1rem, 4.6vw, 3.6rem); font-weight:600; max-width:780px;}
+  .hero .lede{margin-top:26px; font-size:1.15rem; color:#c7d2ea; max-width:660px; line-height:1.65;}
+  .hero .meta-row{margin-top:52px; display:flex; gap:36px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:#8fa0c4;}
+  .hero .meta-row strong{color:#fff; display:block; font-family:'Fraunces',serif; font-size:1.3rem; font-weight:600; margin-bottom:2px;}
+
+  .sec-head{max-width:680px; margin-bottom:52px;}
+  .sec-head .eyebrow{display:block; margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem); font-weight:600; color:var(--ink);}
+  .sec-head .sub{margin-top:14px; color:var(--text-muted); font-size:1.03rem;}
+
+  .why{background:var(--surface);}
+
+  .agenda-list{position:relative; margin-top:12px;}
+  .agenda-list::before{content:""; position:absolute; left:15px; top:6px; bottom:6px; width:1px; background:var(--line);}
+  .agenda-row{display:flex; gap:16px; padding:8px 0; align-items:flex-start;}
+  .agenda-row .dotm{flex:none; width:30px;height:30px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--ink); position:relative; z-index:1;}
+  .agenda-row p{font-size:0.94rem; color:var(--text); padding-top:5px;}
+
+  .callout{background:var(--surface); border-radius:var(--radius); padding:26px 28px; display:flex; gap:18px; align-items:flex-start;}
+  .callout .icn{flex:none; width:26px; height:26px; color:var(--gold); margin-top:2px;}
+  .callout p{color:var(--text); font-size:0.97rem; line-height:1.65;}
+
+  .module-divider{background:linear-gradient(120deg, var(--ink) 0%, #1c3568 100%); color:#fff; padding:72px 0 56px; position:relative; overflow:hidden;}
+  .module-divider::before{content:""; position:absolute; right:-140px; top:-100px; width:420px; height:420px; border-radius:50%; border:1px solid rgba(255,255,255,0.08);}
+  .module-divider .modnum{font-family:'JetBrains Mono',monospace; color:var(--gold-soft); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:16px;}
+  .module-divider h2{font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:600; max-width:760px; color:#fff;}
+  .module-divider .modsub{margin-top:14px; color:#c7d2ea; font-size:1.02rem; max-width:640px; line-height:1.6;}
+  .divider-head{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+  .divider-head .modnum{margin-bottom:0;}
+  .divider-icon{flex:none; width:34px; height:34px; color:var(--gold-soft);}
+
+  .concept-box{background:var(--surface); border-left:4px solid var(--ink); border-radius:0 8px 8px 0; padding:20px; margin:20px 0;}
+  .concept-box h4{font-size:1.05rem; color:var(--ink); margin-bottom:8px;}
+  .concept-box p{color:var(--text); font-size:0.95rem; line-height:1.6;}
+
+  .insight-box{background:var(--teal-soft); border:1px solid var(--teal); border-radius:8px; padding:20px; margin:20px 0; color:var(--ink);}
+  .insight-box .insight-tag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); font-weight:600; display:block; margin-bottom:6px;}
+  .insight-box p{font-size:0.93rem; line-height:1.55;}
+
+  .instruction-step{margin:28px 0;}
+  .instruction-step .step-num{font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:600; color:var(--gold); display:block; margin-bottom:4px;}
+  .instruction-step h4{font-size:1.1rem; color:var(--ink); margin-bottom:8px;}
+  .instruction-step ol, .instruction-step ul{color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem; margin:0;}
+
+  .code-box{background:var(--ink); color:#f0f4fc; font-family:'JetBrains Mono',monospace; font-size:0.82rem; padding:18px 20px; border-radius:10px; margin:16px 0; overflow-x:auto; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--gold);}
+  .code-box .comment{color:#7e93ba;}
+  code.inline{font-family:'JetBrains Mono',monospace; font-size:0.85em; background:var(--surface-2); padding:2px 6px; border-radius:5px; color:var(--ink);}
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .checklist li{display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:16px 18px; font-size:0.94rem; color:var(--text); line-height:1.55;}
+  .checklist li .xicn{flex:none; width:20px;height:20px; color:var(--teal); margin-top:1px;}
+
+  .block-card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:36px; margin-bottom:40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
+  .block-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:1px solid var(--line); padding-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .block-title-area h3{font-size:1.4rem; color:var(--ink); font-weight:600;}
+  .block-badge{font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px; border-radius:20px; font-weight:600;}
+  .badge-teal{background:var(--teal-soft); color:var(--teal);}
+  .badge-gold{background:var(--gold-soft); color:var(--ink);}
+
+  .value-table-wrapper{margin-top:12px; overflow-x:auto; border:1px solid var(--line); border-radius:10px;}
+  .value-table{width:100%; border-collapse:collapse; font-size:0.9rem; text-align:left;}
+  .value-table th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; padding:14px 16px;}
+  .value-table td{padding:14px 16px; border-bottom:1px solid var(--line); color:var(--text); line-height:1.5; vertical-align:top;}
+  .value-table tr:last-child td{border-bottom:none;}
+  .value-table tr:nth-child(even){background:var(--surface);}
+  .value-table strong{color:var(--ink);}
+
+  .pullquote{padding:100px 0; text-align:center;}
+  .pullquote blockquote{max-width:760px; margin:0 auto; font-family:'Fraunces',serif; font-size:clamp(1.3rem,2.6vw,1.9rem); font-weight:500; color:var(--ink); line-height:1.5;}
+  .pullquote .rule{width:44px; height:2px; background:var(--gold); margin:0 auto 30px;}
+
+  footer{background:var(--ink); color:#8fa0c4; padding:44px 0; font-size:0.82rem; font-family:'JetBrains Mono',monospace;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; row-gap:14px;}
+  footer a{color:#c7d2ea;}
+  footer a:hover{color:#fff;}
+
+  .reveal{opacity:1; transform:none;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){ .reveal{opacity:1; transform:none; transition:none;} html{scroll-behavior:auto;} }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> SISPROT · Aula Extra</div>
+  <div class="step">Instalação: VS Code, GitHub e Copilot</div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Curso · IA aplicada ao desenvolvimento de software · Aula Extra</span>
+    <h1>Preparando o Ambiente: VS Code, GitHub e GitHub Copilot</h1>
+    <p class="lede">Antes de seguir para as demais aulas do curso, é preciso ter três coisas prontas: o editor (VS Code), uma conta no GitHub e o GitHub Copilot instalado e autenticado dentro do editor. Esta aula é um guia autocontido de instalação — sem pré-requisitos além de um computador com acesso à internet.</p>
+    <div class="meta-row">
+      <div><strong>3</strong>etapas de instalação</div>
+      <div><strong>~20 min</strong>tempo estimado</div>
+      <div><strong>0 custo</strong>plano gratuito é suficiente</div>
+      <div><strong>SISPROT</strong>ambiente pronto para o curso</div>
+    </div>
+  </div>
+</header>
+
+<!-- AGENDA -->
+<section class="why reveal" id="agenda">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sobre esta aula</span>
+      <h2>Do zero ao primeiro sinal de sugestão do Copilot</h2>
+      <p class="sub">Se você já tem VS Code e conta no GitHub, pode pular direto para a Etapa 3. Caso contrário, siga as três etapas em ordem — cada uma depende da anterior.</p>
+    </div>
+    <div class="agenda-list">
+      <div class="agenda-row"><div class="dotm">01</div><p>Por que preparar o ambiente antes de começar o curso</p></div>
+      <div class="agenda-row"><div class="dotm">02</div><p>Etapa 1 — Instalando o Visual Studio Code (e o Git)</p></div>
+      <div class="agenda-row"><div class="dotm">03</div><p>Etapa 2 — Criando uma conta no GitHub</p></div>
+      <div class="agenda-row"><div class="dotm">04</div><p>Etapa 3 — Instalando e integrando o GitHub Copilot no VS Code</p></div>
+      <div class="agenda-row"><div class="dotm">05</div><p>Checklist final de verificação</p></div>
+      <div class="agenda-row"><div class="dotm">06</div><p>Links úteis: tudo o que você precisa baixar ou acessar</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Regra de ouro do curso:</strong> nunca cole dados reais ou sensíveis em nenhuma ferramenta de IA, especialmente as gratuitas. A conta GitHub criada aqui deve usar um e-mail pessoal — não use dados institucionais na criação da conta.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 1 -->
+<section class="module-divider reveal" id="etapa1">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><circle cx="6.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+      <span class="modnum">Etapa 1</span>
+    </div>
+    <h2>Instalando o Visual Studio Code</h2>
+    <p class="modsub">O editor que usaremos em todas as aulas do curso — leve, gratuito e com suporte nativo a extensões como o GitHub Copilot.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>O que é o VS Code</h4>
+      <p>O Visual Studio Code (VS Code) é um editor de código-fonte gratuito e multiplataforma, mantido pela Microsoft. Ele roda em Windows, macOS e Linux, e será a base de todo o trabalho prático do curso — inclusive da integração com o GitHub Copilot.</p>
+    </div>
+
+    <div class="block-card" style="margin-top:32px;">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Instalação</span>
+          <h3>Download e instalação do VS Code</h3>
+        </div>
+        <span class="block-badge badge-teal">~5 min</span>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 1</span>
+        <h4>Baixe o instalador</h4>
+        <ol>
+          <li>Acesse <a href="https://code.visualstudio.com/download" target="_blank" rel="noopener">code.visualstudio.com/download</a>.</li>
+          <li>O site detecta automaticamente seu sistema operacional; clique no botão de download correspondente (Windows, macOS ou Linux).</li>
+        </ol>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 2</span>
+        <h4>Execute o instalador</h4>
+        <ul>
+          <li><strong>Windows:</strong> execute o <code class="inline">.exe</code> baixado. Aceite os termos e, na tela de tarefas adicionais, marque <strong>"Adicionar ao PATH"</strong> — isso permite abrir o VS Code pelo terminal com o comando <code class="inline">code</code>.</li>
+          <li><strong>macOS:</strong> extraia o <code class="inline">.zip</code> e arraste o ícone do VS Code para a pasta <strong>Applications</strong>.</li>
+          <li><strong>Linux:</strong> instale o pacote <code class="inline">.deb</code> (Debian/Ubuntu) com <code class="inline">sudo apt install ./code_*.deb</code> ou o <code class="inline">.rpm</code> (Fedora/RHEL) com o gerenciador de pacotes da distribuição; também há build via <code class="inline">snap install code --classic</code>.</li>
+        </ul>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 3 (recomendado)</span>
+        <h4>Instale o Git</h4>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:10px;">O Git é o programa de controle de versão que o VS Code usa por trás dos panos para conversar com o GitHub (clonar, enviar e sincronizar repositórios). Sem ele, a integração com o GitHub dentro do editor fica limitada.</p>
+        <ol>
+          <li>Baixe em <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a> e instale com as opções padrão sugeridas pelo instalador.</li>
+        </ol>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 4</span>
+        <h4>Confirme a instalação</h4>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:0;">Abra um terminal (Prompt de Comando, PowerShell ou Terminal) e rode os comandos abaixo. Cada um deve responder com um número de versão:</p>
+        <div class="code-box"><span class="comment"># confirma o VS Code</span>
+code --version
+
+<span class="comment"># confirma o Git</span>
+git --version</div>
+      </div>
+    </div>
+
+    <ul class="checklist">
+      <li><span class="xicn">&#10003;</span>VS Code instalado e abre normalmente.</li>
+      <li><span class="xicn">&#10003;</span>Comando <code class="inline">code --version</code> reconhecido no terminal.</li>
+      <li><span class="xicn">&#10003;</span>Git instalado e <code class="inline">git --version</code> reconhecido no terminal.</li>
+    </ul>
+
+    <div class="insight-box">
+      <span class="insight-tag">Dica</span>
+      <p>Se o comando <code class="inline">code</code> não for reconhecido no terminal após a instalação, feche e reabra o terminal (ou o computador). No Windows, também é possível adicionar o VS Code ao PATH manualmente pela paleta de comandos: abra o VS Code, pressione <code class="inline">Ctrl+Shift+P</code> e busque por <strong>"Shell Command: Install 'code' command in PATH"</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="module-divider reveal" id="etapa2">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-3.4 4-5 7-5s5.8 1.6 7 5"/></svg>
+      <span class="modnum">Etapa 2</span>
+    </div>
+    <h2>Criando uma conta no GitHub</h2>
+    <p class="modsub">O GitHub é onde o código do curso pode ser versionado e é também a conta usada para autenticar o GitHub Copilot.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>O que é o GitHub</h4>
+      <p>O GitHub é uma plataforma de hospedagem de repositórios Git na nuvem — usada para guardar, versionar e colaborar em código. Além disso, uma conta GitHub é o único requisito para habilitar o GitHub Copilot, inclusive no plano gratuito.</p>
+    </div>
+
+    <div class="block-card" style="margin-top:32px;">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Cadastro</span>
+          <h3>Criação da conta</h3>
+        </div>
+        <span class="block-badge badge-teal">~5 min</span>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 1</span>
+        <h4>Acesse a página de cadastro</h4>
+        <ol>
+          <li>Vá até <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>.</li>
+        </ol>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 2</span>
+        <h4>Preencha os dados</h4>
+        <ol>
+          <li>Informe um e-mail pessoal válido.</li>
+          <li>Crie uma senha forte (o GitHub indica os critérios mínimos na hora do cadastro).</li>
+          <li>Escolha um nome de usuário — ele aparecerá em URLs públicas, então evite dados sensíveis.</li>
+          <li>Resolva a verificação de segurança (captcha/puzzle) apresentada na tela.</li>
+        </ol>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 3</span>
+        <h4>Confirme o e-mail e escolha o plano</h4>
+        <ol>
+          <li>Digite o código de verificação enviado ao seu e-mail.</li>
+          <li>Quando perguntado sobre o plano, escolha <strong>Free</strong> — é o suficiente para todo o curso, incluindo o uso do Copilot.</li>
+        </ol>
+      </div>
+    </div>
+
+    <ul class="checklist">
+      <li><span class="xicn">&#10003;</span>Conta criada e e-mail confirmado.</li>
+      <li><span class="xicn">&#10003;</span>Login funcionando em <a href="https://github.com/login" target="_blank" rel="noopener">github.com/login</a>.</li>
+      <li><span class="xicn">&#10003;</span>Nome de usuário e senha anotados em um local seguro.</li>
+    </ul>
+
+    <div class="insight-box">
+      <span class="insight-tag">Recomendado</span>
+      <p>Ative a autenticação em dois fatores (2FA) assim que a conta for criada, em <strong>Settings → Password and authentication</strong>. Veja o passo a passo oficial em <a href="https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa" target="_blank" rel="noopener">docs.github.com — 2FA</a>. Isso protege a conta que, a partir de agora, também autentica o Copilot.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="module-divider reveal" id="etapa3">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="modnum">Etapa 3</span>
+    </div>
+    <h2>Instalando e integrando o GitHub Copilot no VS Code</h2>
+    <p class="modsub">Com o editor instalado e a conta GitHub em mãos, falta o último passo: ligar as duas coisas através da extensão do Copilot.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>O que é o GitHub Copilot</h4>
+      <p>O GitHub Copilot é um assistente de programação com IA que sugere trechos de código diretamente no editor, com base no contexto do arquivo, e oferece um chat (Copilot Chat) para tirar dúvidas, explicar código e gerar esboços de implementação.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Sobre o custo</span>
+      <p>O GitHub oferece um plano <strong>Copilot Free</strong>, vinculado à própria conta GitHub, sem cartão de crédito — com um número limitado de sugestões e interações de chat por mês. Isso é suficiente para acompanhar este curso. Consulte os limites e planos pagos em <a href="https://github.com/features/copilot/plans" target="_blank" rel="noopener">github.com/features/copilot/plans</a>.</p>
+    </div>
+
+    <div class="block-card" style="margin-top:32px;">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Instalação e login</span>
+          <h3>Extensão, autenticação e primeiro teste</h3>
+        </div>
+        <span class="block-badge badge-teal">~10 min</span>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 1</span>
+        <h4>Instale a extensão dentro do VS Code</h4>
+        <ol>
+          <li>Abra o VS Code e a paleta de comandos com <code class="inline">Ctrl+Shift+P</code> (<code class="inline">Cmd+Shift+P</code> no Mac).</li>
+          <li>Escolha <strong>Extensões: Instalar Extensões</strong> e pesquise por <strong>GitHub Copilot</strong>.</li>
+          <li>Clique em <strong>Instalar</strong> na extensão oficial da GitHub (publisher: GitHub). Ela já inclui o Copilot Chat.</li>
+        </ol>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:10px;">Alternativa: instale diretamente pelo navegador, na página da extensão no Marketplace — <a href="https://marketplace.visualstudio.com/items?itemName=GitHub.copilot" target="_blank" rel="noopener">marketplace.visualstudio.com/.../GitHub.copilot</a> — e clique em <strong>Install</strong>, o que abre o VS Code automaticamente.</p>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 2</span>
+        <h4>Faça login com a conta GitHub</h4>
+        <ul>
+          <li>Clique no ícone de conta (silhueta de pessoa) no canto inferior esquerdo do VS Code e selecione a opção para entrar com o GitHub; <strong>ou</strong></li>
+          <li>Abra a paleta de comandos e busque por <strong>"GitHub Copilot: Sign In"</strong>.</li>
+          <li>O navegador abrirá a página de autorização do GitHub — confirme com a conta criada na Etapa 2 e conceda as permissões solicitadas.</li>
+          <li>Volte ao VS Code: o ícone do Copilot na barra de status (canto inferior direito) deve aparecer ativo.</li>
+        </ul>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 3</span>
+        <h4>Teste a primeira sugestão</h4>
+        <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:10px;">Crie um arquivo de teste qualquer (ex.: <code class="inline">teste.js</code>) e escreva um comentário de intenção. O Copilot deve sugerir o código em cinza, logo abaixo:</p>
+        <div class="code-box"><span class="comment">// função que valida um CPF</span>
+</div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:-8px;">Pressione <code class="inline">Tab</code> para aceitar a sugestão, ou <code class="inline">Esc</code> para descartá-la.</p>
+      </div>
+    </div>
+
+    <ul class="checklist">
+      <li><span class="xicn">&#10003;</span>Extensão GitHub Copilot instalada no VS Code.</li>
+      <li><span class="xicn">&#10003;</span>Login realizado e ícone do Copilot ativo na barra de status.</li>
+      <li><span class="xicn">&#10003;</span>Uma sugestão inline foi exibida e aceita com sucesso.</li>
+      <li><span class="xicn">&#10003;</span>Painel do Copilot Chat abre normalmente (ícone de chat na barra lateral).</li>
+    </ul>
+
+    <div class="callout" style="margin-top:24px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Boas práticas desde já:</strong> use o Copilot como assistente, não como autor final — revise toda sugestão antes de aceitar. Isso vale ainda mais dentro do SISPROT, o projeto do curso, onde qualidade e segurança do código são parte da avaliação.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LINKS ÚTEIS -->
+<section class="why reveal" id="links" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Referência rápida</span>
+      <h2>Links úteis</h2>
+      <p class="sub">Todos os endereços usados nesta aula, reunidos em um só lugar.</p>
+    </div>
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Link</th><th>Para que serve</th></tr></thead>
+        <tbody>
+          <tr><td><a href="https://code.visualstudio.com/download" target="_blank" rel="noopener">code.visualstudio.com/download</a></td><td>Download do VS Code (Windows, macOS, Linux).</td></tr>
+          <tr><td><a href="https://code.visualstudio.com/docs/setup/setup-overview" target="_blank" rel="noopener">code.visualstudio.com/docs/setup</a></td><td>Documentação oficial de instalação e configuração inicial.</td></tr>
+          <tr><td><a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a></td><td>Download do Git, necessário para a integração com o GitHub.</td></tr>
+          <tr><td><a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a></td><td>Criação de conta gratuita no GitHub.</td></tr>
+          <tr><td><a href="https://github.com/login" target="_blank" rel="noopener">github.com/login</a></td><td>Login em uma conta GitHub já existente.</td></tr>
+          <tr><td><a href="https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa" target="_blank" rel="noopener">docs.github.com — 2FA</a></td><td>Passo a passo para ativar a autenticação em dois fatores.</td></tr>
+          <tr><td><a href="https://github.com/features/copilot" target="_blank" rel="noopener">github.com/features/copilot</a></td><td>Página oficial do GitHub Copilot.</td></tr>
+          <tr><td><a href="https://github.com/features/copilot/plans" target="_blank" rel="noopener">github.com/features/copilot/plans</a></td><td>Planos do Copilot, incluindo o plano gratuito.</td></tr>
+          <tr><td><a href="https://marketplace.visualstudio.com/items?itemName=GitHub.copilot" target="_blank" rel="noopener">marketplace.visualstudio.com/.../GitHub.copilot</a></td><td>Página da extensão do Copilot no VS Code Marketplace.</td></tr>
+          <tr><td><a href="https://docs.github.com/copilot" target="_blank" rel="noopener">docs.github.com/copilot</a></td><td>Documentação oficial completa do GitHub Copilot.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FECHAMENTO -->
+<section class="pullquote reveal">
+  <div class="wrap" style="text-align:center;">
+    <div class="rule"></div>
+    <blockquote>Ambiente pronto: VS Code instalado, conta no GitHub criada, Copilot autenticado. A partir daqui, o curso segue com o SISPROT — todas as próximas aulas assumem que estes três itens já estão funcionando.</blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-left" style="display:flex; align-items:center; gap:14px;">
+      <span>SISPROT · Aula Extra · Instalação do ambiente</span>
+    </div>
+    <div class="footer-right"><a href="../index.html">&larr; Voltar ao índice do curso</a></div>
+  </div>
+</footer>
+
+<script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = scrolled + '%';
+  });
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  items.forEach(i => io.observe(i));
+</script>
+</body>
+</html>
