@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>SISPROT · Mock de protocolos</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 40px; color: #1A2233; }
+  h1 { margin-bottom: 20px; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #DEE2EA; padding: 10px 14px; text-align: left; font-size: 0.9rem; }
+  th { background: #0F1C36; color: #fff; font-size: 0.78rem; text-transform: uppercase; }
+  tr:nth-child(even) { background: #F3F5F9; }
+  button { font-family: inherit; font-size: 0.8rem; padding: 4px 10px; border-radius: 6px; border: 1px solid #DEE2EA; background: #fff; cursor: pointer; margin: 2px; }
+  button:hover { background: #F3F5F9; }
+</style>
+</head>
+<body>
+
+<h1>Protocolos</h1>
+<table id="tabela-protocolos">
+  <thead>
+    <tr>
+      <th>Número</th>
+      <th>Assunto</th>
+      <th>Requerente</th>
+      <th>Data de abertura</th>
+      <th>Status</th>
+      <th>Prioridade</th>
+      <th>Setor de origem</th>
+      <th>Setor atual</th>
+      <th>Histórico</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  const protocolos = [
+    { numero: "2026/000101", assunto: "Solicitação de certidão", requerente: "Ana Souza", dataAbertura: "2026-01-12", status: "Aberto", prioridade: "Média", setorOrigem: "Protocolo Geral", setorAtual: "Recepção", historico: [] },
+    { numero: "2026/000102", assunto: "Pedido de vista de processo", requerente: "Carlos Lima", dataAbertura: "2026-01-15", status: "Em Análise", prioridade: "Alta", setorOrigem: "Jurídico", setorAtual: "Jurídico", historico: [
+      { de: "Aberto", para: "Em Análise", data: "2026-01-16", setor: "Recepção" }
+    ] },
+    { numero: "2026/000103", assunto: "Recurso administrativo", requerente: "Beatriz Melo", dataAbertura: "2026-01-20", status: "Deferido", prioridade: "Alta", setorOrigem: "Jurídico", setorAtual: "Jurídico", historico: [
+      { de: "Aberto", para: "Em Análise", data: "2026-01-21", setor: "Recepção" },
+      { de: "Em Análise", para: "Deferido", data: "2026-01-25", setor: "Jurídico" }
+    ] },
+    { numero: "2026/000104", assunto: "Requerimento de baixa cadastral", requerente: "João Pedro", dataAbertura: "2026-02-01", status: "Aberto", prioridade: "Baixa", setorOrigem: "Protocolo Geral", setorAtual: "Recepção", historico: [] },
+    { numero: "2026/000105", assunto: "Pedido de cópia de documento", requerente: "Marina Alves", dataAbertura: "2026-02-05", status: "Arquivado", prioridade: "Média", setorOrigem: "Protocolo Geral", setorAtual: "Jurídico", historico: [
+      { de: "Aberto", para: "Em Análise", data: "2026-02-06", setor: "Recepção" },
+      { de: "Em Análise", para: "Indeferido", data: "2026-02-10", setor: "Jurídico" }
+    ] }
+  ];
+
+  function iniciarAnalise(index) {
+    const p = protocolos[index];
+    if (p.status !== "Aberto") return;
+    p.historico.push({ de: p.status, para: "Em Análise", data: new Date().toISOString().slice(0, 10), setor: p.setorAtual });
+    p.status = "Em Análise";
+    renderTabela();
+  }
+
+  function deferir(index) {
+    const p = protocolos[index];
+    if (p.status !== "Em Análise" || p.setorAtual !== "Jurídico") return;
+    p.historico.push({ de: p.status, para: "Deferido", data: new Date().toISOString().slice(0, 10), setor: p.setorAtual });
+    p.status = "Deferido";
+    renderTabela();
+  }
+
+  function indeferir(index) {
+    const p = protocolos[index];
+    if (p.status !== "Em Análise" || p.setorAtual !== "Jurídico") return;
+    p.historico.push({ de: p.status, para: "Indeferido", data: new Date().toISOString().slice(0, 10), setor: p.setorAtual });
+    p.status = "Indeferido";
+    renderTabela();
+  }
+
+  function renderTabela() {
+    const tbody = document.querySelector("#tabela-protocolos tbody");
+    tbody.innerHTML = "";
+    protocolos.forEach((p, index) => {
+      const tr = document.createElement("tr");
+
+      const historicoResumo = p.historico.length
+        ? p.historico.map(h => `${h.de} → ${h.para} (${h.data})`).join("<br>")
+        : "—";
+
+      let acoes = "";
+      if (p.status === "Aberto") {
+        acoes += `<button onclick="iniciarAnalise(${index})">Iniciar análise</button>`;
+      }
+      if (p.status === "Em Análise" && p.setorAtual === "Jurídico") {
+        acoes += `<button onclick="deferir(${index})">Deferir</button>`;
+        acoes += `<button onclick="indeferir(${index})">Indeferir</button>`;
+      }
+
+      tr.innerHTML = `
+        <td>${p.numero}</td>
+        <td>${p.assunto}</td>
+        <td>${p.requerente}</td>
+        <td>${p.dataAbertura}</td>
+        <td>${p.status}</td>
+        <td>${p.prioridade}</td>
+        <td>${p.setorOrigem}</td>
+        <td>${p.setorAtual}</td>
+        <td>${historicoResumo}</td>
+        <td>${acoes}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  renderTabela();
+</script>
+
+</body>
+</html>
