@@ -601,13 +601,18 @@ frameworks.
 
     <p class="copy-hint">Os dois prompts que acabamos de usar — achar o gargalo, depois corrigi-lo — seguem sempre o mesmo roteiro: primeiro diagnosticar sem corrigir, só depois aplicar a correção de um item por vez. Sempre que percebermos esse roteiro se repetindo (auditoria de qualidade, de performance, de segurança), vale empacotá-lo numa skill em vez de reescrever o prompt do zero a cada vez.</p>
 
+    <div class="concept-box">
+      <h4>Definição: Dry-run</h4>
+      <p>Um <strong>dry-run</strong> ("execução a seco") é rodar uma ação para ver o que ela faria, sem aplicar nenhuma mudança de verdade — o mesmo princípio de <code class="inline">terraform plan</code>, <code class="inline">git commit --dry-run</code> ou <code class="inline">rsync -n</code>. É esse roteiro (diagnosticar antes de corrigir) que vamos empacotar na skill abaixo: a Instrução 1 garante que a primeira resposta seja sempre um dry-run — um diagnóstico, nunca um arquivo alterado — antes de decidirmos, com o resultado em mãos, se e o que corrigir.</p>
+    </div>
+
     <div class="code-box"><span class="comment"># .claude/skills/auditoria-refatoracao/SKILL.md</span>
 
 ---
 description: Audita um arquivo em busca de problemas de qualidade, performance
   ou segurança e propõe a correção de um item por vez, sem alterar o
   comportamento observável. Usar quando pedirmos para revisar, auditar ou
-  refatorar código do SISPROT.
+  refatorar código do protocolos-mock.html.
 ---
 
 ## Instruções
@@ -619,12 +624,7 @@ description: Audita um arquivo em busca de problemas de qualidade, performance
 4. Se existirem testes (Aula 3), rode-os antes de considerar a correção concluída.</div>
     <p class="copy-hint">Salvaremos esse arquivo em <code class="inline">.claude/skills/auditoria-refatoracao/SKILL.md</code> dentro da pasta do projeto (ou em <code class="inline">~/.claude/skills/...</code>, na pasta pessoal, para usar em todos os projetos). A partir daí, pedidos como "audite este arquivo" já disparam a skill sozinhos — sem precisarmos reescrever o prompt a cada aula.</p>
 
-    <div class="concept-box">
-      <h4>Definição: Dry-run</h4>
-      <p>Um <strong>dry-run</strong> ("execução a seco") é rodar uma ação para ver o que ela faria, sem aplicar nenhuma mudança de verdade — o mesmo princípio de <code class="inline">terraform plan</code>, <code class="inline">git commit --dry-run</code> ou <code class="inline">rsync -n</code>. A Instrução 1 da skill <code class="inline">auditoria-refatoracao</code> já garante isso por padrão: a primeira resposta é sempre um diagnóstico, nunca um arquivo alterado — só a Instrução 3, depois de escolhermos o item, toca no código.</p>
-    </div>
-
-    <p class="copy-hint">Vale disparar a skill assim de propósito, mesmo sem pedir a correção depois — é uma forma barata de auditar o arquivo sem nenhum risco de alterá-lo por engano.</p>
+    <p class="copy-hint">Vale disparar a skill assim de propósito, mesmo sem pedir a correção depois — sabendo de antemão que é um dry-run, é uma forma barata de auditar o arquivo sem nenhum risco de alterá-lo por engano.</p>
 
     <div class="promptbox" style="margin-top:16px;">
 <span class="plabel">Prompt · skill em modo dry-run</span><span class="blk">[TAREFA]</span> Use a skill auditoria-refatoracao em protocolos-mock.html.
