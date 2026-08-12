@@ -620,6 +620,28 @@ description: Audita um arquivo em busca de problemas de qualidade, performance
     <p class="copy-hint">Salvaremos esse arquivo em <code class="inline">.claude/skills/auditoria-refatoracao/SKILL.md</code> dentro da pasta do projeto (ou em <code class="inline">~/.claude/skills/...</code>, na pasta pessoal, para usar em todos os projetos). A partir daí, pedidos como "audite este arquivo" já disparam a skill sozinhos — sem precisarmos reescrever o prompt a cada aula.</p>
 
     <div class="concept-box">
+      <h4>Definição: Dry-run</h4>
+      <p>Um <strong>dry-run</strong> ("execução a seco") é rodar uma ação para ver o que ela faria, sem aplicar nenhuma mudança de verdade — o mesmo princípio de <code class="inline">terraform plan</code>, <code class="inline">git commit --dry-run</code> ou <code class="inline">rsync -n</code>. A Instrução 1 da skill <code class="inline">auditoria-refatoracao</code> já garante isso por padrão: a primeira resposta é sempre um diagnóstico, nunca um arquivo alterado — só a Instrução 3, depois de escolhermos o item, toca no código.</p>
+    </div>
+
+    <p class="copy-hint">Vale disparar a skill assim de propósito, mesmo sem pedir a correção depois — é uma forma barata de auditar o arquivo sem nenhum risco de alterá-lo por engano.</p>
+
+    <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt · skill em modo dry-run</span><span class="blk">[TAREFA]</span> Use a skill auditoria-refatoracao em protocolos-mock.html.
+
+<span class="blk">[FORMATO]</span> Só o diagnóstico da Instrução 1 (dry-run). Não aplique a Instrução 3,
+mesmo que eu confirme algum item depois nesta mesma conversa.</div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Resultado esperado — dry-run (só diagnóstico, nada alterado)</span>
+      <ol style="margin:12px 0 0; padding-left:20px; display:grid; gap:8px; font-size:0.93rem;">
+        <li><strong>Qualidade:</strong> lógica duplicada em <code class="inline">iniciarAnalise</code>, <code class="inline">deferir</code> e <code class="inline">indeferir</code> — mesmos três passos repetidos (Etapa 1).</li>
+        <li><strong>Performance:</strong> <code class="inline">renderTabela()</code> reconstrói a tabela inteira a cada chamada, mesmo quando só um protocolo mudou (Etapa 2).</li>
+      </ol>
+      <p style="margin-top:10px;">Nenhuma linha de <code class="inline">protocolos-mock.html</code> muda neste passo — o arquivo no disco continua idêntico até escolhermos qual item corrigir e pedirmos isso explicitamente, num prompt separado.</p>
+    </div>
+
+    <div class="concept-box">
       <h4>Definição: Agent Skills — um padrão aberto, não só do Claude Code</h4>
       <p>As skills que criamos no Claude Code seguem o padrão aberto <strong>Agent Skills</strong> (<a href="https://agentskills.io" target="_blank" rel="noopener">agentskills.io</a>): uma pasta com um <code class="inline">SKILL.md</code> no mesmo formato, que qualquer ferramenta compatível sabe ler. O GitHub Copilot passou a suportar esse mesmo padrão (<a href="https://docs.github.com/en/copilot/concepts/agents/about-agent-skills" target="_blank" rel="noopener">docs.github.com/copilot/.../about-agent-skills</a>), lendo skills de <code class="inline">.github/skills/&lt;nome&gt;/SKILL.md</code> — e reconhece até pastas <code class="inline">.claude/skills/</code> já existentes, sem precisar duplicar nada. Uma skill bem escrita não fica presa a uma única IA.</p>
     </div>
