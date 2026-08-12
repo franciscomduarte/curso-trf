@@ -701,6 +701,63 @@ atual da tabela.
 <span class="blk">[FORMATO]</span> Primeiro a explicação do risco encontrado; depois o trecho de
 código corrigido.</div>
     <p class="copy-hint">O critério de sucesso é simples de testar: criar um protocolo com <code class="inline">assunto</code> igual a <code class="inline">&lt;img src=x onerror="alert(1)"&gt;</code> (ou algo assim), fictício, e confirmar que ele aparece como texto na tabela, não como uma execução.</p>
+
+    <p class="copy-hint">XSS é <em>Injection</em> (A03 do OWASP Top 10) — dado tratado como código. Mas o Top 10 tem outras nove categorias, e nem todas são sobre escapar HTML. A segunda vulnerabilidade de hoje é de uma categoria diferente: não é o quê foi enviado, é o <em>como</em> a ação foi disparada — e desta vez o arquivo é PHP, não o mock.</p>
+
+    <div class="concept-box">
+      <h4>Definição: Broken Access Control e CSRF</h4>
+      <p><strong>Broken Access Control</strong> (A01:2021, a categoria nº 1 do OWASP Top 10 atual) cobre qualquer falha em como um sistema decide quem pode fazer o quê — inclui, entre outras falhas, o <strong>CSRF</strong> (Cross-Site Request Forgery, CWE-352): quando uma ação que muda o estado do sistema (aprovar, arquivar, excluir) pode ser disparada por um simples link ou requisição <code class="inline">GET</code>, um atacante consegue induzir a vítima a executá-la sem querer — por exemplo, embutindo esse link numa página ou num e-mail (<a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/" target="_blank" rel="noopener">owasp.org/Top10/A01_2021-Broken_Access_Control</a>). A raiz técnica é simples de lembrar: pelo padrão HTTP, um <code class="inline">GET</code> deveria ser uma operação segura, que só lê dado — nunca deveria alterar nada (<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/GET" target="_blank" rel="noopener">developer.mozilla.org/.../Methods/GET</a>).</p>
+    </div>
+
+    <div class="callout" style="margin:20px 0;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <p><strong>É real, de novo:</strong> em <code class="inline">aula-6/codigo/index.php</code>, o botão "Arquivar" é um link comum, que dispara <code class="inline">encerrar.php</code> por <code class="inline">GET</code> — e <code class="inline">encerrar.php</code> atualiza o banco assim que é chamado, sem checar de onde veio a requisição.</p>
+    </div>
+
+    <div class="code-box"><span class="comment"># aula-6/codigo/index.php (antes)</span>
+&lt;a href="encerrar.php?id=<span style="color:var(--gold-soft);">&lt;?= $p['id'] ?&gt;</span>" onclick="return confirm('Arquivar este protocolo?');"&gt;Arquivar&lt;/a&gt;
+
+<span class="comment"># aula-6/codigo/encerrar.php (antes)</span>
+$id = <span style="color:var(--gold-soft);">$_GET['id']</span> ?? null;
+if ($id) {
+    $stmt = $pdo-&gt;prepare("UPDATE protocolos SET status = 'Arquivado' WHERE id = ?");
+    $stmt-&gt;execute([$id]);
+}</div>
+    <p class="copy-hint">O <code class="inline">confirm()</code> no <code class="inline">onclick</code> só evita clique acidental de quem já está na página — não impede uma requisição forjada vinda de outro lugar, que nunca passa por essa caixa de diálogo.</p>
+
+    <div class="promptbox">
+<span class="plabel">Prompt · auditoria de Broken Access Control</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP sênior, especialista em segurança de
+aplicações web.
+
+<span class="blk">[CONTEXTO]</span> Em index.php, o link "Arquivar" chama encerrar.php?id=X por GET.
+encerrar.php atualiza o status do protocolo direto no banco ao ser chamado.
+
+<span class="blk">[TAREFA]</span> Avalie esse fluxo contra os riscos do OWASP Top 10, com foco em
+Broken Access Control / CSRF. Se houver risco, corrija fazendo a ação passar a
+usar POST, preservando a confirmação antes de arquivar.
+
+<span class="blk">[FORMATO]</span> Primeiro a explicação do risco encontrado; depois os dois arquivos
+corrigidos.</div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Resultado esperado — depois da correção</span>
+      <div class="code-box" style="margin-top:10px;"><span class="comment"># index.php (depois)</span>
+&lt;form method="post" action="encerrar.php" style="display:inline"
+      onsubmit="return confirm('Arquivar este protocolo?');"&gt;
+  &lt;input type="hidden" name="id" value="<span style="color:var(--gold-soft);">&lt;?= $p['id'] ?&gt;</span>"&gt;
+  &lt;button type="submit"&gt;Arquivar&lt;/button&gt;
+&lt;/form&gt;
+
+<span class="comment"># encerrar.php (depois)</span>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = <span style="color:var(--gold-soft);">$_POST['id']</span> ?? null;
+    if ($id) {
+        $stmt = $pdo-&gt;prepare("UPDATE protocolos SET status = 'Arquivado' WHERE id = ?");
+        $stmt-&gt;execute([$id]);
+    }
+}</div>
+      <p style="margin-top:10px;">A ação deixa de ser disparável por um link ou por uma imagem escondida em outra página — só um formulário enviado de propósito, da própria página, aciona o arquivamento. Não elimina 100% do risco de CSRF sozinho (um token CSRF por sessão seria a defesa completa, fora do escopo deste exemplo sem login), mas já fecha o vetor mais simples: o de um <code class="inline">GET</code> que muda estado.</p>
+    </div>
   </div>
 </section>
 
@@ -752,6 +809,7 @@ $stmt-&gt;execute(<span style="color:var(--gold-soft);">[$numero, $assunto, $req
       <li><span class="xicn">&#10003;</span>Toda consulta SQL usa parâmetros (<code class="inline">?</code>) em vez de concatenar valores na string.</li>
       <li><span class="xicn">&#10003;</span>Todo dado que veio do usuário passa por <code class="inline">htmlspecialchars()</code> (PHP) ou é inserido como texto, não HTML (JavaScript), antes de aparecer na tela.</li>
       <li><span class="xicn">&#10003;</span>Mensagens de erro não revelam detalhes internos (nome de tabela, versão do banco) que ajudariam um ataque.</li>
+      <li><span class="xicn">&#10003;</span>Ações que alteram o estado do sistema (aprovar, arquivar, excluir) usam POST, nunca GET — o exemplo de Broken Access Control/CSRF da Etapa 3.</li>
       <li><span class="xicn">&#10003;</span>Pedir à IA, no prompt, para "revisar contra os riscos mais comuns antes de finalizar" — o mesmo espírito do <strong>Chain-of-Verification</strong> da Aula 3 (rascunhar, levantar perguntas de verificação, responder cada uma isoladamente e só então corrigir — <a href="https://arxiv.org/abs/2309.11495" target="_blank" rel="noopener">arxiv.org/abs/2309.11495</a>), aplicado a segurança.</li>
     </ul>
 
