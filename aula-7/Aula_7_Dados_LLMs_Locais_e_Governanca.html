@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 7 · Dados Sensíveis, LLMs Locais e Governança de IA · SISPROT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#0F1C36">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1C36;
+    --ink-2:#16274a;
+    --paper:#FFFFFF;
+    --surface:#F3F5F9;
+    --surface-2:#EAEDF3;
+    --line:#DEE2EA;
+    --text:#1A2233;
+    --text-muted:#5B6478;
+    --gold:#B8892B;
+    --gold-soft:#E9D9B4;
+    --teal:#0E7C7B;
+    --teal-soft:#D6ECEB;
+    --radius:14px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; color-scheme:light only; background:#FFFFFF;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    margin:0;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;line-height:1.6;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  section{padding:96px 0;}
+  @media (max-width:640px){ section{padding:64px 0;} .wrap{padding:0 20px;} }
+
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px;
+    background:rgba(15,28,54,0.88);
+    backdrop-filter:blur(8px);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:600;}
+  .topbar .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .topbar .step{color:#9fb0d1;}
+  @media (max-width:640px){
+    .topbar{padding:12px 20px;}
+    .topbar .step{display:none;}
+  }
+  #progress{
+    position:fixed; top:0; left:0; height:2px; background:var(--gold); z-index:60; width:0%;
+    transition:width .1s linear;
+  }
+
+  .hero{
+    background:radial-gradient(120% 140% at 78% -10%, #1c3568 0%, var(--ink) 55%, #0a1428 100%);
+    color:#fff;
+    padding:180px 0 120px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; right:-180px; top:-120px;
+    width:640px; height:640px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-60px; top:60px;
+    width:420px; height:420px;
+    border-radius:50%;
+    border:1px solid rgba(184,137,43,0.22);
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero .eyebrow{color:var(--gold-soft); margin-bottom:22px; display:block;}
+  .hero h1{font-size:clamp(2.1rem, 4.6vw, 3.6rem); font-weight:600; max-width:760px;}
+  .hero .lede{
+    margin-top:26px; font-size:1.15rem; color:#c7d2ea; max-width:620px; line-height:1.65;
+  }
+  .hero .meta-row{
+    margin-top:52px; display:flex; gap:36px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:#8fa0c4;
+  }
+  .hero .meta-row strong{color:#fff; display:block; font-family:'Fraunces',serif; font-size:1.3rem; font-weight:600; margin-bottom:2px;}
+
+  .sec-head{max-width:680px; margin-bottom:52px;}
+  .sec-head .eyebrow{display:block; margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem); font-weight:600; color:var(--ink);}
+  .sec-head .sub{margin-top:14px; color:var(--text-muted); font-size:1.03rem;}
+
+  .why{background:var(--surface);}
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:800px){ .why-grid{grid-template-columns:1fr;} }
+  .why-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 26px;
+  }
+  .why-card .tag{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:14px;}
+  .why-card h3{font-size:1.15rem; font-weight:600; color:var(--ink); margin-bottom:10px;}
+  .why-card p{color:var(--text-muted); font-size:0.96rem;}
+
+  .shift .grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .shift .grid{grid-template-columns:1fr;} }
+  .shift-card{border-radius:var(--radius); padding:30px 28px; border:1px solid var(--line);}
+  .shift-card.old{background:var(--surface);}
+  .shift-card.new{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .shift-card h3{font-size:1.05rem; margin-bottom:12px;}
+  .shift-card.old h3{color:var(--ink);}
+  .shift-card.new h3{color:var(--gold-soft);}
+  .shift-card p{font-size:0.96rem; color:var(--text-muted); line-height:1.65;}
+  .shift-card.new p{color:#c7d2ea;}
+
+  .callout{
+    background:var(--surface); border-radius:var(--radius); padding:26px 28px;
+    display:flex; gap:18px; align-items:flex-start;
+  }
+  .callout .icn{flex:none; width:26px; height:26px; color:var(--gold); margin-top:2px;}
+  .callout p{color:var(--text); font-size:0.97rem; line-height:1.65;}
+
+  .pullquote{padding:100px 0; text-align:center;}
+  .pullquote blockquote{
+    max-width:760px; margin:0 auto; font-family:'Fraunces',serif; font-size:clamp(1.3rem,2.6vw,1.9rem);
+    font-weight:500; color:var(--ink); line-height:1.5;
+  }
+  .pullquote .rule{width:44px; height:2px; background:var(--gold); margin:0 auto 30px;}
+  footer{background:var(--ink); color:#8fa0c4; padding:44px 0; font-size:0.82rem; font-family:'JetBrains Mono',monospace;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; row-gap:14px;}
+
+  .reveal{opacity:1; transform:none;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  .agenda-list{position:relative; margin-top:12px;}
+  .agenda-list::before{content:""; position:absolute; left:15px; top:6px; bottom:6px; width:1px; background:var(--line);}
+  .agenda-row{display:flex; gap:16px; padding:8px 0; align-items:flex-start;}
+  .agenda-row .dotm{flex:none; width:30px;height:30px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--ink); position:relative; z-index:1;}
+  .agenda-row p{font-size:0.94rem; color:var(--text); padding-top:5px;}
+
+  .module-divider{
+    background:linear-gradient(120deg, var(--ink) 0%, #1c3568 100%); color:#fff;
+    padding:72px 0 56px; position:relative; overflow:hidden;
+  }
+  .module-divider::before{content:""; position:absolute; right:-140px; top:-100px; width:420px; height:420px; border-radius:50%; border:1px solid rgba(255,255,255,0.08);}
+  .module-divider .modnum{font-family:'JetBrains Mono',monospace; color:var(--gold-soft); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:16px;}
+  .module-divider h2{font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:600; max-width:760px; color:#fff;}
+  .module-divider .modsub{margin-top:14px; color:#c7d2ea; font-size:1.02rem; max-width:640px; line-height:1.6;}
+
+  .anatomy-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:800px){ .anatomy-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .anatomy-grid{grid-template-columns:1fr;} }
+  .anatomy-card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px 20px;}
+  .anatomy-card .anum{font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gold); letter-spacing:0.1em; display:block; margin-bottom:10px;}
+  .anatomy-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px;}
+  .anatomy-card p{font-size:0.88rem; color:var(--text-muted); line-height:1.55;}
+
+  .tech-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:700px){ .tech-grid{grid-template-columns:1fr;} }
+  .tech-card{border:1px solid var(--line); border-radius:12px; padding:22px 22px; background:var(--paper);}
+  .tech-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .tech-card .tnum{
+    flex:none; width:26px;height:26px; border-radius:50%; background:var(--ink); color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; display:flex; align-items:center; justify-content:center;
+  }
+  .tech-card p{font-size:0.9rem; color:var(--text-muted); line-height:1.6;}
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .checklist li{
+    display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line);
+    border-radius:10px; padding:16px 18px; font-size:0.94rem; color:var(--text); line-height:1.55;
+  }
+  .checklist li .xicn{flex:none; width:20px;height:20px; color:var(--teal); margin-top:1px;}
+
+  .callout-alert{ background:var(--ink); color:#fff; border-radius:var(--radius); padding:28px 26px; margin-top:24px; }
+  .callout-alert .eyebrow{color:var(--gold-soft); display:block; margin-bottom:10px;}
+  .callout-alert p{color:#dce3f2; font-size:0.95rem; line-height:1.68;}
+</style>
+<style>
+  /* complementos desta aula (padrão reaproveitado das aulas do projeto) */
+  a{color:var(--teal); text-decoration:underline; text-underline-offset:2px; font-weight:600;}
+  a:hover{color:var(--ink);}
+  .promptbox{background:var(--ink); color:#e8edf6; border-radius:12px; padding:20px 22px; margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; line-height:1.7; white-space:pre-wrap; overflow-x:auto;}
+  .promptbox .plabel{display:block; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:12px; font-weight:600;}
+  .promptbox .blk{color:var(--gold-soft); font-weight:600;}
+  .copy-hint{margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted);}
+  code.inline{font-family:'JetBrains Mono',monospace; font-size:0.85em; background:var(--surface-2); padding:2px 6px; border-radius:5px; color:var(--ink);}
+
+  .block-card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:36px; margin-bottom:40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
+  .block-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:1px solid var(--line); padding-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .block-title-area h3{font-size:1.4rem; color:var(--ink); font-weight:600;}
+  .block-badge{font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px; border-radius:20px; font-weight:600;}
+  .badge-teal{background:var(--teal-soft); color:var(--teal);}
+  .badge-gold{background:var(--gold-soft); color:var(--ink);}
+
+  .concept-box{background:var(--surface); border-left:4px solid var(--ink); border-radius:0 8px 8px 0; padding:20px; margin:20px 0;}
+  .concept-box h4{font-size:1.05rem; color:var(--ink); margin-bottom:8px;}
+  .concept-box p{color:var(--text); font-size:0.95rem; line-height:1.6;}
+
+  .insight-box{background:var(--teal-soft); border:1px solid var(--teal); border-radius:8px; padding:20px; margin:20px 0; color:var(--ink);}
+  .insight-box .insight-tag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); font-weight:600; display:block; margin-bottom:6px;}
+  .insight-box p{font-size:0.93rem; line-height:1.55;}
+
+  .instruction-step{margin:28px 0;}
+  .instruction-step .step-num{font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:600; color:var(--gold); display:block; margin-bottom:4px;}
+  .instruction-step h4{font-size:1.1rem; color:var(--ink); margin-bottom:8px;}
+
+  .code-box{background:var(--ink); color:#f0f4fc; font-family:'JetBrains Mono',monospace; font-size:0.82rem; padding:18px 20px; border-radius:10px; margin:16px 0; overflow-x:auto; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--gold);}
+  .code-box .comment{color:#7e93ba;}
+
+  .value-table-wrapper{margin-top:28px; overflow-x:auto; border:1px solid var(--line); border-radius:10px;}
+  .value-table{width:100%; border-collapse:collapse; font-size:0.9rem; text-align:left;}
+  .value-table th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; padding:14px 16px;}
+  .value-table td{padding:14px 16px; border-bottom:1px solid var(--line); color:var(--text); line-height:1.5; vertical-align:top;}
+  .value-table tr:last-child td{border-bottom:none;}
+  .value-table tr:nth-child(even){background:var(--surface);}
+  .value-table strong{color:var(--ink);}
+
+  /* --- elementos visuais (ícones, diagramas, fotos) --- */
+  .icon-badge{
+    display:inline-flex; align-items:center; justify-content:center; flex:none;
+    width:38px; height:38px; border-radius:50%; background:var(--ink); color:#fff;
+  }
+  .icon-badge svg{width:20px; height:20px;}
+  .icon-badge.gold{background:var(--gold-soft); color:var(--ink);}
+  .icon-badge.teal{background:var(--teal-soft); color:var(--teal);}
+  .icon-badge.sm{width:26px; height:26px;}
+  .icon-badge.sm svg{width:14px; height:14px;}
+
+  .legend-row{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:18px;}
+  .legend-chip{display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text);}
+
+  .acard-head{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .acard-head h3{margin:0;}
+  .anatomy-card .anum{display:none;}
+
+  .concept-box > summary{display:flex; align-items:center; gap:14px; cursor:pointer; list-style:none;}
+  .concept-box > summary::-webkit-details-marker{display:none;}
+  .concept-box > summary h4{margin:0; flex:1;}
+  .concept-box > summary .chev{flex:none; width:18px; height:18px; color:var(--text-muted); transition:transform .2s ease;}
+  .concept-box[open] > summary .chev{transform:rotate(180deg);}
+  .concept-box > p{margin-top:14px;}
+
+  .divider-head{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+  .divider-head .modnum{margin-bottom:0;}
+  .divider-icon{flex:none; width:34px; height:34px; color:var(--gold-soft);}
+
+  .diagram-frame{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:24px; margin:24px 0; overflow-x:auto;}
+  .diagram-frame svg{width:100%; height:auto; display:block;}
+  .diagram-frame .diagram-caption{margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted); text-align:center;}
+  .diagram-pair{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .diagram-pair{grid-template-columns:1fr;} }
+  .diagram-pair .diagram-frame{margin:0; height:100%;}
+
+  .photo-frame{
+    width:100%; aspect-ratio:4/3; border-radius:14px;
+    background:linear-gradient(135deg, var(--surface), rgba(184,137,43,0.08));
+    border:1px dashed var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--text-muted); font-size:0.85rem; padding:24px; text-align:center; gap:10px;
+    margin:24px 0;
+  }
+  .photo-frame.wide{aspect-ratio:16/9;}
+  .photo-frame .pf-icon{width:40px; height:40px; color:var(--gold);}
+  .photo-frame .pf-label{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted);}
+  .photo-frame.has-img{padding:0; border:1px solid var(--line); border-style:solid; overflow:hidden;}
+  .photo-frame.has-img img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  .demo-head-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:28px; align-items:center; margin:44px 0 20px;}
+  @media (max-width:800px){ .demo-head-grid{grid-template-columns:1fr;} }
+
+  .quiz-legend{font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin:14px 0;}
+  .quiz-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:16px;}
+  .quiz-input{font-family:'JetBrains Mono',monospace; font-size:0.9rem; padding:10px 14px; border:1px solid var(--line); border-radius:8px; width:220px; letter-spacing:0.1em; text-transform:uppercase;}
+  .quiz-btn{font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600; padding:10px 18px; border-radius:8px; border:none; background:var(--ink); color:#fff; cursor:pointer;}
+  .quiz-btn:hover{background:var(--ink-2);}
+  .quiz-msg{margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; min-height:1.2em;}
+  .quiz-gabarito{display:none; margin-top:16px;}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> SISPROT · Aula 7</div>
+  <div class="step">Dados, LLMs Locais e Governança</div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Curso · IA aplicada ao desenvolvimento de software · Aula 7</span>
+    <h1>Dados Sensíveis, LLMs Locais e Governança de IA no Setor Público</h1>
+    <p class="lede">Desde a Aula 0, uma regra de ouro atravessou o curso inteiro: nunca colar dado real ou sensível numa IA externa. Hoje explicamos essa regra por completo — o que a LGPD diz sobre isso, quando um modelo local resolve o problema, e o que a governança federal já exige de qualquer projeto público que use IA.</p>
+    <div class="meta-row">
+      <div><strong>7</strong>de 10 aulas</div>
+      <div><strong>1</strong>lei federal</div>
+      <div><strong>1</strong>portaria de governança</div>
+      <div><strong>SISPROT</strong>· dados sob perspectiva de conformidade</div>
+    </div>
+  </div>
+</header>
+
+<!-- AGENDA -->
+<section class="why reveal" id="agenda">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sobre esta aula</span>
+      <h2>A regra de ouro, explicada até o fim</h2>
+      <p class="sub">"Nunca cole dado real ou sensível numa IA" foi repetido em toda aula deste curso, sem detalhar o porquê. Hoje detalhamos: o que a lei considera dado pessoal, como reduzir o risco sem abrir mão da IA, quando vale rodar um modelo na própria máquina, e o que já é exigido de órgãos públicos.</p>
+    </div>
+    <div class="agenda-list">
+      <div class="agenda-row"><div class="dotm">01</div><p>LGPD: o que pode e o que não pode ir para uma IA externa</p></div>
+      <div class="agenda-row"><div class="dotm">02</div><p>Anonimização e minimização de dados</p></div>
+      <div class="agenda-row"><div class="dotm">03</div><p>LLMs locais e de código aberto</p></div>
+      <div class="agenda-row"><div class="dotm">04</div><p>Governança de IA na administração pública</p></div>
+      <div class="agenda-row"><div class="dotm">05</div><p>Encarregado de dados e avaliação de risco (RIPD)</p></div>
+      <div class="agenda-row"><div class="dotm">06</div><p>Mão na massa: anonimizar antes de perguntar</p></div>
+      <div class="agenda-row"><div class="dotm">07</div><p>Desafio final: um checklist de governança para o SISPROT</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Regra de ouro do curso, agora explicada:</strong> os exemplos de todas as aulas usaram números de protocolo, nomes e setores fictícios não por excesso de cuidado — é o comportamento que a LGPD e a governança federal esperam de qualquer servidor lidando com IA.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 1 -->
+<section class="module-divider reveal" id="etapa1">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span class="modnum">Etapa 1</span>
+    </div>
+    <h2>LGPD: o que pode e o que não pode</h2>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: dado pessoal (LGPD)</h4>
+      <p>A Lei Geral de Proteção de Dados (Lei 13.709/2018) define dado pessoal como qualquer informação relacionada a uma pessoa natural identificada ou identificável (<a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">camara.leg.br/legin/.../lei-13709</a>, Art. 5º, I). Nome, CPF e endereço são exemplos — dados pessoais "comuns", mas dado pessoal ainda assim. Até um número de protocolo pode virar dado pessoal se, combinado com outra informação, permitir identificar alguém.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: dado pessoal sensível (LGPD)</h4>
+      <p>Uma categoria à parte, com regime de proteção mais restritivo: dado sobre origem racial ou étnica, convicção religiosa, opinião política, filiação a sindicato ou a organização de caráter religioso, filosófico ou político, dado referente à saúde ou à vida sexual, dado genético ou biométrico (Art. 5º, II, mesma lei). <strong>Nem todo dado pessoal é sensível</strong> — CPF, nome e endereço são dados pessoais comuns, não entram nessa lista — mas todo dado sensível é pessoal, e exige cuidado redobrado.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: base legal de tratamento (Art. 7º)</h4>
+      <p>Saber que algo é dado pessoal não basta — a LGPD também exige uma <strong>base legal</strong> para tratá-lo: uma das dez hipóteses do Art. 7º. Duas são as mais comuns no serviço público: o inciso <strong>III</strong>, tratamento pela administração pública "para a execução de políticas públicas previstas em leis e regulamentos ou respaldadas em contratos, convênios ou instrumentos congêneres"; e o inciso <strong>VI</strong>, tratamento necessário ao "exercício regular de direitos em processo judicial, administrativo ou arbitral". No TRF1, essa distinção é concreta: os dados das partes de um <em>processo judicial</em> são tratados com base no inciso VI — decorrem da própria função jurisdicional, não de um consentimento que alguém poderia negar; já um pedido administrativo de um servidor (licença, diária, cadastro) se apoia no inciso III, desde que previsto em norma interna. Nenhum dos dois depende do titular "autorizar".</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: base legal para dado sensível (Art. 11)</h4>
+      <p>Para dado sensível, a lista de bases legais é mais curta e mais rígida — o Art. 11 <strong>não repete</strong> hipóteses do Art. 7º como legítimo interesse, execução de contrato ou proteção de crédito. Sem consentimento específico e destacado do titular, só resta o indispensável para cumprir obrigação legal, executar política pública, exercer direito em processo, proteger a vida, ou questões de saúde — sempre com a palavra "indispensável", não "conveniente". É a mesma lógica da tabela anterior, agora com base no texto da lei: quanto mais sensível o dado, menos motivos válidos existem para tratá-lo sem pedir para o titular.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Campo de um protocolo</th><th>É dado pessoal?</th><th>Pode ir para IA externa (gratuita)?</th></tr></thead>
+        <tbody>
+          <tr><td>Nome completo do requerente</td><td>Sim (comum)</td><td>Não, sem anonimizar</td></tr>
+          <tr><td>CPF</td><td>Sim (comum)</td><td>Não, sem anonimizar — forte identificador, mesmo não sendo "sensível" no sentido técnico da lei</td></tr>
+          <tr><td>Endereço completo</td><td>Sim (comum)</td><td>Não, sem anonimizar</td></tr>
+          <tr><td>Menção a condição de saúde (ex.: "licença médica" no campo assunto)</td><td>Sim (sensível)</td><td>Não, em nenhuma hipótese sem necessidade e salvaguarda específica</td></tr>
+          <tr><td>Número do protocolo</td><td>Depende do contexto</td><td>Geralmente sim, isoladamente</td></tr>
+          <tr><td>Status, data de abertura, setor</td><td>Não</td><td>Sim</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Por que isso importa para quem escreve prompt</span>
+      <p>Todo exemplo deste curso já seguia essa tabela sem nomeá-la: "Ana Souza", "2026/000101" e datas fictícias no lugar de dados reais. A partir de hoje, ao decidir o que colar num prompt, a pergunta certa é "este campo identifica alguém, e é sensível?" — não "parece sensível?". CPF assusta mais visualmente, mas tecnicamente é a mesma categoria de nome e endereço; um campo de assunto mencionando saúde, que ninguém pensaria em esconder, é o que carrega a proteção mais rígida da lei.</p>
+    </div>
+
+    <div class="callout" style="margin:20px 0;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <p><strong>Aconteceu de verdade, com servidores públicos:</strong> em 2023, a ANPD sancionou o IAMSPE (Instituto de Assistência Médica ao Servidor Público Estadual de SP) depois de um incidente que expôs dados pessoais — incluindo dados de saúde, o mesmo tipo "sensível" da linha acima — de milhões de servidores estaduais e seus dependentes. A autoridade concluiu duas falhas: sistemas sem segurança adequada (art. 49 da LGPD) e falha em notificar os afetados a tempo e de forma clara (art. 48). Por ser órgão público, a penalidade foi advertência, não multa — mas com prazo para corrigir e publicar aviso aos titulares. <a href="https://www.gov.br/anpd/pt-br/assuntos/noticias/anpd-conclui-processo-sancionador-contra-orgao-publico" target="_blank" rel="noopener">gov.br/anpd</a>.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: regras específicas do Poder Público (Art. 23)</h4>
+      <p>Além da base legal do Art. 7º, órgãos públicos têm exigências próprias: tratar dado pessoal só para finalidade pública, informar as hipóteses de tratamento e a finalidade em local de fácil acesso, e ter um <strong>encarregado de dados nomeado</strong> (a Aula 6 já tratou desse papel). Isso não é hipotético neste curso: o próprio TRF1 já cumpre esse artigo publicamente — mantém uma página de LGPD com FAQ e encarregado designado, em <a href="https://www.trf1.jus.br/trf1/lgpd/lgpd" target="_blank" rel="noopener">trf1.jus.br/trf1/lgpd</a>. Vale abrir essa página com a turma: é a mesma exigência legal desta etapa, já em produção, no órgão de quem está na sala.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Ponte para a Etapa 2: dado anonimizado sai do jogo</span>
+      <p>Uma última peça, antes de seguir: dado verdadeiramente anonimizado <strong>deixa de ser dado pessoal</strong> para os fins da LGPD (Art. 12) — desde que a anonimização não possa ser revertida com esforço razoável. Toda a discussão de base legal desta etapa (Art. 7º, Art. 11, Art. 23) só se aplica enquanto o dado continua identificando alguém. É por isso que anonimizar, tema da próxima etapa, não é só "mais prudente" — é sair inteiramente do escopo da lei.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício A · individual · 10 min</span>
+      <h4>Correlacionar oito campos</h4>
+      <p style="color:var(--text-muted);">Sem IA, só com o que acabamos de ver: para cada item abaixo, decidiremos se é <strong>C</strong> (dado pessoal comum), <strong>S</strong> (dado pessoal sensível), ou <strong>N</strong> (não é dado pessoal) — depois digitaremos a sequência das 8 letras, na ordem, para destravar o gabarito.</p>
+      <div class="quiz-legend"><strong>C</strong> = dado pessoal comum &nbsp;·&nbsp; <strong>S</strong> = dado pessoal sensível &nbsp;·&nbsp; <strong>N</strong> = não é dado pessoal</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:6px;">
+        <li>Telefone celular informado no cadastro do requerente.</li>
+        <li>Menção, no campo de observações, a participação em culto religioso durante o período de licença.</li>
+        <li>Informação de que o servidor é filiado ao Sindicato dos Servidores Públicos Federais.</li>
+        <li>Setor de tramitação atual do protocolo (ex.: "Recursos Humanos").</li>
+        <li>Impressão digital anexada para autenticação biométrica do requerente.</li>
+        <li>Prioridade do protocolo (Alta/Média/Baixa).</li>
+        <li>Nome da mãe do requerente, usado para confirmação de identidade.</li>
+        <li>Menção a exame de HIV realizado pelo requerente, anexado ao processo.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaA" class="quiz-input" placeholder="ex.: CSSNSNCS" maxlength="20">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaA','CSSNSNCS','gabaritoA','msgA')">Verificar sequência</button>
+      </div>
+      <p id="msgA" class="quiz-msg"></p>
+      <div id="gabaritoA" class="quiz-gabarito">
+        <div class="value-table-wrapper">
+          <table class="value-table">
+            <thead><tr><th>Item</th><th>Classificação</th><th>Por quê</th></tr></thead>
+            <tbody>
+              <tr><td>1. Telefone celular</td><td>C — Comum</td><td>Identifica a pessoa, mas não está na lista do Art. 5º, II.</td></tr>
+              <tr><td>2. Participação em culto religioso</td><td>S — Sensível</td><td>Convicção religiosa é uma das categorias explícitas do Art. 5º, II.</td></tr>
+              <tr><td>3. Filiação sindical</td><td>S — Sensível</td><td>Também está explícita no Art. 5º, II — a categoria mais esquecida pela turma, geralmente.</td></tr>
+              <tr><td>4. Setor de tramitação</td><td>N — Não é dado pessoal</td><td>Não identifica uma pessoa específica, sozinho.</td></tr>
+              <tr><td>5. Impressão digital</td><td>S — Sensível</td><td>Dado biométrico — categoria explícita do Art. 5º, II.</td></tr>
+              <tr><td>6. Prioridade do protocolo</td><td>N — Não é dado pessoal</td><td>Atributo do processo, não da pessoa.</td></tr>
+              <tr><td>7. Nome da mãe</td><td>C — Comum</td><td>Identifica pessoas, mas não é nenhuma das categorias sensíveis da lei.</td></tr>
+              <tr><td>8. Exame de HIV</td><td>S — Sensível</td><td>Dado de saúde — categoria explícita do Art. 5º, II.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="copy-hint">Reparem: 4 dos 8 itens são sensíveis, e cobrem 4 categorias diferentes (religião, sindicato, biométrico, saúde) — não só saúde, que costuma ser a única lembrada.</p>
+      </div>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício B · individual · 10 min</span>
+      <h4>Correlacionar um trecho curto</h4>
+      <p style="color:var(--text-muted);">Leremos o memorando fictício abaixo, depois correlacionaremos cada trecho destacado (a-d) com C, S ou N — a sequência de 4 letras destrava o gabarito.</p>
+      <div style="background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:20px 22px; margin-top:14px; font-style:italic; color:var(--text); line-height:1.7; font-size:0.95rem;">
+        "MEMORANDO Nº 118/2026 — Setor de Pessoal. Informamos que <strong>(a) a servidora Beatriz Nogueira Almeida, matrícula 33.109-7, CPF 234.567.890-11</strong>, solicitou afastamento de 15 dias para <strong>(b) tratamento de saúde mental, com acompanhamento psicológico continuado</strong>. A servidora também comunicou <strong>(c) ser testemunha de Jeová e solicitou que eventuais comunicados evitem datas de guarda religiosa</strong>. O pedido foi registrado sob <strong>(d) o protocolo 2026/009981, atualmente no setor de Perícia Médica</strong>."
+      </div>
+      <div class="quiz-legend" style="margin-top:16px;"><strong>C</strong> = dado pessoal comum &nbsp;·&nbsp; <strong>S</strong> = dado pessoal sensível &nbsp;·&nbsp; <strong>N</strong> = não é dado pessoal</div>
+      <div class="quiz-row" style="margin-top:0;">
+        <input type="text" id="respostaB" class="quiz-input" placeholder="ex.: CSSN" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaB','CSSN','gabaritoB','msgB')">Verificar sequência</button>
+      </div>
+      <p id="msgB" class="quiz-msg"></p>
+      <div id="gabaritoB" class="quiz-gabarito">
+        <ul class="checklist">
+          <li><span class="xicn">&#10003;</span><strong>(a) Comum:</strong> nome, matrícula e CPF — identificam a servidora, mas não são categoria sensível.</li>
+          <li><span class="xicn">&#10003;</span><strong>(b) Sensível (saúde):</strong> "tratamento de saúde mental" — dado referente à saúde, Art. 5º, II.</li>
+          <li><span class="xicn">&#10003;</span><strong>(c) Sensível (religião):</strong> "testemunha de Jeová" — convicção religiosa, mesma categoria do Art. 5º, II.</li>
+          <li><span class="xicn">&#10003;</span><strong>(d) Não é dado pessoal:</strong> número do protocolo e setor, isolados — não identificam ninguém sozinhos (mas, combinados com o resto do memorando, ajudam a apontar pra mesma pessoa — vale essa reflexão com a turma).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício C · individual · 10 min</span>
+      <h4>Correlacionar a base legal</h4>
+      <p style="color:var(--text-muted);">Agora não é sobre classificar o dado — é sobre identificar <em>por que</em> o tratamento é permitido. Para cada cenário, decidiremos qual base legal se aplica.</p>
+      <div class="quiz-legend"><strong>P</strong> = política pública, Art. 7º, III &nbsp;·&nbsp; <strong>J</strong> = exercício de direito em processo, Art. 7º, VI &nbsp;·&nbsp; <strong>S</strong> = base para dado sensível, Art. 11</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:6px;">
+        <li>O TRF1 trata nome e CPF de uma parte para instruir um processo judicial em andamento.</li>
+        <li>O setor de pessoal trata dados de um servidor para conceder férias, com base em norma interna de gestão de pessoal.</li>
+        <li>Uma perícia médica do Tribunal acessa dado de saúde de um servidor para avaliar um pedido de licença médica.</li>
+        <li>O Tribunal mantém dados de uma testemunha para eventual nova oitiva, enquanto o processo não transita em julgado.</li>
+        <li>O setor de pessoal registra a filiação sindical de um servidor, informada por ele mesmo, para fins de desconto em folha — com consentimento específico e destacado.</li>
+        <li>O sistema de protocolo administrativo registra a abertura de um pedido de certidão, com base em regulamento interno do Tribunal.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaC" class="quiz-input" placeholder="ex.: JPSJSP" maxlength="12">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaC','JPSJSP','gabaritoC','msgC')">Verificar sequência</button>
+      </div>
+      <p id="msgC" class="quiz-msg"></p>
+      <div id="gabaritoC" class="quiz-gabarito">
+        <div class="value-table-wrapper">
+          <table class="value-table">
+            <thead><tr><th>Cenário</th><th>Base legal</th><th>Por quê</th></tr></thead>
+            <tbody>
+              <tr><td>1. Dados da parte no processo</td><td>J — Art. 7º, VI</td><td>Decorre do exercício regular de direito em processo judicial, não de consentimento.</td></tr>
+              <tr><td>2. Férias do servidor</td><td>P — Art. 7º, III</td><td>Política pública de gestão de pessoal, prevista em norma interna.</td></tr>
+              <tr><td>3. Perícia médica</td><td>S — Art. 11</td><td>Dado de saúde é sensível — precisa de uma das hipóteses restritas do Art. 11, aqui a tutela da saúde.</td></tr>
+              <tr><td>4. Dados da testemunha</td><td>J — Art. 7º, VI</td><td>Mesma base do item 1 — função jurisdicional, processo ainda em curso.</td></tr>
+              <tr><td>5. Filiação sindical com consentimento</td><td>S — Art. 11</td><td>Dado sensível (Art. 5º, II) — aqui a base é o consentimento específico e destacado, primeira hipótese do Art. 11.</td></tr>
+              <tr><td>6. Pedido de certidão</td><td>P — Art. 7º, III</td><td>Política pública/administrativa, respaldada em regulamento interno.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="copy-hint">Reparem que os itens 3 e 5 chegam à mesma letra (S) por caminhos diferentes dentro do Art. 11 — uma por tutela da saúde, outra por consentimento específico. "Base legal" não é uma escolha única por tipo de dado, é uma análise por situação.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="module-divider reveal" id="etapa2">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9.5 9.5 3 21l7.5-3L21 9l-9-9-8 8z"/><path d="M14 3l7 7"/></svg>
+      <span class="modnum">Etapa 2</span>
+    </div>
+    <h2>Anonimização e minimização</h2>
+    <p class="modsub">Duas técnicas para continuar usando IA sem expor quem não precisa ser exposto.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: anonimização e minimização (LGPD)</h4>
+      <p><strong>Anonimizar</strong> é usar meios técnicos razoáveis para que um dado perca a possibilidade de associação, direta ou indireta, a um indivíduo (Art. 5º, XI, Lei 13.709/2018) — a pessoa deixa de ser identificável, mas a informação continua utilizável. <strong>Minimizar</strong> é limitar o tratamento ao mínimo necessário para a finalidade, com dados pertinentes, proporcionais e não excessivos (Art. 6º, III — princípio da necessidade). São técnicas diferentes: minimizar é <em>não enviar</em> o que não precisa; anonimizar é <em>enviar sem identificar</em> o que precisa estar lá.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:24px;">
+      <span class="step-num">Caso 1 · minimização</span>
+      <h4>Quando o dado nem precisava estar no prompt</h4>
+    </div>
+    <div class="diagram-pair" style="margin-top:12px;">
+      <div class="promptbox" style="margin:0;">
+<span class="plabel">Antes · dado real, sem necessidade</span>Revise a formatação deste protocolo:
+Número: 2026/004821
+Requerente: Maria Aparecida da Silva Santos, CPF 123.456.789-00
+Endereço: Rua das Acácias, 245, Bairro Jardim, Cidade X
+Assunto: Solicitação de segunda via de certidão
+Status: Em Análise</div>
+      <div class="promptbox" style="margin:0;">
+<span class="plabel">Depois · minimizado</span>Revise a formatação deste registro (a tarefa é só sobre formatação, não
+precisa dos dados do requerente):
+Número: 2026/004821
+Assunto: Solicitação de segunda via de certidão
+Status: Em Análise</div>
+    </div>
+    <p class="copy-hint">A tarefa era só revisar formatação — nome, CPF e endereço nunca foram necessários para ela. Minimizar aqui não é "cortar por cautela", é perceber que aqueles campos nunca deveriam ter entrado no prompt.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Caso 2 · anonimização</span>
+      <h4>Quando a tarefa precisa da pessoa, só não do nome dela</h4>
+    </div>
+    <div class="diagram-pair" style="margin-top:12px;">
+      <div class="promptbox" style="margin:0;">
+<span class="plabel">Antes · nome real, necessário para comparar</span>Estes três protocolos foram abertos pela mesma pessoa? Compare a grafia
+do nome do requerente em cada um:
+Protocolo 2026/004821: "João da Silva Pereira"
+Protocolo 2026/004822: "João S. Pereira"
+Protocolo 2026/004825: "J. da Silva Pereira"</div>
+      <div class="promptbox" style="margin:0;">
+<span class="plabel">Depois · anonimizado, mas ainda comparável</span>Estes três registros foram abertos pela mesma pessoa? Compare a grafia
+do nome do requerente em cada um:
+Registro A: "João da Silva Pereira"
+Registro B: "João S. Pereira"
+Registro C: "J. da Silva Pereira"</div>
+    </div>
+    <p class="copy-hint">Aqui minimizar (remover o nome) quebraria a tarefa — ela é sobre comparar grafias de nome. A anonimização troca o identificador real (número do protocolo, que aponta para uma pessoa real) por um rótulo (A, B, C) sem relação com ela, preservando exatamente o que a tarefa precisa comparar.</p>
+
+    <div class="callout" style="margin:20px 0;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <p><strong>Aconteceu de verdade, no ano passado:</strong> em 3 de janeiro de 2025, o e-commerce do Grupo Sabin (não os sistemas clínicos/de exames) sofreu um ataque cibernético que expôs nome, CPF, e-mail, telefone, data de nascimento e dados de nota fiscal de clientes — sem exames nem dado bancário, segundo a empresa. O Sabin notificou a ANPD, como a LGPD exige em incidentes desse tipo (Art. 48). É um exemplo de dado pessoal <em>comum</em>, não sensível, mas ainda assim disparando dever legal de notificação — minimizar o que se guarda e o que se compartilha reduz o que existe para vazar, mesmo quando não é dado sensível. <a href="https://securityleaders.com.br/grupo-sabin-e-atingido-por-incidente-cibernetico/" target="_blank" rel="noopener">securityleaders.com.br</a>.</p>
+    </div>
+
+    <div class="callout" style="margin:20px 0;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <p><strong>Aconteceu de verdade, fora do setor público:</strong> em 2023, engenheiros da Samsung colaram código-fonte proprietário e anotações internas de reunião no ChatGPT, em pelo menos três ocasiões, para tarefas que não precisavam desses dados — o conteúdo saiu do controle da empresa assim que foi enviado. Não é um caso de LGPD (é segredo comercial, não dado pessoal), mas é o mesmo erro de minimização: colar o dado real quando uma versão reduzida resolveria a tarefa igual. <a href="https://incidentdatabase.ai/cite/768/" target="_blank" rel="noopener">incidentdatabase.ai/cite/768</a>.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício D · individual · 10 min</span>
+      <h4>Escolher a técnica certa</h4>
+      <p style="color:var(--text-muted);">Nem toda tarefa pede a mesma técnica. Para cada cenário, decidiremos: <strong>M</strong> (precisa minimizar — tirar campo desnecessário), <strong>A</strong> (precisa anonimizar — a tarefa exige distinguir pessoas, mas não os nomes reais), ou <strong>F</strong> (fica bem do jeito que está — nenhuma técnica é necessária).</p>
+      <div class="quiz-legend"><strong>M</strong> = minimizar &nbsp;·&nbsp; <strong>A</strong> = anonimizar &nbsp;·&nbsp; <strong>F</strong> = fica bem, nenhuma técnica necessária</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:6px;">
+        <li>Resumir o texto de uma norma pública — nenhum dado de processo envolvido.</li>
+        <li>Revisar a formatação de um protocolo, mas o prompt inclui nome, CPF e endereço do requerente, que a formatação não usa.</li>
+        <li>Comparar se dois protocolos foram abertos pela mesma pessoa, olhando a grafia do nome do requerente em cada um.</li>
+        <li>Contar quantos protocolos estão com status "Em Análise" há mais de 5 dias, usando só datas e status.</li>
+        <li>Resumir o histórico de tramitação de um processo, distinguindo os dois requerentes envolvidos, sem usar nomes reais.</li>
+        <li>Pedir ajuda para redigir um e-mail de resposta padrão a um requerente — mas o rascunho enviado incluía o endereço completo dele, que o e-mail não menciona.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaD" class="quiz-input" placeholder="ex.: FMAFAM" maxlength="12">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaD','FMAFAM','gabaritoD','msgD')">Verificar sequência</button>
+      </div>
+      <p id="msgD" class="quiz-msg"></p>
+      <div id="gabaritoD" class="quiz-gabarito">
+        <div class="value-table-wrapper">
+          <table class="value-table">
+            <thead><tr><th>Cenário</th><th>Técnica</th><th>Por quê</th></tr></thead>
+            <tbody>
+              <tr><td>1. Resumir norma pública</td><td>F</td><td>Não há dado pessoal em jogo — nada para minimizar ou anonimizar.</td></tr>
+              <tr><td>2. Formatação com CPF/endereço</td><td>M</td><td>A tarefa é só formatação — nome, CPF e endereço nunca precisavam estar no prompt.</td></tr>
+              <tr><td>3. Comparar grafia de nomes</td><td>A</td><td>A tarefa depende do nome para comparar — minimizar quebraria; anonimizar (rótulos) preserva a comparação.</td></tr>
+              <tr><td>4. Contar protocolos por status</td><td>F</td><td>Já usa só campos não-pessoais (data, status) — nada a mudar.</td></tr>
+              <tr><td>5. Distinguir requerentes sem nomes reais</td><td>A</td><td>Precisa diferenciar pessoas, mas não precisa saber quem elas são — caso clássico de anonimização.</td></tr>
+              <tr><td>6. E-mail com endereço desnecessário</td><td>M</td><td>O e-mail não menciona o endereço — ele nunca deveria ter entrado no prompt.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="copy-hint">O critério é sempre o mesmo: "a tarefa muda se eu tirar isso?" — se não muda, é F ou M (dependendo se o campo é ou não dado pessoal); se muda, mas o nome em si não precisa aparecer, é A.</p>
+      </div>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício E · individual · 10 min</span>
+      <h4>Achar o erro em prompts prontos</h4>
+      <p style="color:var(--text-muted);">Seis prompts já escritos — alguns já aplicam minimização/anonimização corretamente, outros ainda têm dado desnecessário ou identificável demais. Para cada um: <strong>O</strong> (ok, sem problema) ou <strong>E</strong> (tem erro, precisa ajustar).</p>
+      <div class="quiz-legend"><strong>O</strong> = ok, sem problema &nbsp;·&nbsp; <strong>E</strong> = tem erro, precisa ajustar</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem; margin-top:6px;">
+        <li>"Resuma este protocolo em uma frase: Protocolo 2026/005512, Requerente: Carlos Eduardo Nunes, CPF 111.222.333-44, Assunto: pedido de segunda via, Status: Deferido."</li>
+        <li>"Revise a redação deste texto: 'Prezado(a) requerente, seu pedido protocolo 2026/007733 foi deferido.'"</li>
+        <li>"Compare a grafia dos nomes destes três registros do mesmo suspeito de duplicidade: Registro A: 'Ana Paula Ferreira Costa'; Registro B: 'A. P. F. Costa'; Registro C: 'Ana P. Costa'."</li>
+        <li>"Sugira uma correção de formatação para esta tabela: Nome: João Batista Almeida Neto | CPF: 222.333.444-55 | Endereço: Rua Nove, 88 | Status: Aberto."</li>
+        <li>"Verifique se este histórico de tramitação está em ordem cronológica: 12/01 Aberto → 15/01 Em Análise → 20/01 Deferido."</li>
+        <li>"Identifique se as observações abaixo, de dois processos diferentes, tratam do mesmo requerente: Processo X: 'Solicitante mora na Rua das Palmeiras, 42, tel (61) 98888-1234'; Processo Y: 'Requerente reside na mesma rua das Palmeiras, telefone terminado em 1234'."</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaE" class="quiz-input" placeholder="ex.: EOOEOE" maxlength="12">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaE','EOOEOE','gabaritoE','msgE')">Verificar sequência</button>
+      </div>
+      <p id="msgE" class="quiz-msg"></p>
+      <div id="gabaritoE" class="quiz-gabarito">
+        <ul class="checklist">
+          <li><span class="xicn">&#10003;</span><strong>1. Erro:</strong> nome e CPF não são necessários para resumir assunto e status — falta minimizar.</li>
+          <li><span class="xicn">&#10003;</span><strong>2. Ok:</strong> só o número do protocolo, sem dado pessoal do requerente.</li>
+          <li><span class="xicn">&#10003;</span><strong>3. Ok:</strong> o nome aparece porque a tarefa precisa comparar grafias — mas o identificador do protocolo já foi trocado por rótulos (A, B, C), como no Caso 2 desta etapa.</li>
+          <li><span class="xicn">&#10003;</span><strong>4. Erro:</strong> nome, CPF e endereço não ajudam numa sugestão de formatação de tabela — sobrou dado que devia ter sido minimizado.</li>
+          <li><span class="xicn">&#10003;</span><strong>5. Ok:</strong> só datas e status, nenhum dado pessoal.</li>
+          <li><span class="xicn">&#10003;</span><strong>6. Erro:</strong> a tarefa só precisa saber <em>se</em> é a mesma pessoa — endereço e telefone completos não precisavam aparecer; rótulos ou uma descrição genérica ("mesmo endereço, mesmo final de telefone") resolveriam igual, anonimizados.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício F · individual · 10 min</span>
+      <h4>Foi longe demais?</h4>
+      <p style="color:var(--text-muted);">Os Exercícios D e E cobraram proteger o suficiente. Este é o erro oposto — <strong>proteger demais</strong> e quebrar a tarefa, o mesmo risco já citado nas "Dificuldades comuns" do Exercício 1 da Mão na massa. Para cada par tarefa + versão já "protegida", diremos: <strong>V</strong> (viável — a versão protegida ainda cumpre a tarefa) ou <strong>Q</strong> (quebrou — foi longe demais e a tarefa não dá mais para responder).</p>
+      <div class="quiz-legend"><strong>V</strong> = viável, a tarefa ainda funciona &nbsp;·&nbsp; <strong>Q</strong> = quebrou, foi longe demais</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem; margin-top:6px;">
+        <li>Tarefa: "revisar a formatação deste protocolo". Versão protegida: removeu nome e CPF do requerente, manteve número, assunto e status.</li>
+        <li>Tarefa: "gerar um e-mail padrão avisando que o protocolo foi deferido, citando o número para o requerente conferir". Versão protegida: removeu nome, CPF <em>e também o número do protocolo</em>.</li>
+        <li>Tarefa: "estes dois registros foram abertos pela mesma pessoa? Compare a grafia do nome". Versão protegida: removeu o nome dos dois registros, sem substituir por nenhum rótulo.</li>
+        <li>Tarefa: "contar quantos protocolos estão em cada status". Versão protegida: manteve só a coluna de status, removeu todo o resto.</li>
+        <li>Tarefa: "resumir o histórico de tramitação, distinguindo os dois requerentes envolvidos". Versão protegida: trocou os nomes reais por "Requerente 1" e "Requerente 2", de forma consistente do início ao fim.</li>
+        <li>Tarefa: "esta reclamação recebida é sobre o mesmo assunto de um protocolo já existente?". Versão protegida: removeu o texto do campo "assunto" dos dois lados antes de perguntar.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaF" class="quiz-input" placeholder="ex.: VQQVVQ" maxlength="12">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaF','VQQVVQ','gabaritoF','msgF')">Verificar sequência</button>
+      </div>
+      <p id="msgF" class="quiz-msg"></p>
+      <div id="gabaritoF" class="quiz-gabarito">
+        <ul class="checklist">
+          <li><span class="xicn">&#10003;</span><strong>1. Viável:</strong> formatação não depende de nome/CPF — a remoção não afeta a tarefa.</li>
+          <li><span class="xicn">&#10003;</span><strong>2. Quebrou:</strong> o e-mail precisa citar o número do protocolo — removê-lo também tira exatamente o dado que a tarefa pedia para incluir.</li>
+          <li><span class="xicn">&#10003;</span><strong>3. Quebrou:</strong> sem o nome nem um rótulo no lugar, não sobra nada para comparar — minimizar aqui era o erro; precisava ser anonimizado (rótulo), não apagado.</li>
+          <li><span class="xicn">&#10003;</span><strong>4. Viável:</strong> contar por status só precisa da coluna de status — nada mais fazia falta.</li>
+          <li><span class="xicn">&#10003;</span><strong>5. Viável:</strong> anonimização bem feita — os rótulos consistentes preservam a distinção entre as duas pessoas, sem revelar quem são.</li>
+          <li><span class="xicn">&#10003;</span><strong>6. Quebrou:</strong> a pergunta é justamente sobre o conteúdo do assunto — removê-lo tira o único dado que permitiria responder.</li>
+        </ul>
+        <p class="copy-hint">Repare: os itens 3 e 6 "quebraram" por motivos diferentes de proteção excessiva — um removeu o identificador sem substituto (devia ter sido anonimizado, não minimizado), o outro removeu o próprio conteúdo que a pergunta precisava avaliar. "Proteger demais" nem sempre é o mesmo erro duas vezes.</p>
+      </div>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício G · individual · 10 min</span>
+      <h4>Reescrever anonimizando</h4>
+      <p style="color:var(--text-muted);">Agora não é para classificar — é para reescrever de verdade, como nos Casos 1 e 2 desta etapa. O prompt abaixo tem dado real e desnecessário misturado com dado que a tarefa realmente precisa comparar.</p>
+      <div class="promptbox" style="margin-top:14px;">
+<span class="plabel">Prompt original</span>Preciso saber se os protocolos abaixo, abertos em datas diferentes, foram
+feitos pela mesma pessoa — compare os dados dos requerentes:
+
+Protocolo 2026/003311: Requerente Francisco das Chagas Oliveira,
+CPF 555.666.777-88, telefone (61) 97777-2222
+Protocolo 2026/003350: Requerente F. Chagas Oliveira,
+telefone terminado em 2222
+Protocolo 2026/003399: Requerente Francisco C. Oliveira,
+mesmo telefone da primeira solicitação</div>
+      <p style="color:var(--text-muted); margin-top:14px;">Reescreveremos esse prompt aplicando minimização (o que dá para tirar) e anonimização (o que precisa ficar, mas sem apontar pra um protocolo real específico) ao mesmo tempo.</p>
+      <details style="margin-top:14px;">
+        <summary style="cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text-muted);">Ver versão de referência</summary>
+        <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Versão de referência</span>Preciso saber se os registros abaixo, abertos em datas diferentes, foram
+feitos pela mesma pessoa — compare os dados:
+
+Registro A: nome "Francisco das Chagas Oliveira", telefone terminado em 2222
+Registro B: nome "F. Chagas Oliveira", telefone terminado em 2222
+Registro C: nome "Francisco C. Oliveira", mesmo telefone do Registro A</div>
+        <p class="copy-hint">O CPF sumiu (minimização — a tarefa nunca precisou dele). Os números de protocolo viraram rótulos A/B/C (anonimização — a tarefa precisa comparar registros, não localizar um protocolo específico). O nome e o telefone continuam, porque são exatamente o que a tarefa pede para comparar.</p>
+      </details>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício H · individual · 10 min</span>
+      <h4>Reescrever anonimizando (2)</h4>
+      <p style="color:var(--text-muted);">Mesmo exercício, cenário diferente — desta vez a tarefa também depende do horário de cada pedido, não só do nome.</p>
+      <div class="promptbox" style="margin-top:14px;">
+<span class="plabel">Prompt original</span>Preciso saber se estes três protocolos indicam um padrão de pedidos
+recorrentes da mesma pessoa em curto espaço de tempo:
+
+Protocolo 2026/004410, requerente Juliana Andrade Ribeiro,
+CPF 333.222.111-00, aberto em 02/03/2026 às 09h00.
+Protocolo 2026/004411, requerente Juliana A. Ribeiro,
+aberto em 02/03/2026 às 09h15.
+Protocolo 2026/004412, requerente J. Andrade Ribeiro,
+aberto em 02/03/2026 às 09h40.</div>
+      <p style="color:var(--text-muted); margin-top:14px;">Mesma tarefa de reescrever — repare no que precisa ficar desta vez, já que a pergunta não é só sobre nome.</p>
+      <details style="margin-top:14px;">
+        <summary style="cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text-muted);">Ver versão de referência</summary>
+        <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Versão de referência</span>Preciso saber se estes três registros indicam um padrão de pedidos
+recorrentes da mesma pessoa em curto espaço de tempo:
+
+Registro 1, nome "Juliana Andrade Ribeiro", horário 09h00.
+Registro 2, nome "Juliana A. Ribeiro", horário 09h15.
+Registro 3, nome "J. Andrade Ribeiro", horário 09h40.</div>
+        <p class="copy-hint">O CPF saiu de novo (minimização). Os números de protocolo viraram "Registro 1/2/3" (anonimização). Mas, diferente do Exercício G, o <strong>horário</strong> teve que ficar — a tarefa é sobre "curto espaço de tempo", e sem os horários essa pergunta não tem como ser respondida.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="module-divider reveal" id="etapa3">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+      <span class="modnum">Etapa 3</span>
+    </div>
+    <h2>LLMs locais e de código aberto</h2>
+    <p class="modsub">Quando o dado não pode sair da máquina, a IA que precisa ir até ele.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: LLM local</h4>
+      <p>Um modelo de linguagem de código aberto, baixado e executado na própria infraestrutura (seu computador ou um servidor do órgão), sem enviar nada para um serviço externo. Ferramentas como o <a href="https://ollama.com/" target="_blank" rel="noopener">Ollama</a> empacotam esse processo: baixar, rodar e gerenciar modelos abertos localmente, sem chave de API e sem cobrança por token.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: transferência internacional de dados (LGPD)</h4>
+      <p>A maioria das IAs em nuvem mais usadas (Claude, GPT, Gemini) é hospedada por empresas fora do Brasil — enviar dado pessoal para elas pode configurar transferência internacional de dados, só permitida em hipóteses específicas do Art. 33 da LGPD: decisão de adequação da ANPD sobre o país, garantias contratuais oferecidas pelo controlador (cláusulas-padrão, normas corporativas), ou consentimento específico e destacado do titular informando o caráter internacional da operação (<a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">camara.leg.br/legin/.../lei-13709</a>). Não é automaticamente ilegal — mas é uma exigência de conformidade real, raramente cumprida quando alguém só "cola no ChatGPT". Um LLM local elimina essa pergunta inteira: o dado nunca sai do país, nem da máquina.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Critério</th><th>LLM local (ex.: Ollama)</th><th>IA em nuvem (Claude, GPT etc.)</th></tr></thead>
+        <tbody>
+          <tr><td>Dado sai da máquina?</td><td>Não</td><td>Sim</td></tr>
+          <tr><td>Custo por uso</td><td>Só energia/hardware</td><td>Por token ou assinatura</td></tr>
+          <tr><td>Qualidade típica</td><td>Boa, mas geralmente atrás dos melhores modelos de nuvem</td><td>Estado da arte</td></tr>
+          <tr><td>Funciona offline?</td><td>Sim</td><td>Não</td></tr>
+          <tr><td>Hardware / download</td><td>GPU ajuda, mas não é obrigatória — Ollama roda 100% em CPU; como referência, o próprio projeto já documentou cerca de 8 GB de RAM para modelos na faixa de 7-8B parâmetros. O modelo <code class="inline">llama3:8b</code> (padrão) tem 4,7 GB de download.</td><td>Não — roda no navegador/terminal, sem instalar nada</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Além do Ollama</span>
+      <h4>Ollama não é a única opção</h4>
+      <p style="color:var(--text-muted);">É a mais citada por ser simples de instalar, mas existem outras ferramentas para rodar um modelo aberto na própria máquina — cada uma pensada para um perfil diferente de usuário.</p>
+    </div>
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Ferramenta</th><th>Para quem</th><th>Recursos mínimos</th></tr></thead>
+        <tbody>
+          <tr><td><a href="https://lmstudio.ai/" target="_blank" rel="noopener">LM Studio</a></td><td>Interface gráfica "um clique" — sem terminal, a mais próxima de instalar um programa comum.</td><td>16 GB de RAM recomendados (8 GB em Mac funciona, com limitações). GPU opcional — CPU sozinha já roda. Windows, macOS (Apple Silicon) e Linux.</td></tr>
+          <tr><td><a href="https://www.nomic.ai/gpt4all" target="_blank" rel="noopener">GPT4All</a></td><td>Interface gráfica simples, foco em começar a usar rápido, sem configuração.</td><td>16 GB de RAM (8 GB só serve para modelos bem pequenos, na faixa de 3B). GPU opcional. Windows 10, Ubuntu 22.04+ ou macOS Monterey+ — sem suporte a CPU ARM no Windows/Linux.</td></tr>
+          <tr><td><a href="https://jan.ai/" target="_blank" rel="noopener">Jan</a></td><td>Alternativa de código 100% aberto às duas acima, com interface parecida com um app de chat comum.</td><td>8 GB de RAM mínimo (16 GB recomendado), 10 GB de disco livre. GPU opcional (6 GB de VRAM, se usar). Windows e Linux.</td></tr>
+          <tr><td><a href="https://github.com/oobabooga/text-generation-webui" target="_blank" rel="noopener">text-generation-webui</a></td><td>Interface para usuário avançado — múltiplos modelos, ajuste fino do modelo.</td><td>~10 GB de disco para a instalação completa. RAM varia muito por modelo (de ~2,6 GB a mais de 27 GB rodando só em CPU). GPU opcional — tem build oficial só-CPU. Windows, macOS e Linux.</td></tr>
+          <tr><td><a href="https://localai.io/" target="_blank" rel="noopener">LocalAI</a></td><td>Servidor que imita a API de ferramentas de nuvem, mas rodando local — para quem já tem um sistema integrado com uma IA em nuvem e quer só trocar o destino.</td><td>Sem mínimo numérico oficial de RAM/disco — a documentação diz que varia pelo modelo escolhido. GPU não é necessária (roda em hardware comum). Docker, macOS, Linux — sem instalador nativo pra Windows.</td></tr>
+          <tr><td><a href="https://github.com/vllm-project/vllm" target="_blank" rel="noopener">vLLM</a></td><td>Não é para uma pessoa só — serve várias pessoas ao mesmo tempo a partir de um servidor, o tipo de escolha que um órgão faria para toda uma equipe, não uma máquina individual.</td><td>GPU praticamente obrigatória no caminho principal (placas NVIDIA/AMD específicas, ex.: T4, A100, RTX 20xx+). Existe um modo só-CPU documentado, mas é o caminho secundário. Linux é o sistema nativo — sem suporte oficial a Windows.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Por baixo da maioria dessas ferramentas — inclusive do Ollama — está o mesmo motor, o <a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noopener">llama.cpp</a>: a diferença entre elas é a experiência em volta dele, não o que roda por dentro. Os números de RAM/disco vêm da documentação oficial de cada ferramenta — quando ela não publica um mínimo exato (caso do LocalAI), preferi dizer isso a inventar um número.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Sem instalar nada sozinho</span>
+      <h4>Dá para contratar, não só baixar</h4>
+      <p style="color:var(--text-muted);">Para um órgão que não quer que ninguém precise instalar nada manualmente, os grandes fornecedores já vendem infraestrutura de IA local ou "soberana" (rodando até sem internet), com suporte formal.</p>
+    </div>
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Empresa</th><th>Oferta</th><th>Pré-requisito mínimo</th></tr></thead>
+        <tbody>
+          <tr><td>Microsoft</td><td><a href="https://blogs.microsoft.com/blog/2026/02/24/microsoft-sovereign-cloud-adds-governance-productivity-and-support-for-large-ai-models-securely-running-even-when-completely-disconnected/" target="_blank" rel="noopener">Azure Local</a>, com operação "soberana" mesmo totalmente desconectado da internet.</td><td>1 servidor físico já é uma implantação válida (2, para ter redundância básica). Hardware precisa vir da lista de equipamentos certificados (Dell, HPE, Lenovo etc.) — não é "qualquer servidor". Exige uma assinatura Azure ativa para o registro inicial; não existe modo 100% offline desde o primeiro dia.</td></tr>
+          <tr><td>NVIDIA</td><td><a href="https://www.nvidia.com/en-us/ai-data-science/products/nim-microservices/" target="_blank" rel="noopener">NIM + AI Enterprise</a>, em hardware certificado instalado no próprio órgão.</td><td>Não exige comprar um DGX — roda em qualquer servidor da lista "NVIDIA-Certified Systems" (Cisco, Dell, HPE, Lenovo, Supermicro) com pelo menos uma GPU de datacenter suportada (H100, L40S, A100 etc.). Exige assinatura do software NVIDIA AI Enterprise para suporte.</td></tr>
+          <tr><td>IBM</td><td><a href="https://www.ibm.com/new/product-blog/ibm-and-vmware-help-enterprises-adopt-generative-ai-with-watsonx-on-premises" target="_blank" rel="noopener">watsonx.ai on-premises</a>.</td><td>Exige um cluster Red Hat OpenShift como base — não é vendido isolado. Pode vir pronto no appliance Fusion HCI da IBM ou rodar num OpenShift já certificado que o órgão já tenha; o dimensionamento exato depende da carga de trabalho.</td></tr>
+          <tr><td>Google</td><td><a href="https://cloud.google.com/distributed-cloud-air-gapped" target="_blank" rel="noopener">Google Distributed Cloud</a> (air-gapped).</td><td>A própria Google fala em "a partir de quatro racks" para uma configuração de produção. Não tem catálogo de autoatendimento — a contratação passa por negociação direta com o time de vendas.</td></tr>
+          <tr><td>AWS</td><td><a href="https://aws.amazon.com/blogs/compute/build-rag-powered-ai-solutions-at-the-edge-with-aws-local-zones-and-outposts/" target="_blank" rel="noopener">Outposts</a> — traz a infraestrutura da AWS para dentro do órgão (é infraestrutura genérica, não um pacote de IA pronto).</td><td>Os modelos menores (servidor 1U/2U) saíram de linha para novas vendas. Hoje a entrada é o Outposts Rack: mínimo 1 rack de computação + 1 rack de rede, com compromisso de contrato de 1 ou 3 anos — o equipamento continua sendo da AWS.</td></tr>
+          <tr><td>Meta</td><td>Não vende o serviço de implantação — o Llama é aberto (baixar e rodar por conta própria); quem implanta para uma empresa são parceiros como AWS, IBM, Dell e a própria NVIDIA.</td><td>Nenhum — a Meta não impõe mínimo de hardware; o pré-requisito é ter (ou contratar de um parceiro) GPU suficiente para o tamanho do modelo escolhido.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Nenhuma dessas contratações é necessária para o SISPROT ou para este curso — mas vale um órgão saber que "modelo local" não significa obrigatoriamente "cada servidor instala algo sozinho no seu computador". Os pré-requisitos vêm da documentação oficial de cada fornecedor — quando não há um número fechado (caso do IBM), preferi dizer isso a inventar um.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Quando local compensa</span>
+      <p>Vale considerar um LLM local quando o dado é sensível e não pode sair da máquina de jeito nenhum, quando o volume de uso tornaria caro pagar por token, ou quando não há garantia de internet. Para o dia a dia deste curso (exemplos fictícios, tarefas pontuais), a nuvem continua sendo o caminho mais simples — a decisão muda quando o dado real entra em cena.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 4 -->
+<section class="module-divider reveal" id="etapa4">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 3 6v6c0 5 4 9 9 10 5-1 9-5 9-10V6z"/></svg>
+      <span class="modnum">Etapa 4</span>
+    </div>
+    <h2>Governança de IA na administração pública</h2>
+    <p class="modsub">Já existe regra federal para isso — e ela chegou em 2026.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: Portaria MGI nº 3.485/2026</h4>
+      <p>Publicada em 28/04/2026, institui a Política de Governança de Inteligência Artificial no âmbito do Ministério da Gestão e da Inovação em Serviços Públicos (MGI) — princípios, diretrizes e responsabilidades para desenvolvimento, aquisição e uso de aplicações de IA na administração pública (<a href="https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/abril/mgi-institui-politica-de-governanca-de-inteligencia-artificial-no-ambito-do-ministerio" target="_blank" rel="noopener">gov.br/gestao</a>). Entrou em vigor 60 dias após a publicação.</p>
+    </div>
+
+    <div class="anatomy-grid" style="margin-top:28px;">
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 6v6c0 5 4 9 9 10 5-1 9-5 9-10V6z"/></svg></span><h3>Princípios</h3></div>
+        <p>Transparência, proteção de dados, segurança da informação e respeito aos direitos fundamentais no uso de IA.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span><h3>Estrutura</h3></div>
+        <p>Alta administração, Comitê de Governança Digital e Segurança da Informação (CGDSI), e o Subcomitê de Inteligência Artificial (SCIA) — instituído pela Resolução CGDSI/MGI nº 14/2025 —, além dos responsáveis por segurança, tecnologia, dados e controle interno.</p>
+      </div>
+      <div class="anatomy-card">
+        <div class="acard-head"><span class="icon-badge" style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1rem;">$</span><h3>Riscos e custos</h3></div>
+        <p>Custo por token, risco de vazamento de dados, dependência de fornecedor externo, qualidade variável entre ferramentas — tudo isso vira parte da decisão formal, não só técnica.</p>
+      </div>
+    </div>
+
+    <ul class="checklist" style="margin-top:24px;">
+      <li><span class="xicn">&#10003;</span><strong>Restrição de dado em IA generativa (art. 16):</strong> só informação pública, salvo avaliação prévia de risco — dado sigiloso, pessoal ou pessoal sensível é vedado por padrão. É a mesma tabela da Etapa 1, agora em norma.</li>
+      <li><span class="xicn">&#10003;</span><strong>Supervisão humana proporcional ao risco (art. 5º, III e art. 6º):</strong> capacidade de monitorar e corrigir a decisão da IA, com nível de supervisão maior quanto maior o risco a direitos ou bens públicos — não é "revisar tudo igual", é calibrar o esforço pelo risco.</li>
+      <li><span class="xicn">&#10003;</span><strong>Revisão crítica obrigatória (art. 15, V):</strong> todo conteúdo gerado por IA passa por revisão antes de qualquer divulgação, decisão ou uso administrativo — o "diagnosticar antes de aceitar" de todo este curso, agora exigência formal.</li>
+      <li><span class="xicn">&#10003;</span><strong>Responsabilidade pessoal (art. 15, III):</strong> cada servidor responde pela informação que compartilha com a IA — a decisão de colar ou não um dado não é "culpa da ferramenta".</li>
+      <li><span class="xicn">&#10003;</span><strong>Transparência de uso (art. 15, IV):</strong> registrar o uso de IA nos produtos resultantes — quem ler um documento deve conseguir saber que uma IA participou da sua produção.</li>
+      <li><span class="xicn">&#10003;</span><strong>Capacitação (art. 17):</strong> três trilhas formais — letramento para usuários finais, para gestores, e capacitação técnica para quem desenvolve com IA.</li>
+    </ul>
+
+    <div class="insight-box">
+      <span class="insight-tag">O que isso muda na prática</span>
+      <p>Para um servidor escrevendo prompts, a governança formaliza o que este curso já vinha praticando: decidir com critério o que enviar, para qual ferramenta, e documentar essa decisão — não é burocracia extra, é a mesma disciplina de "spec antes do prompt" (Aula 1) aplicada à escolha da própria ferramenta de IA.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 5 -->
+<section class="module-divider reveal" id="etapa5">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 3 6v6c0 5 4 9 9 10 5-1 9-5 9-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      <span class="modnum">Etapa 5</span>
+    </div>
+    <h2>Encarregado de dados e avaliação de risco</h2>
+    <p class="modsub">Quem responde pela proteção de dados no órgão, e como avaliar o risco antes de usar IA em algo real.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: Encarregado de Dados (DPO)</h4>
+      <p>A LGPD exige que todo controlador — inclusive órgão público — "indique encarregado pelo tratamento de dados pessoais" (Art. 41, caput), com identidade e contato divulgados publicamente (§1º). As atribuições legais são específicas: receber e responder reclamações de titulares, receber comunicações da ANPD, orientar funcionários e contratados sobre proteção de dados, e outras que o controlador definir (§2º). Para o Poder Público, a indicação é obrigatória por força do Art. 23, III — a dispensa prevista no §3º do Art. 41 vale para pequenos agentes privados, não para órgãos públicos (<a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">camara.leg.br/legin/.../lei-13709</a>). A ANPD publica um <a href="https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/copy_of_guia_da_atuacao_do_encarregado_anpd.pdf" target="_blank" rel="noopener">Guia da Atuação do Encarregado</a> detalhando o papel.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: RIPD (Relatório de Impacto à Proteção de Dados)</h4>
+      <p>RIPD é a sigla de "Relatório de Impacto à Proteção de Dados Pessoais" — o equivalente, na LGPD, a uma análise de risco antes de colocar algo em produção: um documento que descreve os processos de tratamento de dados pessoais capazes de gerar risco a direitos fundamentais, junto com as medidas e salvaguardas para mitigar esse risco (Art. 5º, XVII). A ANPD pode exigir esse relatório de qualquer controlador a qualquer momento (Art. 38). O conteúdo mínimo exigido por lei é curto — só três pontos: os tipos de dado coletados, a metodologia de tratamento e segurança, e a análise do próprio controlador sobre os riscos e como mitigá-los. Na prática, a própria ANPD recomenda uma estrutura bem mais completa — cerca de 12 seções, da identificação dos agentes de tratamento até a aprovação final —, mas o que a lei exige como piso continua sendo só esses três pontos (<a href="https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/relatorio-de-impacto-a-protecao-de-dados-pessoais-ripd" target="_blank" rel="noopener">gov.br/anpd</a>). O Ministério da Gestão publicou um <a href="https://www.gov.br/governodigital/pt-br/privacidade-e-seguranca/ppsi-2.0/arquivos/guia-para-elaboracao-de-ripds-v0-1-31072026.pdf" target="_blank" rel="noopener">Guia para Elaboração de RIPDs</a> voltado a órgãos públicos, com modelo pronto para adaptar.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">RIPD é obrigatório para todo uso de IA?</span>
+      <p>Sendo honestos: não existe hoje uma norma dizendo "todo uso de IA exige RIPD, sempre". O que existe é uma inferência forte, não uma obrigação literal: tratamento automatizado de dados tende a ser tratamento de maior risco, e a própria ANPD já colocou "inteligência artificial e tecnologias emergentes" entre os eixos prioritários de fiscalização para 2026-2027. Na prática, para qualquer uso de IA que envolva dado pessoal real de cidadão — não os exemplos fictícios deste curso —, elaborar um RIPD antes é a escolha prudente, com ou sem exigência expressa da ANPD naquele caso específico.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:0;">
+      <span class="step-num">Na prática, para este cenário</span>
+      <h4>O que um RIPD da triagem de protocolos por IA precisa responder</h4>
+      <p style="color:var(--text-muted);">O conteúdo mínimo exigido pelo Art. 38 é curto (três pontos, acima). Mas, para o cenário deste curso — uma IA ajudando a triar protocolos com dado real de cidadão —, as perguntas que realmente importam responder, campo por campo, são estas:</p>
+      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:10px; font-size:0.95rem;">
+        <li><strong>Que dado entra no prompt enviado à IA?</strong> Nem todo campo do protocolo precisa ir — é a mesma minimização da Etapa 2, só que agora documentada formalmente: listar campo por campo o que é enviado, e por quê.</li>
+        <li><strong>Qual a base legal de cada dado enviado?</strong> Retomando a Etapa 1: dado comum se apoia no Art. 7º (para um processo administrativo, provavelmente o inciso III — políticas públicas —, ou o VI, se for processo judicial); dado sensível precisa do teste mais estrito do Art. 11.</li>
+        <li><strong>Onde o dado é processado?</strong> Local, nuvem, ou nuvem com anonimização (Etapa 3) — a escolha muda o risco relatado: dado real de cidadão saindo para uma nuvem de terceiro não é o mesmo risco de rodar num modelo local, dentro do órgão.</li>
+        <li><strong>A triagem decide algo sozinha, ou só sugere?</strong> Este é o ponto que a própria ANPD trata como critério de alto risco: decisão tomada unicamente com base em tratamento automatizado de dados pessoais, quando afeta direitos. Se a IA sugere uma ordem de prioridade mas uma pessoa aprova antes de qualquer protocolo mudar de status, o risco relatado é menor do que se a IA decidisse e o sistema agisse sozinho.</li>
+        <li><strong>O que acontece se a IA errar?</strong> Medida de mitigação concreta, não genérica — para o SISPROT, a resposta natural é a revisão humana antes de qualquer mudança de status virar ação real (o mesmo princípio da revisão crítica obrigatória, Art. 15, V da Portaria MGI nº 3.485/2026, visto na Etapa 4).</li>
+      </ol>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Prompt · rascunhar um RIPD simplificado com ajuda de IA</span><span class="blk">[PAPEL]</span> Você é um especialista em proteção de dados, com experiência em
+relatórios de impacto conforme a LGPD.
+
+<span class="blk">[CONTEXTO]</span> O SISPROT é um sistema de protocolo administrativo que passou a
+usar IA para auditoria de qualidade e segurança do próprio código, e pode
+futuramente usar IA para triagem de protocolos com dado de cidadão.
+
+<span class="blk">[TAREFA]</span> Rascunhe um RIPD simplificado para esse uso futuro (triagem de
+protocolos), cobrindo: tipos de dado envolvidos, metodologia de tratamento,
+riscos identificados, e medidas de mitigação propostas.
+
+<span class="blk">[FORMATO]</span> Seguindo a estrutura do Guia de Elaboração de RIPDs do Governo
+Digital, em tópicos.</div>
+    <p class="copy-hint">Só um rascunho, não o documento final — um RIPD de verdade é revisado e assinado pelo Encarregado do órgão, não gerado e aceito sem revisão. Mas pedir um primeiro rascunho à IA, a partir do modelo oficial, economiza o trabalho de começar do zero.</p>
+  </div>
+</section>
+
+<!-- PRÁTICA -->
+<section class="reveal" id="pratica" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Mão na massa</span>
+      <h2>Anonimizar antes de perguntar</h2>
+    </div>
+
+    <div class="callout" style="margin-bottom:24px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Sem instalação:</strong> os exercícios de hoje são de julgamento e reescrita, não de código — cabem em qualquer IA de chat gratuita.</p>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 1 · individual · 20 min</span>
+          <h3>Reescrever um prompt com dado sensível "escondido"</h3>
+        </div>
+        <span class="block-badge badge-teal">20 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Identificar dado pessoal que não deveria estar no prompt, mesmo quando não é óbvio.</p>
+      <p style="color:var(--text-muted); margin-top:10px;">O documento abaixo é um processo administrativo fictício, com um pedido de tarefa no final ("resumir este processo... indicando apenas o tipo de licença e o prazo"). A maioria das pessoas, ao procurar "dado que não deveria estar ali", só olha para nome e CPF — mas este documento tem outras categorias sensíveis mencionadas no meio da descrição do pedido, não numa lista separada de campos. O trabalho é ler o documento inteiro (não só os campos de cadastro), decidir campo por campo se ele é necessário para a tarefa pedida, e só então reescrever o pedido — mantendo-o funcional com o que sobrou.</p>
+
+      <p style="margin:16px 0;">
+        <a href="documento-ficticio.txt" download style="display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+          Baixar documento-ficticio.txt
+        </a>
+      </p>
+
+      <details style="margin-bottom:20px;">
+        <summary style="cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">Ou copiar o texto diretamente daqui</summary>
+        <div style="position:relative; margin-top:10px;">
+          <textarea id="doc-source" readonly style="width:100%; height:280px; background:var(--ink); color:#e8edf6; font-family:'JetBrains Mono',monospace; font-size:0.76rem; line-height:1.6; padding:16px; border-radius:10px; border:none; resize:vertical; white-space:pre;">PROCESSO ADMINISTRATIVO Nº 2026/007734
+SISPROT - Sistema de Protocolo Administrativo
+
+ASSUNTO: Requerimento de licença médica com pedido de acompanhamento sindical
+
+DADOS DO REQUERENTE
+Nome: Carlos Eduardo Bezerra Lima
+CPF: 987.654.321-00
+Cargo: Técnico Administrativo
+Matrícula: 45.221-3
+Endereço residencial: SQN 308, Bloco H, Apto 302, Asa Norte, Brasília-DF
+Telefone: (61) 98888-4321
+E-mail: carlos.lima@exemplo.gov.br
+
+SETOR DE ORIGEM: Recursos Humanos
+SETOR ATUAL: Perícia Médica
+DATA DE ABERTURA: 03/02/2026
+STATUS: Em Análise
+
+DESCRIÇÃO DO PEDIDO:
+Venho requerer licença médica de 30 (trinta) dias, conforme atestado em
+anexo, em razão de tratamento psiquiátrico continuado para transtorno
+depressivo, iniciado em janeiro deste ano. Solicito que a Perícia Médica
+considere também meu histórico de afastamento por procedimento cirúrgico
+ortopédico ocorrido em 2024.
+
+Solicito ainda que uma cópia deste requerimento seja encaminhada ao
+Sindicato dos Servidores Públicos Federais (SINDSEP-DF), do qual sou
+associado, para fins de acompanhamento.
+
+HISTÓRICO DE TRAMITAÇÃO:
+- 03/02/2026: Aberto no setor Recursos Humanos.
+- 05/02/2026: Encaminhado à Perícia Médica.
+
+TAREFA PEDIDA (fictícia, para o exercício):
+"Preciso de ajuda para resumir este processo em um parágrafo para
+constar no relatório mensal do setor de Perícia Médica, indicando
+apenas o tipo de licença e o prazo."</textarea>
+          <button type="button" onclick="const ta=document.getElementById('doc-source'); ta.select(); navigator.clipboard.writeText(ta.value); this.textContent='Copiado!'; setTimeout(() => this.textContent='Copiar', 1500);" style="position:absolute; top:10px; right:10px; background:var(--gold-soft); color:var(--ink); border:none; padding:6px 12px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; font-weight:600; cursor:pointer;">Copiar</button>
+        </div>
+      </details>
+
+      <div class="instruction-step" style="margin-top:0;">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:10px; font-size:0.95rem;">
+          <li><strong>Baixar ou copiar</strong> o documento fictício desta aula — um processo administrativo com a "TAREFA PEDIDA" descrita no final.</li>
+          <li><strong>Ler o documento inteiro</strong> e anotar, à parte (papel, bloco de notas — não precisa ser bonito), se cada campo é dado comum, dado sensível ou não é dado pessoal, segundo os critérios da Etapa 1. Este documento tem mais de uma categoria escondida, não só CPF — e elas aparecem no meio do texto do pedido, não só nos campos de cadastro.</li>
+          <li><strong>Sem editar o documento original</strong>, escrever um <strong>prompt novo, do zero</strong>, pedindo exatamente a mesma tarefa ("resumir... indicando apenas o tipo de licença e o prazo") — usando só os campos que sobraram depois de tirar o que a tarefa não precisa (minimização) e disfarçar o que precisa ficar, mas não pode apontar para a pessoa real (anonimização).</li>
+          <li><strong>Colar só esse prompt novo</strong> — nunca o documento original — numa IA de chat gratuita, e confirmar que a resposta ainda cumpre a tarefa (indica o tipo de licença e o prazo).</li>
+        </ol>
+        <p class="copy-hint" style="margin-top:10px;">O documento original nunca vai para a IA — nem antes, nem depois, nem para comparar. Só o prompt novo do passo 3 é enviado, uma única vez, no passo 4.</p>
+      </div>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Remover dado de menos, deixando algo que ainda identifica a pessoa combinado com outro campo.</li>
+            <li>Remover dado de mais, quebrando a tarefa (ex.: remover o número do protocolo quando a tarefa precisava dele para referência).</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Para cada campo, perguntaremos: "a tarefa muda se eu tirar isso?" — se a resposta for não, ele provavelmente não deveria estar lá.</li>
+          </ul>
+        </div>
+      </div>
+
+      <details style="margin-top:20px;">
+        <summary style="cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text-muted);">Ver versão de referência (tente por conta própria por uns 15 min antes de abrir)</summary>
+        <div style="margin-top:10px; color:var(--text); font-size:0.92rem; line-height:1.7;">
+          <p><strong>Nome, CPF, matrícula, endereço, telefone, e-mail</strong>: dado pessoal comum — nenhum é necessário para a tarefa (resumir tipo de licença e prazo).</p>
+          <p><strong>"tratamento psiquiátrico continuado para transtorno depressivo"</strong> e <strong>"procedimento cirúrgico ortopédico"</strong>: dado pessoal <strong>sensível</strong> (saúde, Art. 5º, II) — a categoria mais fácil de achar aqui.</p>
+          <p><strong>Filiação ao "Sindicato dos Servidores Públicos Federais (SINDSEP-DF)"</strong>: também dado pessoal <strong>sensível</strong> (filiação sindical, mesmo Art. 5º, II) — a que mais passa despercebida; poucas pessoas associam "sindicato" a dado sensível.</p>
+          <p><strong>Número do processo, setor de origem/atual, datas, status</strong>: seguros para manter — não identificam ninguém sozinhos.</p>
+        </div>
+        <div class="promptbox" style="margin-top:14px;">
+<span class="plabel">Versão de referência</span>Preciso de ajuda para resumir um processo de licença médica em um
+parágrafo para o relatório mensal do setor de Perícia Médica,
+indicando apenas o tipo de licença e o prazo.
+
+Processo: 2026/007734
+Setor atual: Perícia Médica
+Tipo de licença: licença médica
+Prazo: 30 dias</div>
+        <p class="copy-hint">Este documento tinha <strong>duas</strong> categorias de dado sensível, não uma — quem só achou a menção a saúde não errou, mas não terminou o exercício. Repare também que "tipo de licença" (licença médica) ficou, mas o diagnóstico específico (depressão, cirurgia) não — a tarefa pedia o tipo, não o motivo clínico. É minimização aplicada dentro do próprio dado sensível, não uma decisão de tudo-ou-nada.</p>
+      </details>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 2 · individual · 20 min</span>
+          <h3>Local ou nuvem?</h3>
+        </div>
+        <span class="block-badge badge-teal">20 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Praticar a decisão da Etapa 3 com casos concretos.</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Para três cenários (ex.: "revisar um trecho de código genérico"; "resumir um processo com nomes reais de servidores"; "gerar 500 respostas por dia para um chatbot interno"), decidiremos: local, nuvem, ou nuvem com anonimização.</li>
+          <li>Justificaremos cada escolha em 1-2 frases, usando os critérios da tabela da Etapa 3.</li>
+        </ol>
+      </div>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Escolher só por custo ou só por sensibilidade do dado — os dois critérios (e outros, como volume) entram na decisão junto.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Não existe resposta errada única aqui — o que importa é a justificativa se sustentar sozinha, sem precisar de mais contexto.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- DESAFIO -->
+<section class="reveal" id="desafio" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Desafio final · sem roteiro</span>
+          <h3>Um checklist de governança para o SISPROT</h3>
+        </div>
+        <span class="block-badge badge-gold">20 min</span>
+      </div>
+      <p style="color:var(--text-muted); margin-bottom:20px;">Consolidar tudo em um artefato reutilizável — o tipo de documento que a Portaria MGI espera que um órgão tenha.</p>
+      <p style="color:var(--text-muted);">Escreva um checklist curto (5-8 itens) para decidir, antes de colar qualquer dado do SISPROT numa IA, se pode enviar, precisa anonimizar antes, ou não pode de jeito nenhum.</p>
+
+      <div class="instruction-step" style="margin-top:0;">
+        <span class="step-num">Regras</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>O checklist deve se basear na LGPD (Etapa 1) e nos princípios da Portaria MGI (Etapa 4) — sem inventar critério sem relação com nenhuma das duas.</li>
+          <li>Aplicaremos o checklist a 3 exemplos concretos de campos do SISPROT (ex.: número do protocolo, nome do requerente, histórico de tramitação) e escreveremos o resultado de cada um.</li>
+        </ol>
+      </div>
+
+      <div class="callout-alert">
+        <span class="eyebrow">Critério de sucesso</span>
+        <ul class="checklist" style="margin-top:12px;">
+          <li><span class="xicn">&#10003;</span>O checklist tem entre 5 e 8 itens, cada um verificável (dá para responder sim/não).</li>
+          <li><span class="xicn">&#10003;</span>Os 3 exemplos aplicados chegam a uma decisão clara: pode / anonimizar antes / não pode.</li>
+          <li><span class="xicn">&#10003;</span>Conseguimos apontar, para cada item do checklist, se ele vem da LGPD ou da Portaria MGI.</li>
+        </ul>
+      </div>
+
+      <details style="margin-top:20px;">
+        <summary style="cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text-muted);">Ver um checklist de referência (tente o seu primeiro)</summary>
+        <div style="margin-top:14px; color:var(--text); font-size:0.92rem; line-height:1.7;">
+          <ol style="padding-left:20px; display:grid; gap:8px;">
+            <li>O campo identifica ou pode identificar uma pessoa (dado pessoal, Etapa 1)? Se não, pode enviar sem restrição. <em style="color:var(--text-muted);">(LGPD, Art. 5º, I)</em></li>
+            <li>Se é dado pessoal, ele cai numa das categorias sensíveis (saúde, filiação sindical, etc. — Etapa 1)? Se sim, o teste do item 6 fica mais rígido. <em style="color:var(--text-muted);">(LGPD, Art. 5º, II)</em></li>
+            <li>A tarefa muda se eu tirar esse campo do prompt? Se não muda, ele não deveria estar lá (minimização). <em style="color:var(--text-muted);">(LGPD, princípio da necessidade, Art. 6º, III)</em></li>
+            <li>Dá para substituir o campo por um rótulo ou versão parcial (nome abreviado, "Registro A", trecho de telefone) sem quebrar a tarefa? Se sim, anonimizar em vez de remover. <em style="color:var(--text-muted);">(Etapa 2)</em></li>
+            <li>A ferramenta de IA é de nuvem de terceiro, ou local/homologada pelo órgão (Etapa 3)? Nuvem de terceiro puxa os itens seguintes com mais rigor. <em style="color:var(--text-muted);">(Portaria MGI, Art. 16)</em></li>
+            <li>Existe base legal específica para esse uso do dado (Art. 7º para comum, Art. 11 para sensível — Etapa 1), ou é só "conveniente"? Sem base, não envia. <em style="color:var(--text-muted);">(LGPD, Art. 7º/11)</em></li>
+            <li>A resposta da IA vai gerar alguma ação ou decisão automática, sem revisão humana antes? Se sim, precisa de supervisão proporcional ao risco e revisão crítica antes de qualquer efeito real. <em style="color:var(--text-muted);">(Portaria MGI, Art. 5º, III / 6º / 15, V)</em></li>
+            <li>Dá para registrar, depois, que uma IA participou desta tarefa? <em style="color:var(--text-muted);">(Portaria MGI, Art. 15, IV)</em></li>
+          </ol>
+          <table class="value-table" style="margin-top:16px;">
+            <thead><tr><th>Campo do SISPROT</th><th>Decisão</th><th>Por quê</th></tr></thead>
+            <tbody>
+              <tr><td>Número do protocolo</td><td>Pode enviar</td><td>Identifica um processo, não uma pessoa — não é dado pessoal (item 1).</td></tr>
+              <tr><td>Nome do requerente</td><td>Anonimizar antes</td><td>Dado pessoal comum (item 1); a maioria das tarefas de resumo/triagem não muda sem o nome completo (item 3) — mas se a tarefa precisar comparar se é a mesma pessoa em registros diferentes, um rótulo ou nome parcial resolve sem expor a pessoa real (item 4, como nos Exercícios G/H).</td></tr>
+              <tr><td>Histórico de tramitação (setor, data, status)</td><td>Pode enviar</td><td>Não identifica ninguém sozinho — não é dado pessoal (item 1).</td></tr>
+            </tbody>
+          </table>
+          <p class="copy-hint" style="margin-top:12px;">Não existe um único checklist "correto" — o critério de sucesso não é bater com este exatamente, é cada item ser verificável e rastreável até a LGPD ou a Portaria MGI. Um checklist de 6 itens bem fundamentado vale mais que um de 8 itens genéricos.</p>
+        </div>
+      </details>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Demonstração final · depois do tempo de execução · LLM local vs. nuvem</span>
+          <h3>Rodando um modelo local, ao vivo</h3>
+        </div>
+        <span class="block-badge badge-gold">Sem custo por token</span>
+      </div>
+      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos esta aula com a alternativa que a Etapa 3 só descreveu em teoria: um LLM local. Este bloco está preparado para funcionar dos dois jeitos — rodando de verdade, se o Ollama estiver disponível no dia, ou só sendo apresentado, com o exemplo já pronto abaixo.</p>
+
+      <div class="callout" style="margin:16px 0 20px;">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        <p><strong>Sem Ollama instalado no dia?</strong> Pule os "Pré-requisitos" e o passo de rodar o comando — apresente direto a tabela de comparação e o "Exemplo de resposta" logo abaixo, deixando claro para a turma que é um exemplo ilustrativo do tipo de diferença esperada, não uma captura ao vivo daquele momento. O ponto da demonstração (o que sai ou não da máquina) se sustenta sem executar nada.</p>
+      </div>
+
+      <div class="instruction-step">
+        <span class="step-num">Pré-requisitos (só se for rodar de verdade)</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Ollama instalado (<a href="https://ollama.com/" target="_blank" rel="noopener">ollama.com</a>) e um modelo já baixado (ex.: <code class="inline">ollama pull llama3</code> ou outro modelo leve, com antecedência — o download pode ser grande).</li>
+        </ol>
+      </div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Comparação</span>
+        <h4>Mesma tarefa, dois destinos</h4>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt · rodar nos dois (ou só ler, se não for rodar)</span>Explique, em poucas frases, o que a função validarProtocolo() do SISPROT
+faz e por que ela foi separada num arquivo próprio.</div>
+      <p class="copy-hint">Se for rodar de verdade: exatamente esse prompt no modelo local (via <code class="inline">ollama run</code>) e numa IA em nuvem, comparando os quatro critérios da tabela abaixo. Se <code class="inline">validacoes.php</code> já existir (Aula 3 ou Aula 6), colar o conteúdo real do arquivo antes da pergunta deixa a resposta mais específica — sem ele, a pergunta ainda funciona em termos gerais.</p>
+
+      <div class="tech-grid" style="margin-top:16px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Exemplo de resposta · modelo local (leve, tipo llama3 8B)</h3>
+          <div class="promptbox" style="margin-top:10px; font-size:0.78rem;">
+<span class="plabel">Ilustrativo — não é captura real</span>A função validarProtocolo() provavelmente verifica se os campos
+obrigatórios do protocolo (como número e requerente) estão
+preenchidos antes de seguir com o processamento. Separá-la num
+arquivo próprio ajuda a reutilizar essa validação em outras partes
+do sistema e facilita testar essa parte isoladamente.</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:8px;">Mais curta, mais genérica ("provavelmente"), mas ainda assim usável.</p>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Exemplo de resposta · IA em nuvem (modelo maior)</h3>
+          <div class="promptbox" style="margin-top:10px; font-size:0.78rem;">
+<span class="plabel">Ilustrativo — não é captura real</span>validarProtocolo() centraliza as regras de validação de um protocolo
+antes de qualquer gravação no banco — checando campos obrigatórios
+e formato dos dados. Ela foi extraída para um arquivo próprio
+(validacoes.php) para separar a lógica de negócio da camada de
+formulário (protocolo_form.php), permitindo reutilizar a mesma
+validação em outros pontos de entrada do sistema (ex.: uma futura
+API) sem duplicar código, e testá-la isoladamente.</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-top:8px;">Mais longa, mais específica sobre o motivo da separação (camadas, reuso, testabilidade).</p>
+        </div>
+      </div>
+      <p class="copy-hint" style="margin-top:12px;">Estes dois textos são ilustrativos, escritos para este material — não uma captura de execução real. Diga isso à turma se for usá-los sem rodar ao vivo: o objetivo é mostrar o <em>tipo</em> de diferença esperada (mais genérica vs. mais específica), não uma resposta exata que o Ollama vai repetir.</p>
+
+      <div class="value-table-wrapper" style="margin-top:20px;">
+        <table class="value-table">
+          <thead><tr><th>Critério</th><th>O que observar (ao vivo ou no exemplo acima)</th></tr></thead>
+          <tbody>
+            <tr><td>Tempo de resposta</td><td>O modelo local tende a ser mais lento numa máquina sem GPU dedicada — vale cronometrar os dois, mesmo informalmente, se estiver rodando ao vivo.</td></tr>
+            <tr><td>Qualidade da explicação</td><td>A resposta da nuvem tende a ser mais completa e precisa; a local costuma ser mais genérica, mas usável — como no exemplo acima.</td></tr>
+            <tr><td>O que saiu da máquina</td><td>Nada, no caso local — é essa diferença que importa quando o dado é sensível, não a qualidade da resposta.</td></tr>
+            <tr><td>Custo</td><td>Local: só o custo de eletricidade rodando. Nuvem: consumiu tokens da conta usada.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="insight-box">
+        <span class="insight-tag">O fio que atravessa o curso</span>
+        <p>A pergunta desta demonstração é a mesma que abriu o curso, na Aula 0: qual ferramenta usar, para qual tarefa, e por quê. A diferença é que agora a resposta inclui não só qualidade e custo, mas também o que a lei e a governança pública já exigem — a engenharia de prompt sempre foi, também, uma decisão de conformidade. O ganho do modelo local não é "melhor resposta" — é "nenhum dado saiu da máquina"; isso não aparece na qualidade da resposta, só no que aconteceu (ou não) na rede.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FECHAMENTO -->
+<section class="pullquote reveal">
+  <div class="wrap" style="text-align:center;">
+    <div class="rule"></div>
+    <blockquote>O curso começou com uma regra repetida sem explicação: nunca cole dado real numa IA gratuita. Hoje, essa regra ficou totalmente fundamentada — na lei, na governança, e na prática de cada aula que a seguiu sem exceção. As próximas aulas continuam a partir daqui.</blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-left" style="display:flex; align-items:center; gap:14px;">
+      <span>SISPROT · Aula 7 · Dados Sensíveis, LLMs Locais e Governança de IA</span>
+    </div>
+    <div class="footer-right"><span>Aula 7</span></div>
+  </div>
+</footer>
+
+<script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = scrolled + '%';
+  });
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  items.forEach(i => io.observe(i));
+
+  function verificarSequencia(inputId, resposta, gabaritoId, msgId) {
+    const raw = document.getElementById(inputId).value;
+    const input = raw.trim().toUpperCase().replace(/[^A-Z]/g, '');
+    const msg = document.getElementById(msgId);
+    const gabarito = document.getElementById(gabaritoId);
+    if (input === resposta) {
+      gabarito.style.display = 'block';
+      msg.textContent = 'Sequência correta — gabarito liberado abaixo.';
+      msg.style.color = 'var(--teal)';
+    } else {
+      gabarito.style.display = 'none';
+      msg.textContent = 'Ainda não — confira os itens de novo (só letras C, S ou N, sem espaços).';
+      msg.style.color = 'var(--gold)';
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 8 · RAG: Buscando Antes de Responder · SISPROT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#0F1C36">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1C36;
+    --ink-2:#16274a;
+    --paper:#FFFFFF;
+    --surface:#F3F5F9;
+    --surface-2:#EAEDF3;
+    --line:#DEE2EA;
+    --text:#1A2233;
+    --text-muted:#5B6478;
+    --gold:#B8892B;
+    --gold-soft:#E9D9B4;
+    --teal:#0E7C7B;
+    --teal-soft:#D6ECEB;
+    --radius:14px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; color-scheme:light only; background:#FFFFFF;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    margin:0;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;line-height:1.6;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  section{padding:96px 0;}
+  @media (max-width:640px){ section{padding:64px 0;} .wrap{padding:0 20px;} }
+
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px;
+    background:rgba(15,28,54,0.88);
+    backdrop-filter:blur(8px);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:600;}
+  .topbar .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .topbar .step{color:#9fb0d1;}
+  @media (max-width:640px){
+    .topbar{padding:12px 20px;}
+    .topbar .step{display:none;}
+  }
+  #progress{
+    position:fixed; top:0; left:0; height:2px; background:var(--gold); z-index:60; width:0%;
+    transition:width .1s linear;
+  }
+
+  .hero{
+    background:radial-gradient(120% 140% at 78% -10%, #1c3568 0%, var(--ink) 55%, #0a1428 100%);
+    color:#fff;
+    padding:180px 0 120px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; right:-180px; top:-120px;
+    width:640px; height:640px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-60px; top:60px;
+    width:420px; height:420px;
+    border-radius:50%;
+    border:1px solid rgba(184,137,43,0.22);
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero .eyebrow{color:var(--gold-soft); margin-bottom:22px; display:block;}
+  .hero h1{font-size:clamp(2.1rem, 4.6vw, 3.6rem); font-weight:600; max-width:760px;}
+  .hero .lede{
+    margin-top:26px; font-size:1.15rem; color:#c7d2ea; max-width:620px; line-height:1.65;
+  }
+  .hero .meta-row{
+    margin-top:52px; display:flex; gap:36px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:#8fa0c4;
+  }
+  .hero .meta-row strong{color:#fff; display:block; font-family:'Fraunces',serif; font-size:1.3rem; font-weight:600; margin-bottom:2px;}
+
+  .sec-head{max-width:680px; margin-bottom:52px;}
+  .sec-head .eyebrow{display:block; margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem); font-weight:600; color:var(--ink);}
+  .sec-head .sub{margin-top:14px; color:var(--text-muted); font-size:1.03rem;}
+
+  .why{background:var(--surface);}
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:800px){ .why-grid{grid-template-columns:1fr;} }
+  .why-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 26px;
+  }
+  .why-card .tag{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:14px;}
+  .why-card h3{font-size:1.15rem; font-weight:600; color:var(--ink); margin-bottom:10px;}
+  .why-card p{color:var(--text-muted); font-size:0.96rem;}
+
+  .shift .grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .shift .grid{grid-template-columns:1fr;} }
+  .shift-card{border-radius:var(--radius); padding:30px 28px; border:1px solid var(--line);}
+  .shift-card.old{background:var(--surface);}
+  .shift-card.new{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .shift-card h3{font-size:1.05rem; margin-bottom:12px;}
+  .shift-card.old h3{color:var(--ink);}
+  .shift-card.new h3{color:var(--gold-soft);}
+  .shift-card p{font-size:0.96rem; color:var(--text-muted); line-height:1.65;}
+  .shift-card.new p{color:#c7d2ea;}
+
+  .callout{
+    background:var(--surface); border-radius:var(--radius); padding:26px 28px;
+    display:flex; gap:18px; align-items:flex-start;
+  }
+  .callout .icn{flex:none; width:26px; height:26px; color:var(--gold); margin-top:2px;}
+  .callout p{color:var(--text); font-size:0.97rem; line-height:1.65;}
+
+  .pullquote{padding:100px 0; text-align:center;}
+  .pullquote blockquote{
+    max-width:760px; margin:0 auto; font-family:'Fraunces',serif; font-size:clamp(1.3rem,2.6vw,1.9rem);
+    font-weight:500; color:var(--ink); line-height:1.5;
+  }
+  .pullquote .rule{width:44px; height:2px; background:var(--gold); margin:0 auto 30px;}
+  footer{background:var(--ink); color:#8fa0c4; padding:44px 0; font-size:0.82rem; font-family:'JetBrains Mono',monospace;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; row-gap:14px;}
+
+  .reveal{opacity:1; transform:none;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  .agenda-list{position:relative; margin-top:12px;}
+  .agenda-list::before{content:""; position:absolute; left:15px; top:6px; bottom:6px; width:1px; background:var(--line);}
+  .agenda-row{display:flex; gap:16px; padding:8px 0; align-items:flex-start;}
+  .agenda-row .dotm{flex:none; width:30px;height:30px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--ink); position:relative; z-index:1;}
+  .agenda-row p{font-size:0.94rem; color:var(--text); padding-top:5px;}
+
+  .module-divider{
+    background:linear-gradient(120deg, var(--ink) 0%, #1c3568 100%); color:#fff;
+    padding:72px 0 56px; position:relative; overflow:hidden;
+  }
+  .module-divider::before{content:""; position:absolute; right:-140px; top:-100px; width:420px; height:420px; border-radius:50%; border:1px solid rgba(255,255,255,0.08);}
+  .module-divider .modnum{font-family:'JetBrains Mono',monospace; color:var(--gold-soft); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:16px;}
+  .module-divider h2{font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:600; max-width:760px; color:#fff;}
+  .module-divider .modsub{margin-top:14px; color:#c7d2ea; font-size:1.02rem; max-width:640px; line-height:1.6;}
+
+  .anatomy-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:800px){ .anatomy-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .anatomy-grid{grid-template-columns:1fr;} }
+  .anatomy-card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px 20px;}
+  .anatomy-card .anum{font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gold); letter-spacing:0.1em; display:block; margin-bottom:10px;}
+  .anatomy-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px;}
+  .anatomy-card p{font-size:0.88rem; color:var(--text-muted); line-height:1.55;}
+
+  .tech-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:700px){ .tech-grid{grid-template-columns:1fr;} }
+  .tech-card{border:1px solid var(--line); border-radius:12px; padding:22px 22px; background:var(--paper);}
+  .tech-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .tech-card .tnum{
+    flex:none; width:26px;height:26px; border-radius:50%; background:var(--ink); color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; display:flex; align-items:center; justify-content:center;
+  }
+  .tech-card p{font-size:0.9rem; color:var(--text-muted); line-height:1.6;}
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .checklist li{
+    display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line);
+    border-radius:10px; padding:16px 18px; font-size:0.94rem; color:var(--text); line-height:1.55;
+  }
+  .checklist li .xicn{flex:none; width:20px;height:20px; color:var(--teal); margin-top:1px;}
+
+  .callout-alert{ background:var(--ink); color:#fff; border-radius:var(--radius); padding:28px 26px; margin-top:24px; }
+  .callout-alert .eyebrow{color:var(--gold-soft); display:block; margin-bottom:10px;}
+  .callout-alert p{color:#dce3f2; font-size:0.95rem; line-height:1.68;}
+</style>
+<style>
+  /* complementos desta aula (padrão reaproveitado das aulas do projeto) */
+  a{color:var(--teal); text-decoration:underline; text-underline-offset:2px; font-weight:600;}
+  a:hover{color:var(--ink);}
+  .promptbox{background:var(--ink); color:#e8edf6; border-radius:12px; padding:20px 22px; margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; line-height:1.7; white-space:pre-wrap; overflow-x:auto;}
+  .promptbox .plabel{display:block; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:12px; font-weight:600;}
+  .promptbox .blk{color:var(--gold-soft); font-weight:600;}
+  .copy-hint{margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted);}
+  code.inline{font-family:'JetBrains Mono',monospace; font-size:0.85em; background:var(--surface-2); padding:2px 6px; border-radius:5px; color:var(--ink);}
+
+  .block-card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:36px; margin-bottom:40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
+  .block-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:1px solid var(--line); padding-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .block-title-area h3{font-size:1.4rem; color:var(--ink); font-weight:600;}
+  .block-badge{font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px; border-radius:20px; font-weight:600;}
+  .badge-teal{background:var(--teal-soft); color:var(--teal);}
+  .badge-gold{background:var(--gold-soft); color:var(--ink);}
+
+  .concept-box{background:var(--surface); border-left:4px solid var(--ink); border-radius:0 8px 8px 0; padding:20px; margin:20px 0;}
+  .concept-box h4{font-size:1.05rem; color:var(--ink); margin-bottom:8px;}
+  .concept-box p{color:var(--text); font-size:0.95rem; line-height:1.6;}
+
+  .insight-box{background:var(--teal-soft); border:1px solid var(--teal); border-radius:8px; padding:20px; margin:20px 0; color:var(--ink);}
+  .insight-box .insight-tag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); font-weight:600; display:block; margin-bottom:6px;}
+  .insight-box p{font-size:0.93rem; line-height:1.55;}
+
+  .instruction-step{margin:28px 0;}
+  .instruction-step .step-num{font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:600; color:var(--gold); display:block; margin-bottom:4px;}
+  .instruction-step h4{font-size:1.1rem; color:var(--ink); margin-bottom:8px;}
+
+  .code-box{background:var(--ink); color:#f0f4fc; font-family:'JetBrains Mono',monospace; font-size:0.82rem; padding:18px 20px; border-radius:10px; margin:16px 0; overflow-x:auto; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--gold);}
+  .code-box .comment{color:#7e93ba;}
+
+  .value-table-wrapper{margin-top:28px; overflow-x:auto; border:1px solid var(--line); border-radius:10px;}
+  .value-table{width:100%; border-collapse:collapse; font-size:0.9rem; text-align:left;}
+  .value-table th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; padding:14px 16px;}
+  .value-table td{padding:14px 16px; border-bottom:1px solid var(--line); color:var(--text); line-height:1.5; vertical-align:top;}
+  .value-table tr:last-child td{border-bottom:none;}
+  .value-table tr:nth-child(even){background:var(--surface);}
+  .value-table strong{color:var(--ink);}
+
+  /* --- elementos visuais (ícones, diagramas, fotos) --- */
+  .icon-badge{
+    display:inline-flex; align-items:center; justify-content:center; flex:none;
+    width:38px; height:38px; border-radius:50%; background:var(--ink); color:#fff;
+  }
+  .icon-badge svg{width:20px; height:20px;}
+  .icon-badge.gold{background:var(--gold-soft); color:var(--ink);}
+  .icon-badge.teal{background:var(--teal-soft); color:var(--teal);}
+  .icon-badge.sm{width:26px; height:26px;}
+  .icon-badge.sm svg{width:14px; height:14px;}
+
+  .legend-row{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:18px;}
+  .legend-chip{display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text);}
+
+  .acard-head{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .acard-head h3{margin:0;}
+  .anatomy-card .anum{display:none;}
+
+  .concept-box > summary{display:flex; align-items:center; gap:14px; cursor:pointer; list-style:none;}
+  .concept-box > summary::-webkit-details-marker{display:none;}
+  .concept-box > summary h4{margin:0; flex:1;}
+  .concept-box > summary .chev{flex:none; width:18px; height:18px; color:var(--text-muted); transition:transform .2s ease;}
+  .concept-box[open] > summary .chev{transform:rotate(180deg);}
+  .concept-box > p{margin-top:14px;}
+
+  .divider-head{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+  .divider-head .modnum{margin-bottom:0;}
+  .divider-icon{flex:none; width:34px; height:34px; color:var(--gold-soft);}
+
+  .diagram-frame{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:24px; margin:24px 0; overflow-x:auto;}
+  .diagram-frame svg{width:100%; height:auto; display:block;}
+  .diagram-frame .diagram-caption{margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted); text-align:center;}
+  .diagram-pair{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .diagram-pair{grid-template-columns:1fr;} }
+  .diagram-pair .diagram-frame{margin:0; height:100%;}
+
+  .photo-frame{
+    width:100%; aspect-ratio:4/3; border-radius:14px;
+    background:linear-gradient(135deg, var(--surface), rgba(184,137,43,0.08));
+    border:1px dashed var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--text-muted); font-size:0.85rem; padding:24px; text-align:center; gap:10px;
+    margin:24px 0;
+  }
+  .photo-frame.wide{aspect-ratio:16/9;}
+  .photo-frame .pf-icon{width:40px; height:40px; color:var(--gold);}
+  .photo-frame .pf-label{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted);}
+  .photo-frame.has-img{padding:0; border:1px solid var(--line); border-style:solid; overflow:hidden;}
+  .photo-frame.has-img img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  .demo-head-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:28px; align-items:center; margin:44px 0 20px;}
+  @media (max-width:800px){ .demo-head-grid{grid-template-columns:1fr;} }
+
+  .quiz-legend{font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin:14px 0;}
+  .quiz-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:16px;}
+  .quiz-input{font-family:'JetBrains Mono',monospace; font-size:0.9rem; padding:10px 14px; border:1px solid var(--line); border-radius:8px; width:220px; letter-spacing:0.1em; text-transform:uppercase;}
+  .quiz-btn{font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600; padding:10px 18px; border-radius:8px; border:none; background:var(--ink); color:#fff; cursor:pointer;}
+  .quiz-btn:hover{background:var(--ink-2);}
+  .quiz-msg{margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; min-height:1.2em;}
+  .quiz-gabarito{display:none; margin-top:16px;}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> SISPROT · Aula 8</div>
+  <div class="step">RAG e Bases de Conhecimento</div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Curso · IA aplicada ao desenvolvimento de software · Aula 8</span>
+    <h1>RAG: Buscando Antes de Responder</h1>
+    <p class="lede">Até aqui, cada resposta da IA veio só do que ela aprendeu no treinamento — e vimos, na Aula 6, que isso pode virar alucinação. Hoje aprendemos a técnica que ataca esse problema pela raiz: buscar o trecho certo de um documento real antes de responder, em vez de confiar só na memória do modelo.</p>
+    <div class="meta-row">
+      <div><strong>8</strong>de 10 aulas</div>
+      <div><strong>1</strong>ferramenta real, gratuita, sem instalar nada</div>
+      <div><strong>SISPROT</strong>· consultando suas próprias normas</div>
+    </div>
+  </div>
+</header>
+
+<!-- AGENDA -->
+<section class="why reveal" id="agenda">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sobre esta aula</span>
+      <h2>Buscar antes de responder</h2>
+      <p class="sub">Um modelo de IA "sabe" o que estava nos dados de treino — nada além disso. Ele não leu o regimento interno do seu órgão, nem a versão mais recente de uma norma, nem o código do SISPROT. RAG (Retrieval-Augmented Generation) é a técnica que resolve isso: buscar o trecho relevante de um documento de verdade e entregá-lo à IA junto com a pergunta, para a resposta nascer do texto, não da memória.</p>
+    </div>
+    <div class="agenda-list">
+      <div class="agenda-row"><div class="dotm">01</div><p>O que é RAG e por que ele existe</p></div>
+      <div class="agenda-row"><div class="dotm">02</div><p>Arquitetura de um sistema RAG</p></div>
+      <div class="agenda-row"><div class="dotm">03</div><p>RAG no desenvolvimento de software</p></div>
+      <div class="agenda-row"><div class="dotm">04</div><p>RAG em bases normativas</p></div>
+      <div class="agenda-row"><div class="dotm">05</div><p>Limites e riscos do RAG</p></div>
+      <div class="agenda-row"><div class="dotm">06</div><p>Mão na massa: RAG de verdade, sem instalar nada</p></div>
+      <div class="agenda-row"><div class="dotm">07</div><p>Desafio final: perguntas com fontes que se cruzam</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Regra de ouro do curso (continua valendo):</strong> hoje vamos enviar documentos inteiros para uma ferramenta de IA, não só um parágrafo de prompt — mais um motivo para manter tudo fictício, como sempre. Nenhum documento real do seu órgão entra em nenhuma ferramenta gratuita hoje.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 1 -->
+<section class="module-divider reveal" id="etapa1">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <span class="modnum">Etapa 1</span>
+    </div>
+    <h2>O que é RAG e por que ele existe</h2>
+    <p class="modsub">A IA não decorou os documentos do seu órgão — mas pode ler um trecho antes de responder.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Um exemplo real, antes da teoria: NotebookLM</h4>
+      <p>Antes de formalizar o conceito, vale ver RAG funcionando de verdade numa ferramenta que qualquer um pode abrir hoje: o <a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> (Google) — a mesma ferramenta que esta aula usa mais à frente, no Mão na massa. A ideia, por trás da interface simples: você entrega documentos e fontes de verdade, a ferramenta monta um índice de busca sobre esse material (é RAG por dentro), e cada resposta cita exatamente de onde tirou a informação — nunca "da memória" do modelo, só do que está nas fontes que você trouxe.</p>
+    </div>
+
+    <div class="tech-grid" style="margin-top:20px;">
+      <div class="tech-card">
+        <h3 style="display:block;">O que entra (fontes aceitas)</h3>
+        <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.9rem; line-height:1.7; display:flex; flex-direction:column; gap:6px;">
+          <li>Documentos: PDF, Google Docs, Slides e Sheets, Word (.docx), PowerPoint (.pptx), texto simples e Markdown, EPUB, CSV</li>
+          <li>Mídia: link de página da web, vídeo do YouTube, arquivo de áudio, imagem</li>
+          <li>Limite por fonte: até 200 MB ou 500 mil palavras</li>
+        </ul>
+      </div>
+      <div class="tech-card">
+        <h3 style="display:block;">O que sai (formatos gerados)</h3>
+        <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.9rem; line-height:1.7; display:flex; flex-direction:column; gap:6px;">
+          <li><strong>Áudio</strong> — um "podcast" narrado por duas vozes, em 4 formatos (Aprofundado, Resumido, Crítica, Debate), em mais de 80 idiomas</li>
+          <li><strong>Vídeo</strong> — narrado e animado, em estilo explicativo ou resumido, com escolha de estilo visual</li>
+          <li><strong>Mapa mental, guia de estudos, FAQ, linha do tempo, quiz, flashcards, slides, infográfico, tabela de dados</strong></li>
+          <li><strong>Relatório completo</strong> — via "Deep Research", que lê várias fontes de uma vez e escreve um relatório final</li>
+        </ul>
+      </div>
+    </div>
+    <p class="copy-hint">Fontes: <a href="https://blog.google/innovation-and-ai/models-and-research/google-labs/notebooklm-video-overviews-studio-upgrades/" target="_blank" rel="noopener">blog.google/.../notebooklm-video-overviews-studio-upgrades</a> e <a href="https://workspaceupdates.googleblog.com/2026/03/new-ways-to-customize-and-interact-with-your-content-in-NotebookLM.html" target="_blank" rel="noopener">workspaceupdates.googleblog.com</a>.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Por que isso importa antes da definição formal</span>
+      <p>Um mapa mental, um vídeo narrado ou um "podcast" gerado pelo NotebookLM não é uma habilidade nova do modelo de IA — é a mesma busca-antes-de-responder desta aula, só que o resultado final é reformatado numa mídia diferente de texto puro. Guarde essa ideia: RAG é sobre <em>onde a resposta nasce</em> (no documento buscado, não na memória do modelo), não sobre <em>em que formato ela é entregue depois</em>.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: RAG (Retrieval-Augmented Generation)</h4>
+      <p>Técnica que combina um <strong>buscador</strong> (encontra trechos relevantes num conjunto de documentos externo) com um <strong>gerador</strong> (o LLM, que escreve a resposta) — a resposta nasce do trecho recuperado, não só do que o modelo "decorou" no treinamento. Proposta por Lewis et al. em 2020, publicada na NeurIPS (<a href="https://arxiv.org/abs/2005.11401" target="_blank" rel="noopener">arxiv.org/abs/2005.11401</a>, "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"). A ideia central do paper: em vez de um modelo responder só com o que memorizou, ele consulta um índice de documentos em tempo real — o que reduz erro factual e permite atualizar o conhecimento sem retreinar o modelo inteiro.</p>
+    </div>
+
+    <div class="diagram-pair" style="margin-top:20px;">
+      <div class="promptbox" style="margin:0;">
+<span class="plabel">Sem RAG · só a memória do modelo</span>Qual é o prazo de recurso previsto no Regimento Interno do nosso órgão
+para indeferimento de protocolo administrativo?</div>
+      <div class="promptbox" style="margin:0;">
+<span class="plabel">Com RAG · o trecho real entra no prompt</span>Com base <em>somente</em> no trecho abaixo do Regimento Interno, qual é o
+prazo de recurso para indeferimento de protocolo administrativo?
+
+"Art. 42. Do indeferimento de protocolo administrativo cabe recurso no
+prazo de 10 (dez) dias úteis, contados da ciência da decisão, dirigido
+à autoridade imediatamente superior."</div>
+    </div>
+    <p class="copy-hint">Na primeira versão, a IA nunca viu o Regimento Interno do seu órgão — ela vai <em>tentar</em> responder mesmo assim, arriscando um número que pode estar certo por sorte ou completamente errado. Na segunda, a resposta só pode vir do texto fornecido: é isso que RAG automatiza — encontrar esse trecho certo sozinho, sem alguém colar manualmente.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">A mesma alucinação da Aula 0, atacada pela raiz</span>
+      <p>A Aula 0 já ensinou a pedir "cite a fonte" para reduzir alucinação — um paliativo, porque a IA ainda podia inventar uma fonte que soa real. RAG é a versão estrutural dessa ideia: a fonte não é pedida depois, ela é <em>entregue antes</em>, como parte do material que a IA usa para responder. A IA ainda pode errar ao interpretar o trecho, mas não pode mais inventar um trecho que não existe.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Precisa buscar, ou o modelo já sabe?</h4>
+      <p style="color:var(--text-muted);">Para cada pergunta abaixo, decida: a IA pode responder bem só com o que já "sabe" do treinamento (<strong>M</strong> de memória), ou ela só responde direito se buscar um documento específico antes (<strong>R</strong> de RAG)? A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>M</strong> = a memória do modelo já basta &nbsp;·&nbsp; <strong>R</strong> = precisa buscar um documento específico</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+        <li>"Qual é a sintaxe de um laço <code class="inline">for</code> em PHP?"</li>
+        <li>"Qual é o prazo de recurso previsto no Regimento Interno do nosso órgão para indeferimento de protocolo?"</li>
+        <li>"O que significa a sigla HTTP?"</li>
+        <li>"O que diz exatamente o Art. 42 da norma interna que acabei de anexar?"</li>
+        <li>"Como funciona a validação do formulário de protocolo no projeto SISPROT?"</li>
+        <li>"O que é uma função recursiva, em termos gerais?"</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaRAG1" class="quiz-input" placeholder="ex.: MRMRRM" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaRAG1','MRMRRM','gabaritoRAG1','msgRAG1')">Verificar sequência</button>
+      </div>
+      <p id="msgRAG1" class="quiz-msg"></p>
+      <div id="gabaritoRAG1" class="quiz-gabarito">
+        <p class="copy-hint">Os itens 2, 4 e 5 pedem um documento ou projeto específico que o modelo nunca leu por completo (o Regimento Interno do órgão, o texto exato de um artigo anexado, o código do SISPROT) — sem buscar, a resposta é um chute educado. Os itens 1, 3 e 6 são conhecimento geral, estável, do tipo que qualquer modelo treinado já viu milhares de vezes — não muda de órgão para órgão, nem precisa de fonte externa.</p>
+      </div>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Transformar uma pergunta "no escuro" numa pergunta com fonte</h4>
+      <p style="color:var(--text-muted);">Este trecho fictício de uma norma interna do SISPROT nunca foi visto por nenhum modelo de IA:</p>
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Trecho fictício · Regimento Interno, Art. 15</span>"Art. 15. O interessado poderá solicitar vista de processo administrativo
+em qualquer fase da tramitação, devendo o pedido ser atendido no prazo
+de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
+      <p style="color:var(--text-muted); margin-top:14px;">E esta é a pergunta que alguém faria "no escuro", sem anexar nada — a mesma armadilha do primeiro exemplo desta etapa:</p>
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Prompt original · sem fonte</span>Qual é o prazo para atender um pedido de vista de processo administrativo
+no nosso órgão?</div>
+      <p style="color:var(--text-muted); margin-top:14px;">Reescreva esse prompt para que a resposta só possa vir do trecho acima — do jeito que o segundo prompt do início da etapa fez com o Art. 42.</p>
+      <details style="margin-top:14px;">
+        <summary style="cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text-muted);">Ver versão de referência</summary>
+        <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Versão de referência</span>Com base <em>somente</em> no trecho abaixo do Regimento Interno, qual é o
+prazo para atender um pedido de vista de processo administrativo?
+
+"Art. 15. O interessado poderá solicitar vista de processo administrativo
+em qualquer fase da tramitação, devendo o pedido ser atendido no prazo
+de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
+        <p class="copy-hint">A pergunta em si quase não mudou — o que mudou foi anexar o trecho e instruir a IA a responder <em>só</em> com base nele. É exatamente esse anexo que um sistema de RAG automatiza: em vez de alguém colar o Art. 15 manualmente toda vez, a ferramenta busca e anexa sozinha.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="module-divider reveal" id="etapa2">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      <span class="modnum">Etapa 2</span>
+    </div>
+    <h2>Arquitetura de um sistema RAG</h2>
+    <p class="modsub">Quatro peças, sempre na mesma ordem: fragmentar, transformar em vetor, indexar, buscar.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: chunking, embeddings e índice vetorial</h4>
+      <p><strong>Chunking</strong> é dividir um documento grande em pedaços menores (em geral, no máximo algumas centenas de palavras) — pedaço pequeno demais perde contexto, grande demais dilui o que é relevante. Cada pedaço vira um <strong>embedding</strong>: uma representação numérica (um vetor) que captura o significado do texto, não só as palavras exatas. Esses vetores ficam guardados num <strong>índice vetorial</strong> (vector database), organizado para buscar por <em>proximidade de significado</em>, não por palavra-chave literal (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>).</p>
+    </div>
+
+    <div class="diagram-frame">
+      <svg viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .lbl{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#1A2233;}
+          .sub{font-family:'JetBrains Mono',monospace; font-size:10px; fill:#5B6478;}
+          .lbl-inv{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#fff;}
+          .sub-inv{font-family:'JetBrains Mono',monospace; font-size:10px; fill:#c7d2ea;}
+          .box{fill:#F3F5F9; stroke:#DEE2EA; stroke-width:1.5;}
+          .boxink{fill:#0F1C36; stroke:#0F1C36;}
+          .arrow{stroke:#B8892B; stroke-width:2; fill:none; marker-end:url(#arrow8);}
+        </style>
+        <defs>
+          <marker id="arrow8" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill="#B8892B"/>
+          </marker>
+        </defs>
+
+        <rect class="box" x="20" y="30" width="150" height="56" rx="8"/>
+        <text class="lbl" x="95" y="54" text-anchor="middle">Documento</text>
+        <text class="sub" x="95" y="72" text-anchor="middle">(norma, código, PDF)</text>
+
+        <path class="arrow" d="M170 58 L230 58"/>
+        <rect class="box" x="235" y="30" width="150" height="56" rx="8"/>
+        <text class="lbl" x="310" y="54" text-anchor="middle">Chunking</text>
+        <text class="sub" x="310" y="72" text-anchor="middle">pedaços pequenos</text>
+
+        <path class="arrow" d="M385 58 L445 58"/>
+        <rect class="box" x="450" y="30" width="150" height="56" rx="8"/>
+        <text class="lbl" x="525" y="54" text-anchor="middle">Embeddings</text>
+        <text class="sub" x="525" y="72" text-anchor="middle">vetor por pedaço</text>
+
+        <path class="arrow" d="M600 58 L660 58"/>
+        <rect class="boxink" x="665" y="30" width="135" height="56" rx="8"/>
+        <text class="lbl-inv" x="732" y="54" text-anchor="middle">Índice vetorial</text>
+        <text class="sub-inv" x="732" y="72" text-anchor="middle">guardado, pronto</text>
+
+        <rect class="box" x="20" y="170" width="150" height="56" rx="8"/>
+        <text class="lbl" x="95" y="194" text-anchor="middle">Pergunta</text>
+        <text class="sub" x="95" y="212" text-anchor="middle">do usuário</text>
+
+        <path class="arrow" d="M170 198 L230 198"/>
+        <rect class="box" x="235" y="170" width="150" height="56" rx="8"/>
+        <text class="lbl" x="310" y="194" text-anchor="middle">Embedding</text>
+        <text class="sub" x="310" y="212" text-anchor="middle">da pergunta</text>
+
+        <path class="arrow" d="M732 86 L732 130 L525 130 L525 170" />
+        <path class="arrow" d="M385 198 L445 198"/>
+        <rect class="box" x="450" y="170" width="150" height="56" rx="8"/>
+        <text class="lbl" x="525" y="194" text-anchor="middle">Retrieval</text>
+        <text class="sub" x="525" y="212" text-anchor="middle">trechos + próximos</text>
+
+        <path class="arrow" d="M600 198 L660 198"/>
+        <rect class="boxink" x="665" y="170" width="135" height="56" rx="8"/>
+        <text class="lbl-inv" x="732" y="194" text-anchor="middle">Resposta</text>
+        <text class="sub-inv" x="732" y="212" text-anchor="middle">gerada com contexto</text>
+      </svg>
+      <p class="diagram-caption">Documento vira índice uma vez; cada pergunta nova busca nesse índice e aumenta o prompt com o que encontrar.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Retrieval, em uma frase</span>
+      <p><strong>Retrieval</strong> é a busca em si: pegar o embedding da pergunta e encontrar, no índice vetorial, os pedaços de documento com significado mais próximo — não os que contêm as mesmas palavras, os que <em>significam</em> a mesma coisa. É por isso que uma pergunta com palavras diferentes do documento original ainda pode encontrar o trecho certo.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Qual peça da arquitetura é essa?</h4>
+      <p style="color:var(--text-muted);">Para cada descrição abaixo, identifique a peça do diagrama que ela representa. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>C</strong> = chunking &nbsp;·&nbsp; <strong>E</strong> = embedding &nbsp;·&nbsp; <strong>I</strong> = índice vetorial &nbsp;·&nbsp; <strong>R</strong> = retrieval</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+        <li>Dividir um regimento interno de 40 páginas em pedaços de algumas centenas de palavras cada um.</li>
+        <li>Transformar um pedaço de texto num vetor de números que representa o seu significado.</li>
+        <li>Guardar todos os vetores já gerados, organizados para busca rápida por proximidade.</li>
+        <li>Comparar o vetor da pergunta com os vetores guardados e trazer os mais parecidos.</li>
+        <li>Cortar um artigo de lei em fatias de tamanho parecido, cuidando para não perder o contexto ao redor.</li>
+        <li>Encontrar, entre 500 pedaços já guardados, os quatro mais relevantes para uma pergunta específica.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaRAG2" class="quiz-input" placeholder="ex.: CEIRCR" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaRAG2','CEIRCR','gabaritoRAG2','msgRAG2')">Verificar sequência</button>
+      </div>
+      <p id="msgRAG2" class="quiz-msg"></p>
+      <div id="gabaritoRAG2" class="quiz-gabarito">
+        <p class="copy-hint">1 e 5 são chunking (dividir o documento); 2 é embedding (texto vira vetor); 3 é o índice vetorial (onde os vetores ficam guardados); 4 e 6 são retrieval (a busca em si, comparando vetores). Repare que 1 e 5 descrevem a mesma peça com exemplos diferentes (regimento vs. lei) — e o mesmo vale para 4 e 6.</p>
+      </div>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Isso bateria numa busca por significado?</h4>
+      <p style="color:var(--text-muted);">Para cada par pergunta/trecho abaixo, decida se um retrieval por embeddings encontraria esse trecho para essa pergunta — mesmo sem nenhuma palavra em comum entre os dois (<strong>S</strong>), ou se os dois são sobre assuntos diferentes e não deveriam bater (<strong>N</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>S</strong> = bate, é o mesmo assunto com outras palavras &nbsp;·&nbsp; <strong>N</strong> = não bate, assunto diferente</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Pergunta: "Quanto tempo dura o mandato do dirigente?" · Trecho: "O gestor exerce a função por um período de quatro anos."</li>
+        <li>Pergunta: "Qual é a cor do formulário de protocolo?" · Trecho: "O prazo de resposta ao requerente é de 10 dias úteis."</li>
+        <li>Pergunta: "Posso recorrer de uma decisão de indeferimento?" · Trecho: "Cabe recurso, no prazo de 10 dias, contra o indeferimento do pedido."</li>
+        <li>Pergunta: "O sistema aceita anexos maiores que 10 MB?" · Trecho: "Arquivos enviados não podem ultrapassar dez megabytes de tamanho."</li>
+        <li>Pergunta: "Como faço backup do banco de dados?" · Trecho: "O servidor deve manter sigilo sobre informações pessoais dos requerentes."</li>
+        <li>Pergunta: "Quem pode assinar o despacho final?" · Trecho: "A autoridade competente possui alçada para homologar a decisão."</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaRAG2B" class="quiz-input" placeholder="ex.: SNSSNS" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaRAG2B','SNSSNS','gabaritoRAG2B','msgRAG2B')">Verificar sequência</button>
+      </div>
+      <p id="msgRAG2B" class="quiz-msg"></p>
+      <div id="gabaritoRAG2B" class="quiz-gabarito">
+        <p class="copy-hint">1, 3, 4 e 6 são o mesmo assunto dito com palavras diferentes — "mandato" e "período de quatro anos", "recorrer" e "cabe recurso", "10 MB" e "dez megabytes", "assinar o despacho" e "alçada para homologar". 2 e 5 são sobre assuntos genuinamente diferentes (cor de formulário ≠ prazo de resposta; backup de banco ≠ sigilo de dado pessoal) — nenhuma busca por significado deveria juntar esses pares, por mais que ambos "pareçam" administrativos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="module-divider reveal" id="etapa3">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3 4 12l4 9"/><path d="M16 3l4 9-4 9"/></svg>
+      <span class="modnum">Etapa 3</span>
+    </div>
+    <h2>RAG no desenvolvimento de software</h2>
+    <p class="modsub">Perguntar sobre um projeto inteiro, sem abrir arquivo por arquivo.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: RAG sobre uma base de código</h4>
+      <p>Em vez de documentos jurídicos, o "documento" pode ser todo o código-fonte, a documentação e os arquivos de configuração de um projeto — cada arquivo (ou trecho de arquivo) vira um pedaço indexado, e uma pergunta sobre o projeto busca só os arquivos relevantes antes de responder, em vez de precisar caber o projeto inteiro no prompt. O <strong>Claude Projects</strong> já faz isso sobre documentos anexados a um projeto (a Anthropic chama de <em>project knowledge</em>): RAG entra automaticamente quando o material anexado passa do que caberia direto na janela de contexto (<a href="https://support.claude.com/en/articles/11473015-retrieval-augmented-generation-rag-for-projects" target="_blank" rel="noopener">support.claude.com/.../rag-for-projects</a>).</p>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Pergunta sobre um projeto que a IA nunca leu por completo</span>Como funciona a validação do formulário de protocolo no SISPROT? Qual
+arquivo faz isso, e o que acontece se o campo "número" vier vazio?</div>
+    <p class="copy-hint">Sem RAG, alguém precisaria abrir <code class="inline">protocolo_form.php</code> manualmente e ler os quatro <code class="inline">if</code>s de validação para responder — ou colar o arquivo inteiro no prompt. Com RAG sobre o projeto, a ferramenta busca sozinha o arquivo e o trecho certo — a mesma ideia por trás de como o Claude Code já lê arquivos do projeto conforme a conversa pede, sem precisar que colemos tudo de uma vez.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Isso já é familiar</span>
+      <p>Sem chamar de "RAG", o curso já usa essa lógica desde a Aula 0: em vez de colar o projeto inteiro num prompt, sempre demos só o contexto necessário para a tarefa (<code class="inline">[CONTEXTO]</code> do formato PACIF). RAG automatiza essa curadoria — a ferramenta decide o que é relevante buscar, em vez de uma pessoa decidir o que colar.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Essa pergunta sobre o SISPROT precisa buscar no projeto?</h4>
+      <p style="color:var(--text-muted);">Para cada pergunta abaixo, decida se a resposta exige buscar algo específico no código do SISPROT (<strong>P</strong>), ou se é conhecimento genérico de programação que não depende do projeto (<strong>G</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>P</strong> = precisa buscar no projeto &nbsp;·&nbsp; <strong>G</strong> = genérica, não depende do projeto</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+        <li>"O que é uma variável, em PHP?"</li>
+        <li>"Qual arquivo faz a validação do formulário de protocolo?"</li>
+        <li>"O que faz o operador <code class="inline">===</code> em PHP?"</li>
+        <li>"Se eu enviar o campo 'número' vazio, o que o SISPROT faz?"</li>
+        <li>"Como funciona, de forma geral, uma conexão PDO com um banco de dados?"</li>
+        <li>"Que tabela do banco a função <code class="inline">tramitar()</code> atualiza?"</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaRAG3" class="quiz-input" placeholder="ex.: GPGPGP" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaRAG3','GPGPGP','gabaritoRAG3','msgRAG3')">Verificar sequência</button>
+      </div>
+      <p id="msgRAG3" class="quiz-msg"></p>
+      <div id="gabaritoRAG3" class="quiz-gabarito">
+        <p class="copy-hint">1, 3 e 5 são conceitos gerais de PHP/banco de dados — respondíveis sem nunca ter visto o SISPROT. 2, 4 e 6 só têm resposta certa lendo o código real do projeto: qual arquivo, qual comportamento específico, qual tabela — é exatamente o tipo de pergunta onde RAG sobre o projeto economiza abrir arquivo por arquivo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 4 -->
+<section class="module-divider reveal" id="etapa4">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5M5 8v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/></svg>
+      <span class="modnum">Etapa 4</span>
+    </div>
+    <h2>RAG em bases normativas</h2>
+    <p class="modsub">O gancho para o setor público: responder com base na lei de verdade, citando o artigo.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: RAG aplicado a normas</h4>
+      <p>O mesmo mecanismo da Etapa 2, com um corpus de leis, portarias e regimentos internos como base indexada. Em vez de a IA "lembrar" (e possivelmente errar) o conteúdo de uma norma, ela busca o artigo exato antes de responder — e pode citar qual trecho embasou a resposta, tornando a resposta auditável. Existe pesquisa acadêmica específica sobre isso: o sistema HyPA-RAG foi desenhado e testado especificamente sobre a <a href="https://rules.cityofnewyork.us/rule/automated-employment-decision-tools-2/" target="_blank" rel="noopener">Local Law 144 de Nova York</a> (lei que regula o uso de IA em processos seletivos), publicado na NAACL 2025 (<a href="https://arxiv.org/abs/2409.09046" target="_blank" rel="noopener">arxiv.org/abs/2409.09046</a>). Vale a ressalva: é um sistema de pesquisa avaliado contra uma lei real, não uma ferramenta de produção usada por um governo — mas prova que a aplicação é séria, não hipotética.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Amarra direto com a Aula 7</span>
+      <p>A <a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">LGPD</a> e a <a href="https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/abril/mgi-institui-politica-de-governanca-de-inteligencia-artificial-no-ambito-do-ministerio" target="_blank" rel="noopener">Portaria MGI nº 3.485/2026</a>, que vimos na Aula 7, são exatamente o tipo de base normativa que se beneficia de RAG: em vez de perguntar "o que a LGPD diz sobre X" e confiar na memória da IA (arriscando um artigo errado), colar ou indexar o texto real da lei garante que a resposta cite o artigo certo. É a mesma diferença entre os dois prompts da Etapa 1, aplicada à lei que este curso já vem citando desde a Aula 7.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Sem RAG</th><th>Com RAG sobre a norma</th></tr></thead>
+        <tbody>
+          <tr><td>A IA responde com o que "lembra" da lei — pode confundir artigos, ou citar uma versão desatualizada.</td><td>A IA busca o texto vigente antes de responder — a resposta reflete a norma real, não a memória do treino.</td></tr>
+          <tr><td>Não dá para conferir de onde veio a resposta.</td><td>A resposta pode citar o artigo/trecho exato usado — auditável por um humano depois.</td></tr>
+          <tr><td>Atualizar a norma exige esperar o próximo treinamento do modelo.</td><td>Atualizar a norma é só trocar o documento indexado — a IA já responde com a versão nova.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Verdadeiro ou falso?</h4>
+      <p style="color:var(--text-muted);">Para cada afirmação abaixo sobre RAG aplicado a normas, decida se é verdadeira (<strong>V</strong>) ou falsa (<strong>F</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>V</strong> = verdadeiro &nbsp;·&nbsp; <strong>F</strong> = falso</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+        <li>RAG sobre normas garante que a IA nunca vai errar a interpretação da lei.</li>
+        <li>Um sistema de RAG bem feito pode citar o artigo exato usado numa resposta.</li>
+        <li>Atualizar a norma indexada é só trocar o documento — não precisa esperar o modelo ser retreinado.</li>
+        <li>Sem RAG, a IA sempre inventa um artigo que não existe.</li>
+        <li>O HyPA-RAG, citado nesta etapa, foi testado contra uma lei real (a Local Law 144 de Nova York).</li>
+        <li>RAG elimina totalmente a necessidade de checar a resposta depois.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaRAG4" class="quiz-input" placeholder="ex.: FVVFVF" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaRAG4','FVVFVF','gabaritoRAG4','msgRAG4')">Verificar sequência</button>
+      </div>
+      <p id="msgRAG4" class="quiz-msg"></p>
+      <div id="gabaritoRAG4" class="quiz-gabarito">
+        <p class="copy-hint">1 e 4 são exageros: RAG <em>reduz</em> o risco de citar o artigo errado, mas não garante interpretação perfeita, e "às vezes inventa" é diferente de "sempre inventa". 6 também é exagero — a Etapa 5, a seguir, mostra que RAG ainda falha e ainda precisa de revisão humana. 2, 3 e 5 são exatamente o que a etapa ensinou: citação auditável, atualização sem retreinar, e um caso acadêmico real testado contra lei de verdade.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 5 -->
+<section class="module-divider reveal" id="etapa5">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <span class="modnum">Etapa 5</span>
+    </div>
+    <h2>Limites e riscos do RAG</h2>
+    <p class="modsub">A busca pode falhar, o meio do contexto pode ser ignorado, e o índice pode ser envenenado — RAG reduz alucinação, não elimina cuidado.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: falha de recuperação (retrieval failure)</h4>
+      <p>RAG só funciona se o buscador encontrar o trecho certo — e ele nem sempre encontra. Dois motivos comuns: (1) um chunk isolado perde o contexto ao redor (ex.: um trecho dizendo "a receita da empresa cresceu 3%" não diz mais qual empresa, qual trimestre, depois de cortado do resto do documento); (2) busca por significado pode não bater com busca por texto exato — uma pergunta sobre um código de erro específico pode recuperar conteúdo genérico sobre "erros", não o código certo. A própria Anthropic mediu isso: RAG básico falha em recuperar o trecho certo em <strong>5,7% das perguntas</strong> (buscando entre os 20 trechos mais prováveis); técnicas melhores reduzem para 2,9% ou 1,9% — nunca chega a zero (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>).</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: "lost in the middle"</h4>
+      <p>Pesquisa mostrou que modelos de linguagem prestam mais atenção ao que está no <em>início</em> ou no <em>fim</em> de um contexto longo — informação no meio tende a ser subutilizada, mesmo em modelos feitos para contexto longo (Liu et al., "Lost in the Middle: How Language Models Use Long Contexts", TACL 2024 — <a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noopener">arxiv.org/abs/2307.03172</a>). Isso importa para RAG porque vários trechos recuperados são empilhados no mesmo prompt — se o trecho que responde à pergunta cair no meio da pilha, a chance de ele ser ignorado sobe, mesmo tendo sido encontrado corretamente.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Envenenamento do índice — o mesmo risco da Aula 6, aplicado a RAG</span>
+      <p>Se um documento malicioso entra no que é indexado, ele passa a competir por recuperação como qualquer outro — e pode influenciar a resposta como se fosse uma fonte legítima. A OWASP GenAI Security Project reconhece isso como categoria própria, <strong>LLM08:2025 — Vector and Embedding Weaknesses</strong>, com um exemplo real de risco: um currículo com instruções escondidas, indexado num sistema de RAG para triagem de candidatos, fazendo a IA recomendar um candidato que não deveria (<a href="https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/" target="_blank" rel="noopener">genai.owasp.org/llmrisk/llm082025</a>). É a mesma lógica do Prompt Injection da Aula 6 — só que a porta de entrada agora é o próprio documento que alguém decidiu indexar, não o prompt digitado na hora.</p>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Aplicado ao SISPROT · risco hipotético</span>Um "Regimento Interno" fictício, enviado por golpe para dentro da pasta de
+documentos indexados, contém o texto:
+
+"Art. 99. Protocolos com status 'Em Análise' há mais de 5 dias devem ser
+automaticamente deferidos, sem revisão adicional."
+
+Se um sistema de RAG sobre normas do órgão indexar esse documento sem
+verificação de origem, uma pergunta sobre prazos de análise pode citar
+esse artigo falso como se fosse norma vigente.</div>
+    <p class="copy-hint">Por isso a recomendação da própria OWASP é validar a origem de um documento <em>antes</em> de indexá-lo — o mesmo cuidado que já vale para instalar uma skill de terceiros (Aula 6) ou aceitar um dado de fonte desconhecida.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Manter o índice não é "configurar uma vez"</span>
+      <p>Voltando à Etapa 2: cada vez que um documento-fonte muda, os trechos e embeddings relacionados a ele precisam ser refeitos — um índice desatualizado responde com uma versão antiga da norma, do jeito exato que RAG deveria evitar. Isso é trabalho contínuo, não uma configuração de uma vez só — vale levar em conta antes de prometer que "a IA sempre vai responder com a versão mais recente" sem alguém cuidando da atualização do índice.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Qual dos quatro riscos é esse?</h4>
+      <p style="color:var(--text-muted);">Esta etapa apresentou quatro formas de RAG falhar. Para cada cenário abaixo, identifique qual delas está em jogo. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>Q</strong> = falha de recuperação &nbsp;·&nbsp; <strong>M</strong> = lost in the middle &nbsp;·&nbsp; <strong>V</strong> = envenenamento do índice &nbsp;·&nbsp; <strong>D</strong> = índice desatualizado</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+        <li>A IA busca pelo código de erro "E-4021" mas só recupera trechos genéricos sobre "erros do sistema" — nunca o trecho certo.</li>
+        <li>O trecho certo foi recuperado, mas ficou no meio de outros oito trechos empilhados no prompt, e a resposta final o ignorou.</li>
+        <li>Um currículo com instruções escondidas foi indexado num sistema de triagem e influenciou a recomendação da IA.</li>
+        <li>A norma mudou mês passado, mas ninguém refez os embeddings — a IA ainda responde com o texto antigo.</li>
+        <li>Um chunk cortado bem no meio de uma frase perde a referência de qual trimestre ou empresa um número se refere.</li>
+        <li>Alguém envia, por golpe, um "Regimento Interno" falso para a pasta de documentos indexados do órgão.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaRAG5" class="quiz-input" placeholder="ex.: QMVDQV" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaRAG5','QMVDQV','gabaritoRAG5','msgRAG5')">Verificar sequência</button>
+      </div>
+      <p id="msgRAG5" class="quiz-msg"></p>
+      <div id="gabaritoRAG5" class="quiz-gabarito">
+        <p class="copy-hint">1 e 5 são falha de recuperação (busca não encontra o trecho certo, ou o chunk perdeu contexto). 2 é lost in the middle (o trecho foi encontrado, mas ignorado por estar no meio da pilha). 3 e 6 são envenenamento do índice (documento malicioso competindo como fonte legítima). 4 é índice desatualizado (o documento mudou, o índice não acompanhou).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRÁTICA -->
+<section class="reveal" id="pratica" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Mão na massa</span>
+      <h2>RAG de verdade, sem instalar nada</h2>
+    </div>
+
+    <div class="callout" style="margin-bottom:24px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Ferramenta de hoje:</strong> <a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> (Google), gratuita, sem instalar nada — só uma conta Google. Diferente do resto do curso, hoje não é um "RAG simulado" copiando texto num prompt: é RAG de verdade, com o índice sendo montado e consultado na hora, e cada resposta vem com citação clicável apontando pro trecho da fonte.</p>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 1 · individual · 25 min</span>
+          <h3>Perguntar a uma norma de verdade</h3>
+        </div>
+        <span class="block-badge badge-teal">25 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Ver RAG funcionando de ponta a ponta: fonte, busca, resposta citada.</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Abriremos o NotebookLM e criaremos um notebook novo.</li>
+          <li>Como fonte, colaremos um texto público e não sensível — por exemplo, o texto de um artigo da LGPD (<a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">camara.leg.br/legin</a>) ou o Regimento Interno fictício de um órgão qualquer.</li>
+          <li>Faremos pelo menos três perguntas sobre o conteúdo da fonte, incluindo uma pergunta cuja resposta <em>não está</em> no texto colado.</li>
+          <li>Observaremos as citações que o NotebookLM mostra em cada resposta, clicando para conferir se realmente batem com o trecho usado.</li>
+        </ol>
+      </div>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Colar dado real ou sensível como fonte — a regra de ouro da aula vale aqui com força total, porque o documento inteiro é enviado, não só um trecho.</li>
+            <li>Não testar uma pergunta fora do escopo da fonte — é o teste mais importante, é o que mostra se a ferramenta "inventa" quando não sabe.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Uma boa resposta para "pergunta fora do escopo" é a ferramenta dizer que não encontrou isso na fonte — não inventar um número ou prazo que não estava lá.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 2 · individual · 20 min</span>
+          <h3>RAG sobre uma documentação técnica</h3>
+        </div>
+        <span class="block-badge badge-teal">20 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Aplicar a mesma ferramenta ao caso da Etapa 3 — documentação, não lei.</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>No mesmo notebook (ou um novo), adicionaremos como fonte um texto técnico público — por exemplo, a documentação de uma linguagem ou biblioteca que já usamos no curso (ex.: a página do PDO no manual do PHP).</li>
+          <li>Perguntaremos algo específico que exigiria ler várias seções para responder manualmente.</li>
+          <li>Compararemos: essa pergunta seria mais rápida de responder lendo a documentação inteira, ou usando a busca da ferramenta?</li>
+        </ol>
+      </div>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Escolher uma fonte curta demais, onde a diferença entre "buscar" e "ler tudo" não aparece.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Documentações oficiais de linguagens/bibliotecas costumam ser longas o suficiente para o exercício valer a pena — e são sempre informação pública, nunca dado do órgão.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Desafio final · sem roteiro · continuação dos Exercícios 1 e 2</span>
+          <h3>Perguntas com fontes que se cruzam</h3>
+        </div>
+        <span class="block-badge badge-gold">20 min</span>
+      </div>
+      <p style="color:var(--text-muted); margin-bottom:20px;">Testar RAG no cenário em que ele realmente prova o valor: múltiplos documentos, nem sempre alinhados.</p>
+      <p style="color:var(--text-muted);">Este desafio é <strong>continuação</strong> do que já estava aberto nos Exercícios 1 e 2 — o mesmo <strong>NotebookLM</strong>, não o notebook Python da demonstração a seguir. No mesmo notebook (ou um novo, se preferir), adicionaremos pelo menos dois textos fictícios (ex.: dois trechos de "normas internas" inventadas, um dizendo que um prazo é de 10 dias, outro dizendo 15) e faremos perguntas que só uma leitura cruzada dos dois resolve.</p>
+
+      <div class="instruction-step" style="margin-top:0;">
+        <span class="step-num">Regras</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>Os documentos precisam ser fictícios, escritos por nós mesmos — nada de norma real do próprio órgão.</li>
+          <li>Pelo menos uma pergunta deve ter resposta que depende dos dois documentos ao mesmo tempo (ex.: "existe conflito entre as duas normas sobre este prazo?").</li>
+          <li>Anotaremos se a ferramenta identificou o conflito sozinha, ou só respondeu com uma das duas fontes.</li>
+        </ol>
+      </div>
+
+      <div class="callout-alert">
+        <span class="eyebrow">Critério de sucesso</span>
+        <ul class="checklist" style="margin-top:12px;">
+          <li><span class="xicn">&#10003;</span>As citações nas respostas apontam para o documento certo, não misturado.</li>
+          <li><span class="xicn">&#10003;</span>Testamos explicitamente o caso de conflito entre as fontes, não só perguntas "fáceis".</li>
+          <li><span class="xicn">&#10003;</span>Conseguimos explicar, em 1-2 frases, se a ferramenta lidou bem com o conflito ou escondeu ele.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Demonstração · instrutor mostra, turma acompanha · 15 min</span>
+          <h3>RAG por dentro: implementação real em Python</h3>
+        </div>
+        <span class="block-badge badge-gold">Google Colab · sem instalar nada</span>
+      </div>
+      <p style="color:var(--text-muted);">O NotebookLM dos Exercícios 1 e 2 é RAG por trás de uma interface pronta. Este bloco abre o capô com código Python de verdade — adaptado de um app Streamlit real, construído por um servidor público num trabalho de curso — rodando no <a href="https://colab.research.google.com/" target="_blank" rel="noopener">Google Colab</a>, sem instalar Python nem configurar nada na própria máquina.</p>
+      <p style="color:var(--text-muted); margin-top:10px;">Esta versão usa a abordagem mais simples possível: extrair o texto inteiro do PDF e colar no prompt, junto com a pergunta — sem chunking, sem embeddings, sem retrieval. Funciona bem quando o documento cabe na janela de contexto do modelo (é o caso aqui). É um contraste didático importante com as Etapas 1 e 2 desta aula: mostra que "RAG" no sentido amplo (buscar informação num documento antes de responder) pode ser tão simples quanto colar o texto todo — e por que, mesmo assim, a técnica de chunking + embeddings + retrieval existe e vale a pena para acervos maiores.</p>
+
+      <div class="concept-box" style="margin-top:20px;">
+        <h4>As fontes: dois documentos públicos reais, não fictícios</h4>
+        <p>Diferente do resto do curso, aqui os documentos são <strong>reais</strong>: o <a href="https://repositorio.enap.gov.br/handle/1/9959" target="_blank" rel="noopener">Relatório de Gestão 2023</a> e o <a href="https://repositorio.enap.gov.br/handle/1/8854" target="_blank" rel="noopener">Relatório de Gestão 2024</a> da Enap (Escola Nacional de Administração Pública), publicados no repositório institucional da própria Enap. É seguro usar como exemplo porque um relatório de gestão é, por definição, documento de prestação de contas — informação pública, o mesmo tipo de material que já embasou a regra de ouro do curso desde a Aula 0 (nunca dado real e sensível, mas informação pública é outra categoria). Os dois relatórios têm anos diferentes de propósito — dá pra fazer perguntas que só um dos dois responde, e perguntas que cruzam os dois.</p>
+      </div>
+
+      <p style="margin:16px 0; display:flex; gap:12px; flex-wrap:wrap;">
+        <a href="codigo/rag-exemplo/rag_enap_colab.ipynb" download target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; background:var(--gold); color:var(--ink); padding:10px 18px; border-radius:8px; text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+          Baixar o notebook (.ipynb)
+        </a>
+        <a href="codigo/rag-exemplo/documentos/relatorio_gestao_enap_2023.pdf" download target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+          Baixar Relatório de Gestão 2023
+        </a>
+        <a href="codigo/rag-exemplo/documentos/relatorio_gestao_enap_2024.pdf" download target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+          Baixar Relatório de Gestão 2024
+        </a>
+      </p>
+      <p class="copy-hint">Baixe os três antes de abrir o Colab — o notebook (.ipynb) é o que você vai carregar no Colab; os dois PDFs são o que o notebook vai pedir para enviar no Passo 1.</p>
+
+      <div class="callout" style="margin:16px 0 20px;">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        <p><strong>O botão do notebook abriu texto na tela, em vez de baixar?</strong> É esperado, dependendo de como você está vendo este material — se esta página foi aberta diretamente como arquivo (endereço começando com <code class="inline">file://</code>, não <code class="inline">http://</code>), o Chrome e outros navegadores desativam o download automático por segurança, mesmo com o botão certo no HTML. Não tem solução por código nesse caso — é só usar Ctrl+S (Cmd+S no Mac) na aba que abriu com o texto do notebook, ou clicar com o botão direito no botão dourado acima e escolher "Salvar link como".</p>
+      </div>
+
+      <div class="instruction-step" style="margin-top:20px;">
+        <span class="step-num">Como abrir</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Baixe o notebook e os dois PDFs pelos botões acima (usando Ctrl+S se o botão do notebook só abrir texto — veja o aviso acima).</li>
+          <li>Abra <a href="https://colab.research.google.com/" target="_blank" rel="noopener">colab.research.google.com</a> → Arquivo → Fazer upload de notebook → selecione o arquivo <code class="inline">rag_enap_colab.ipynb</code> baixado.</li>
+          <li>Ambiente de execução → Executar tudo. A célula do Passo 1 vai pedir para você enviar os dois PDFs baixados — selecione os dois de uma vez quando a caixa de upload aparecer.</li>
+        </ol>
+      </div>
+
+      <div class="callout" style="margin:16px 0 20px;">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        <p><strong>Por que upload manual, e não a ferramenta buscar sozinha:</strong> o servidor do repositório da Enap bloqueia pedidos automáticos vindos de faixas de IP de datacenter do Google — um <code class="inline">requests.get()</code> direto do Colab retorna <code class="inline">403 Forbidden</code>, mesmo o link funcionando normalmente no navegador de qualquer pessoa. Pedir upload evita esse problema por completo: o download acontece no seu navegador (sem bloqueio), só o envio para dentro do Colab é manual.</p>
+      </div>
+
+      <div class="code-box"><span class="comment"># Passo 0 — cliente da OpenAI e histórico (feito antes, nos Passos 1-3 do notebook)</span>
+client = OpenAI(api_key=api_key)
+historico = []
+
+<span class="comment"># Passo 1 — receber os dois PDFs por upload e extrair o texto inteiro</span>
+def extrair_texto_pdf(conteudo_pdf):
+    texto = ""
+    leitor = PyPDF2.PdfReader(io.BytesIO(conteudo_pdf))
+    for pagina in range(len(leitor.pages)):
+        texto += leitor.pages[pagina].extract_text() + "\n"
+    return texto
+
+enviados = files.upload()  <span class="comment"># abre a caixa de seleção de arquivo do navegador</span>
+texto_por_ano = {}
+for nome_arquivo, conteudo in enviados.items():
+    ano = "2023" if "2023" in nome_arquivo else "2024"
+    texto_por_ano[ano] = extrair_texto_pdf(conteudo)
+
+<span class="comment"># Passo 2 — montar o prompt: documento(s) inteiro(s) + histórico + pergunta</span>
+def perguntar(pergunta, anos=("2023", "2024")):
+    documento = "\n\n".join(f"[Relatório {a}]\n{texto_por_ano[a]}" for a in anos)
+    contexto = "\n".join(f"Pergunta: {h['pergunta']}\nResposta: {h['resposta']}" for h in historico)
+    prompt = f"Baseado no(s) documento(s):\n\n{documento}\n\nHistórico:\n{contexto}\n\nPergunta: {pergunta}\nResposta:"
+
+    <span class="comment"># Passo 3 — geração: chamar a OpenAI com o prompt montado</span>
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=200,
+    )
+    resposta = completion.choices[0].message.content
+    historico.append({"pergunta": pergunta, "resposta": resposta})
+    return resposta</div>
+      <p class="copy-hint">Código completo (incluindo o upload, a configuração da chave via <code class="inline">python-dotenv</code>, e uma segunda pergunta testando o histórico) no notebook. Números reais, medidos antes de publicar este material: o relatório de 2023 tem ~99.600 caracteres (~25 mil tokens) e o de 2024, ~174.300 caracteres (~43,6 mil tokens) — juntos, ~68,5 mil tokens, dentro dos 128 mil da janela de contexto do <code class="inline">gpt-4o-mini</code>, mas um bloco grande para reenviar a cada pergunta.</p>
+
+      <div class="code-box"><span class="comment"># Exemplo ilustrativo do tipo de resposta esperada — não é uma captura real da API</span>
+perguntar("Quantos participantes o Congresso do CLAD reuniu, e em qual ano isso aconteceu?")
+
+<span class="comment"># Resposta (ilustrativa):</span>
+"O Congresso Internacional do CLAD, mencionado no Relatório de Gestão
+de 2024, reuniu mais de mil participantes de 20 países. O evento
+ocorreu em 2024, sediado pela própria Enap."</div>
+      <p class="copy-hint">Este exemplo é ilustrativo — mostra o formato esperado da resposta, mas não é uma execução real capturada (a geração aqui depende de uma chave de API paga, que não foi acionada para preparar este material). O dado citado (mais de mil participantes, 20 países) é real e vem do próprio relatório, já usado como exemplo verificado no notebook baseado em embeddings.</p>
+
+      <div class="insight-box">
+        <span class="insight-tag">O que isso prova para a turma</span>
+        <p>Diferente do notebook com embeddings (onde o retrieval é de graça e só a geração final é paga), aqui <em>toda</em> pergunta já exige a chamada paga à OpenAI — não existe uma etapa intermediária gratuita, porque não há busca: o documento inteiro sempre vai junto. É o trade-off central desta demonstração: mais simples de programar, mas mais caro por pergunta e sem o "filtro" que o retrieval oferece.</p>
+      </div>
+
+      <div class="concept-box" style="margin-top:20px;">
+        <h4>Indo além do Colab: publicar como app de verdade</h4>
+        <p>O mesmo código deste notebook existe também como app Streamlit completo, com interface própria — em <code class="inline">aula-8/codigo/rag-exemplo/streamlit-app/app.py</code> — pronto para rodar localmente (<code class="inline">streamlit run app.py</code>) ou publicar de graça no <a href="https://streamlit.io/cloud" target="_blank" rel="noopener">Streamlit Community Cloud</a>. O passo a passo completo — configurar a chave num arquivo <code class="inline">.env</code> local, subir o projeto para o GitHub, e publicar — está em <code class="inline">streamlit-app/PUBLICAR.md</code>, na mesma pasta.</p>
+        <ul style="color:var(--text); line-height:1.7; padding-left:20px; margin-top:10px; display:grid; gap:6px; font-size:0.92rem;">
+          <li><strong>Local:</strong> a chave fica num arquivo <code class="inline">.env</code> (nunca comitado — está no <code class="inline">.gitignore</code>), carregado com <code class="inline">python-dotenv</code>.</li>
+          <li><strong>Git:</strong> <code class="inline">git init</code> → <code class="inline">git add .</code> → <code class="inline">git commit</code> → criar repositório no GitHub → <code class="inline">git push</code>.</li>
+          <li><strong>Streamlit Community Cloud:</strong> <a href="https://share.streamlit.io" target="_blank" rel="noopener">share.streamlit.io</a> → "Create app" → apontar repositório, branch e <code class="inline">app.py</code> → em "Advanced settings", colar a chave no campo "Secrets" (formato <code class="inline">OPENAI_API_KEY = "sk-..."</code>, diferente da sintaxe do <code class="inline">.env</code>) → "Deploy".</li>
+          <li>Plano gratuito: 690 MB–2,7 GB de RAM conforme a demanda, até 50 GB de armazenamento, 1 app privado por conta, e hibernação automática após 12h sem acesso (reativa sozinho na próxima visita).</li>
+        </ul>
+        <p class="copy-hint">Fonte: <a href="https://docs.streamlit.io/deploy/streamlit-community-cloud" target="_blank" rel="noopener">docs.streamlit.io/deploy/streamlit-community-cloud</a>. Este é o caminho natural para quem quiser transformar a demonstração de hoje num serviço de verdade, disponível para outras pessoas do órgão testarem — sem precisar saber hospedar servidor.</p>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-top:20px;">
+          <figure style="margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper);">
+            <img src="imagens/streamlit1.jpg" alt="Tela de escolha de plano, Free ou Pro, ao publicar" style="width:100%; display:block;">
+            <figcaption style="padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:0.74rem; color:var(--text-muted);">1. Escolher o plano Free ao publicar.</figcaption>
+          </figure>
+          <figure style="margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper);">
+            <img src="imagens/streamlit2.jpg" alt="Tela de autorização do Streamlit acessando a conta do GitHub" style="width:100%; display:block;">
+            <figcaption style="padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:0.74rem; color:var(--text-muted);">2. Autorizar o Streamlit a acessar sua conta do GitHub.</figcaption>
+          </figure>
+          <figure style="margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper);">
+            <img src="imagens/streamlit3.jpg" alt="Tela de confirmação de acesso com código de verificação" style="width:100%; display:block;">
+            <figcaption style="padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:0.74rem; color:var(--text-muted);">3. Confirmar o acesso com o código enviado por e-mail.</figcaption>
+          </figure>
+          <figure style="margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper);">
+            <img src="imagens/streamlit4.jpg" alt="Barra de navegação do Streamlit Cloud com o botão Create app em destaque" style="width:100%; display:block;">
+            <figcaption style="padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:0.74rem; color:var(--text-muted);">4. No painel, clicar em "Create app".</figcaption>
+          </figure>
+          <figure style="margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper);">
+            <img src="imagens/streamlit5.jpg" alt="Tela perguntando o que você gostaria de fazer, com a opção Deploy a public app from GitHub em destaque" style="width:100%; display:block;">
+            <figcaption style="padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:0.74rem; color:var(--text-muted);">5. Escolher "Deploy a public app from GitHub".</figcaption>
+          </figure>
+          <figure style="margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper);">
+            <img src="imagens/streamlit6.jpg" alt="Formulário de deploy com campos Repository, Branch, Main file path e App URL" style="width:100%; display:block;">
+            <figcaption style="padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:0.74rem; color:var(--text-muted);">6. Preencher repositório, branch, arquivo principal (aqui, <code class="inline">app.py</code>) e clicar em "Deploy".</figcaption>
+          </figure>
+        </div>
+        <p class="copy-hint" style="margin-top:12px;">Capturas de tela reais, do processo de publicação de um servidor público que fez esse mesmo curso — a tela muda de nome de vez em quando (hoje pergunta "What would you like to do?" antes de ir para o formulário do passo 6), mas o caminho geral é sempre repositório → branch → arquivo principal → secrets → deploy.</p>
+      </div>
+
+      <div class="insight-box" style="margin-top:20px;">
+        <span class="insight-tag">Exemplo publicado de verdade</span>
+        <p>O app deste bloco não é só teoria — está publicado em <a href="https://franciscomolina.streamlit.app/" target="_blank" rel="noopener">franciscomolina.streamlit.app</a>, feito por um servidor público que passou por este mesmo processo. Abra no celular ou no computador antes da aula para conferir se ainda está no ar e público (apps gratuitos hibernam depois de 12h sem acesso — visitar a URL já reativa sozinho).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESAFIO -->
+<section class="reveal" id="desafio" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Demonstração final · depois do tempo de execução · RAG sobre o SISPROT</span>
+          <h3>Perguntando ao próprio código, ao vivo</h3>
+        </div>
+        <span class="block-badge badge-gold">IA paga</span>
+      </div>
+      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos esta aula aplicando RAG de verdade sobre o SISPROT (PHP + MySQL), com o Claude Code.</p>
+
+      <div class="instruction-step">
+        <span class="step-num">Pré-requisitos</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Usaremos a cópia em <code class="inline">aula-8/codigo/</code> — o estado do SISPROT ao final da Aula 7.</li>
+          <li>Um projeto no Claude (claude.ai) com esses arquivos anexados como <em>project knowledge</em>, ou um terminal com <code class="inline">claude</code> rodando dentro da pasta.</li>
+        </ol>
+      </div>
+
+      <div class="concept-box" style="margin-top:20px;">
+        <h4>Comprar créditos na OpenAI, passo a passo</h4>
+        <p>É a mesma API usada no notebook Python da demonstração anterior (Passo 5, geração da resposta) — vale a pena conhecer o passo a passo de compra antes de precisar dele ao vivo. Não tem assinatura mensal: é crédito pré-pago, consumido por uso.</p>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; margin-top:10px; display:grid; gap:6px; font-size:0.92rem;">
+          <li>Crie uma conta em <code class="inline">platform.openai.com</code> → "Sign up" (separada de uma eventual assinatura do ChatGPT).</li>
+          <li>Gere a chave: "Settings" → "API keys" → <strong>"Create new secret key"</strong> → nomeie → <strong>"Create secret key"</strong> — copie na hora, ela só aparece uma vez.</li>
+          <li>Sem crédito, a chave não funciona: "Settings" → "Billing" → <strong>"Add payment method"</strong> → cadastrar cartão → <strong>"Add credit"</strong> → comprar um valor pré-pago (mínimo de US$ 5, na cobrança atual).</li>
+          <li>Créditos comprados expiram em um ano e não são reembolsáveis — comprar pouco de cada vez, conforme o uso, é mais seguro que comprar um valor alto de uma vez.</li>
+        </ol>
+
+        <div class="value-table-wrapper" style="margin-top:16px;">
+          <table class="value-table">
+            <thead><tr><th>Campo da tela</th><th>O que escolher, e por quê</th></tr></thead>
+            <tbody>
+              <tr><td>"Add payment method"</td><td>Cadastra o cartão — obrigatório antes de comprar qualquer crédito; sem isso a chave de API fica criada, mas não funciona.</td></tr>
+              <tr><td>"Add credit" (valor da compra)</td><td>US$ 5 (o mínimo atual) já é suficiente para testar bastante — o teste deste notebook consome só poucos centavos disso.</td></tr>
+              <tr><td>Auto-recharge (recarga automática)</td><td>Manter desligado num primeiro teste — evita comprar mais crédito automaticamente sem perceber; só vale ligar para um uso contínuo e já dimensionado.</td></tr>
+              <tr><td>Nome da chave (API key)</td><td>Um nome descritivo (ex.: "aula-rag") facilita identificar e revogar essa chave depois, sem afetar outras chaves da mesma conta.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="copy-hint">Passo a passo cruzado com a documentação da API (<a href="https://developers.openai.com/api/docs/quickstart" target="_blank" rel="noopener">developers.openai.com/api/docs/quickstart</a>) e múltiplas fontes independentes — o help center oficial da OpenAI bloqueou o acesso automatizado no momento da pesquisa, então nomes exatos de botão podem variar ligeiramente na tela real. Mesma lógica de custo por token da Etapa 3 da Aula 7 — vale decidir com critério antes de comprar um valor alto de uma vez.</p>
+      </div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Pergunta ao vivo</span>
+        <h4>Uma pergunta que exige juntar dois arquivos</h4>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt · pergunta sobre o projeto inteiro</span>Se eu enviar o formulário de protocolo com o campo "número" vazio, o que
+acontece? Rastreie o caminho completo: validação, banco de dados, e o
+que aparece pro usuário.</div>
+      <p class="copy-hint">Essa resposta exige juntar informação de pelo menos dois arquivos (<code class="inline">protocolo_form.php</code>, com a validação, e <code class="inline">conexao.php</code>, com a conexão PDO que só é usada se a validação passar) — o tipo de pergunta onde RAG sobre o projeto economiza abrir cada um manualmente. Vale comentar com a turma qual arquivo a ferramenta buscou primeiro, e se ela citou onde encontrou cada parte da resposta.</p>
+
+      <div class="insight-box">
+        <span class="insight-tag">Fechando a aula</span>
+        <p>RAG não substitui saber ler código ou lei — substitui a parte mecânica de <em>encontrar</em> o trecho certo antes de poder ler e decidir. Na Aula 9, olhamos para outra camada de automação: como pedir à IA para otimizar performance de verdade, medindo antes e depois, e como orquestrar mais de um agente de IA trabalhando numa mesma tarefa de desenvolvimento — incluindo o protocolo MCP, que é como uma ferramenta de IA se conecta a fontes de dados e outras ferramentas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FECHAMENTO -->
+<section class="pullquote reveal">
+  <div class="wrap" style="text-align:center;">
+    <div class="rule"></div>
+    <blockquote>Hoje a IA parou de responder só da memória e passou a buscar antes de falar. Na Aula 9, olhamos para dentro do código gerado — otimizando com medição de verdade, e coordenando mais de uma IA na mesma tarefa.</blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-left" style="display:flex; align-items:center; gap:14px;">
+      <span>SISPROT · Aula 8 · RAG: Buscando Antes de Responder</span>
+    </div>
+    <div class="footer-right"><span>Aula 8</span></div>
+  </div>
+</footer>
+
+<script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = scrolled + '%';
+  });
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  items.forEach(i => io.observe(i));
+
+  function verificarSequencia(inputId, resposta, gabaritoId, msgId) {
+    const raw = document.getElementById(inputId).value;
+    const input = raw.trim().toUpperCase().replace(/[^A-Z]/g, '');
+    const msg = document.getElementById(msgId);
+    const gabarito = document.getElementById(gabaritoId);
+    if (input === resposta) {
+      gabarito.style.display = 'block';
+      msg.textContent = 'Sequência correta — gabarito liberado abaixo.';
+      msg.style.color = 'var(--teal)';
+    } else {
+      gabarito.style.display = 'none';
+      msg.textContent = 'Ainda não — confira os itens de novo (só as letras da legenda, sem espaços).';
+      msg.style.color = 'var(--gold)';
+    }
+  }
+</script>
+</body>
+</html>
