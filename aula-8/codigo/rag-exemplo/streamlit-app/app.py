@@ -26,7 +26,8 @@ def extrair_texto_pdf(pdf_path):
     with open(pdf_path, "rb") as arquivo:
         leitor = PyPDF2.PdfReader(arquivo)
         for pagina in range(len(leitor.pages)):
-            texto += leitor.pages[pagina].extract_text() + "\n"
+            texto_pagina = leitor.pages[pagina].extract_text() or ""  # páginas sem texto extraível não quebram a extração
+            texto += texto_pagina + "\n"
     return texto
 
 # Configuração da página

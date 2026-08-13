@@ -415,11 +415,11 @@ prazo de recurso para indeferimento de protocolo administrativo?
 prazo de 10 (dez) dias úteis, contados da ciência da decisão, dirigido
 à autoridade imediatamente superior."</div>
     </div>
-    <p class="copy-hint">Na primeira versão, a IA nunca viu o Regimento Interno do seu órgão — ela vai <em>tentar</em> responder mesmo assim, arriscando um número que pode estar certo por sorte ou completamente errado. Na segunda, a resposta só pode vir do texto fornecido: é isso que RAG automatiza — encontrar esse trecho certo sozinho, sem alguém colar manualmente.</p>
+    <p class="copy-hint">Na primeira versão, a IA nunca viu o Regimento Interno do seu órgão — ela vai <em>tentar</em> responder mesmo assim, arriscando um número que pode estar certo por sorte ou completamente errado. Na segunda, a instrução restringe a resposta ao texto fornecido: é isso que RAG automatiza — encontrar esse trecho certo sozinho, sem alguém colar manualmente.</p>
 
     <div class="insight-box">
       <span class="insight-tag">A mesma alucinação da Aula 0, atacada pela raiz</span>
-      <p>A Aula 0 já ensinou a pedir "cite a fonte" para reduzir alucinação — um paliativo, porque a IA ainda podia inventar uma fonte que soa real. RAG é a versão estrutural dessa ideia: a fonte não é pedida depois, ela é <em>entregue antes</em>, como parte do material que a IA usa para responder. A IA ainda pode errar ao interpretar o trecho, mas não pode mais inventar um trecho que não existe.</p>
+      <p>A Aula 0 já ensinou a pedir "cite a fonte" para reduzir alucinação — um paliativo, porque a IA ainda podia inventar uma fonte que soa real. RAG é a versão estrutural dessa ideia: a fonte não é pedida depois, ela é <em>entregue antes</em>, como parte do material que a IA usa para responder. Isso reduz bastante o risco de a IA inventar um trecho que não existe — mas não elimina o risco por completo, nem garante que a interpretação do trecho real esteja certa. A resposta ainda pode sair errada; fica só mais fácil auditar de onde ela veio.</p>
     </div>
 
     <div class="instruction-step" style="margin-top:28px;">
@@ -489,7 +489,7 @@ de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
   <div class="wrap">
     <div class="concept-box">
       <h4>Definição: chunking, embeddings e índice vetorial</h4>
-      <p><strong>Chunking</strong> é dividir um documento grande em pedaços menores (em geral, no máximo algumas centenas de palavras) — pedaço pequeno demais perde contexto, grande demais dilui o que é relevante. Cada pedaço vira um <strong>embedding</strong>: uma representação numérica (um vetor) que captura o significado do texto, não só as palavras exatas. Esses vetores ficam guardados num <strong>índice vetorial</strong> (vector database), organizado para buscar por <em>proximidade de significado</em>, não por palavra-chave literal (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>).</p>
+      <p><strong>Chunking</strong> é dividir um documento grande em pedaços menores (em geral, no máximo algumas centenas de palavras) — pedaço pequeno demais perde contexto, grande demais dilui o que é relevante. Cada pedaço vira um <strong>embedding</strong>: uma representação numérica (um vetor) que captura o significado do texto, não só as palavras exatas. Esses vetores ficam guardados num <strong>índice vetorial</strong> (vector database), organizado para buscar por <em>proximidade de significado</em> (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>).</p>
     </div>
 
     <div class="diagram-frame">
@@ -553,7 +553,7 @@ de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
 
     <div class="insight-box">
       <span class="insight-tag">Retrieval, em uma frase</span>
-      <p><strong>Retrieval</strong> é a busca em si: pegar o embedding da pergunta e encontrar, no índice vetorial, os pedaços de documento com significado mais próximo — não os que contêm as mesmas palavras, os que <em>significam</em> a mesma coisa. É por isso que uma pergunta com palavras diferentes do documento original ainda pode encontrar o trecho certo.</p>
+      <p><strong>Retrieval</strong> é a busca em si: encontrar, entre os pedaços indexados, os mais relevantes para a pergunta. <strong>Busca semântica</strong> (por embeddings, como o diagrama acima) é <em>uma</em> estratégia — compara significado, não texto exato, o que permite encontrar o trecho certo mesmo com palavras diferentes das do documento original. Mas não é a única: <strong>busca lexical</strong> compara palavras/termos exatos (útil para códigos, siglas e nomes próprios, que um embedding às vezes borra); <strong>busca híbrida</strong> combina as duas; <strong>filtros por metadados</strong> restringem a busca por data, tipo de documento ou setor antes mesmo de comparar significado; e um passo de <strong>reranking</strong> pode reordenar os resultados encontrados com um modelo mais caro e preciso, só nos poucos candidatos que sobraram. Esta aula usa busca semântica como exemplo principal porque é a mais comum em ferramentas prontas (como o NotebookLM do Mão na massa), não porque seja a única forma correta de fazer retrieval.</p>
     </div>
 
     <div class="instruction-step" style="margin-top:28px;">
@@ -582,8 +582,8 @@ de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
     <div class="instruction-step" style="margin-top:28px;">
       <span class="step-num">Exercício rápido · individual · 5 min</span>
       <h4>Isso bateria numa busca por significado?</h4>
-      <p style="color:var(--text-muted);">Para cada par pergunta/trecho abaixo, decida se um retrieval por embeddings encontraria esse trecho para essa pergunta — mesmo sem nenhuma palavra em comum entre os dois (<strong>S</strong>), ou se os dois são sobre assuntos diferentes e não deveriam bater (<strong>N</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
-      <div class="quiz-legend"><strong>S</strong> = bate, é o mesmo assunto com outras palavras &nbsp;·&nbsp; <strong>N</strong> = não bate, assunto diferente</div>
+      <p style="color:var(--text-muted);">Para cada par pergunta/trecho abaixo, decida se você <em>esperaria</em> que um retrieval por embeddings desse alta relevância a esse trecho para essa pergunta — mesmo sem nenhuma palavra em comum entre os dois (<strong>S</strong>) — ou se os dois são sobre assuntos diferentes, e não seria esperado que uma busca por significado os aproximasse (<strong>N</strong>). O resultado real depende do modelo de embedding, do corpus e de como o texto foi cortado em chunks — aqui é sobre expectativa, não uma garantia matemática. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>S</strong> = esperado alta relevância, mesmo assunto com outras palavras &nbsp;·&nbsp; <strong>N</strong> = esperado baixa relevância, assunto diferente</div>
       <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
         <li>Pergunta: "Quanto tempo dura o mandato do dirigente?" · Trecho: "O gestor exerce a função por um período de quatro anos."</li>
         <li>Pergunta: "Qual é a cor do formulário de protocolo?" · Trecho: "O prazo de resposta ao requerente é de 10 dias úteis."</li>
@@ -598,7 +598,7 @@ de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
       </div>
       <p id="msgRAG2B" class="quiz-msg"></p>
       <div id="gabaritoRAG2B" class="quiz-gabarito">
-        <p class="copy-hint">1, 3, 4 e 6 são o mesmo assunto dito com palavras diferentes — "mandato" e "período de quatro anos", "recorrer" e "cabe recurso", "10 MB" e "dez megabytes", "assinar o despacho" e "alçada para homologar". 2 e 5 são sobre assuntos genuinamente diferentes (cor de formulário ≠ prazo de resposta; backup de banco ≠ sigilo de dado pessoal) — nenhuma busca por significado deveria juntar esses pares, por mais que ambos "pareçam" administrativos.</p>
+        <p class="copy-hint">1, 3, 4 e 6 são o mesmo assunto dito com palavras diferentes — "mandato" e "período de quatro anos", "recorrer" e "cabe recurso", "10 MB" e "dez megabytes", "assinar o despacho" e "alçada para homologar" — o tipo de par que uma busca semântica bem treinada tende a aproximar. 2 e 5 são sobre assuntos genuinamente diferentes (cor de formulário ≠ prazo de resposta; backup de banco ≠ sigilo de dado pessoal) — não seria esperado que uma busca por significado juntasse esses pares, por mais que ambos "pareçam" administrativos, embora nenhum modelo de embedding garanta esse resultado com 100% de certeza em todo corpus.</p>
       </div>
     </div>
   </div>
@@ -679,16 +679,16 @@ arquivo faz isso, e o que acontece se o campo "número" vier vazio?</div>
 
     <div class="insight-box">
       <span class="insight-tag">Amarra direto com a Aula 7</span>
-      <p>A <a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">LGPD</a> e a <a href="https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/abril/mgi-institui-politica-de-governanca-de-inteligencia-artificial-no-ambito-do-ministerio" target="_blank" rel="noopener">Portaria MGI nº 3.485/2026</a>, que vimos na Aula 7, são exatamente o tipo de base normativa que se beneficia de RAG: em vez de perguntar "o que a LGPD diz sobre X" e confiar na memória da IA (arriscando um artigo errado), colar ou indexar o texto real da lei garante que a resposta cite o artigo certo. É a mesma diferença entre os dois prompts da Etapa 1, aplicada à lei que este curso já vem citando desde a Aula 7.</p>
+      <p>A <a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">LGPD</a> e a <a href="https://www.gov.br/gestao/pt-br/assuntos/noticias/2026/abril/mgi-institui-politica-de-governanca-de-inteligencia-artificial-no-ambito-do-ministerio" target="_blank" rel="noopener">Portaria MGI nº 3.485/2026</a>, que vimos na Aula 7, são exatamente o tipo de base normativa que se beneficia de RAG: em vez de perguntar "o que a LGPD diz sobre X" e confiar na memória da IA (arriscando um artigo errado), colar ou indexar o texto real da lei reduz bastante esse risco e permite que a resposta cite o artigo certo — sem eliminar por completo a chance de erro de busca ou de interpretação. É a mesma diferença entre os dois prompts da Etapa 1, aplicada à lei que este curso já vem citando desde a Aula 7.</p>
     </div>
 
     <div class="value-table-wrapper">
       <table class="value-table">
         <thead><tr><th>Sem RAG</th><th>Com RAG sobre a norma</th></tr></thead>
         <tbody>
-          <tr><td>A IA responde com o que "lembra" da lei — pode confundir artigos, ou citar uma versão desatualizada.</td><td>A IA busca o texto vigente antes de responder — a resposta reflete a norma real, não a memória do treino.</td></tr>
+          <tr><td>A IA responde com o que "lembra" da lei — pode confundir artigos, ou citar uma versão desatualizada.</td><td>Com um índice atualizado, a IA busca o texto vigente antes de responder — a resposta tende a refletir a norma real, em vez da memória do treino.</td></tr>
           <tr><td>Não dá para conferir de onde veio a resposta.</td><td>A resposta pode citar o artigo/trecho exato usado — auditável por um humano depois.</td></tr>
-          <tr><td>Atualizar a norma exige esperar o próximo treinamento do modelo.</td><td>Atualizar a norma é só trocar o documento indexado — a IA já responde com a versão nova.</td></tr>
+          <tr><td>Atualizar a norma exige esperar o próximo treinamento do modelo.</td><td>Atualizar a norma é só trocar o documento indexado — mas alguém precisa fazer isso; um índice esquecido volta a responder com a versão antiga (a Etapa 5 detalha esse risco).</td></tr>
         </tbody>
       </table>
     </div>
@@ -762,6 +762,25 @@ esse artigo falso como se fosse norma vigente.</div>
     <div class="insight-box">
       <span class="insight-tag">Manter o índice não é "configurar uma vez"</span>
       <p>Voltando à Etapa 2: cada vez que um documento-fonte muda, os trechos e embeddings relacionados a ele precisam ser refeitos — um índice desatualizado responde com uma versão antiga da norma, do jeito exato que RAG deveria evitar. Isso é trabalho contínuo, não uma configuração de uma vez só — vale levar em conta antes de prometer que "a IA sempre vai responder com a versão mais recente" sem alguém cuidando da atualização do índice.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>RAG não é garantia de verdade</h4>
+      <p>Os quatro riscos desta etapa se encaixam em duas cadeias de falha, e só uma delas está no buscador:</p>
+      <div class="code-box" style="font-size:0.86rem;">Fonte errada (ou envenenada, ou desatualizada)
+    ↓
+retrieval "funciona" — encontra o trecho, só que o trecho está errado
+    ↓
+contexto errado entra no prompt
+    ↓
+resposta errada, mas com aparência de embasada
+
+Fonte correta, retrieval correto (achou o trecho certo)
+    ↓
+o LLM interpreta mal o trecho, ou ignora parte dele ("lost in the middle")
+    ↓
+resposta ainda pode estar errada, mesmo com a busca tendo funcionado perfeitamente</div>
+      <p style="margin-top:10px;">A mensagem central: <strong>RAG melhora o acesso a evidências — buscar antes de responder é sempre mais auditável do que confiar só na memória do modelo — mas não substitui validação humana.</strong> Uma resposta com fonte citada ainda precisa ser conferida, principalmente antes de qualquer uso oficial; a citação prova de onde a IA <em>disse</em> que tirou a informação, não que a resposta está certa.</p>
     </div>
 
     <div class="instruction-step" style="margin-top:28px;">
@@ -903,13 +922,29 @@ esse artigo falso como se fosse norma vigente.</div>
     <div class="block-card">
       <div class="block-header">
         <div class="block-title-area">
-          <span class="eyebrow">Demonstração · instrutor mostra, turma acompanha · 15 min</span>
-          <h3>RAG por dentro: implementação real em Python</h3>
+          <span class="eyebrow">Demonstração · instrutor mostra, turma acompanha · 20 min</span>
+          <h3>RAG por dentro: duas implementações reais, lado a lado</h3>
         </div>
         <span class="block-badge badge-gold">Google Colab · sem instalar nada</span>
       </div>
-      <p style="color:var(--text-muted);">O NotebookLM dos Exercícios 1 e 2 é RAG por trás de uma interface pronta. Este bloco abre o capô com código Python de verdade — adaptado de um app Streamlit real, construído por um servidor público num trabalho de curso — rodando no <a href="https://colab.research.google.com/" target="_blank" rel="noopener">Google Colab</a>, sem instalar Python nem configurar nada na própria máquina.</p>
-      <p style="color:var(--text-muted); margin-top:10px;">Esta versão usa a abordagem mais simples possível: extrair o texto inteiro do PDF e colar no prompt, junto com a pergunta — sem chunking, sem embeddings, sem retrieval. Funciona bem quando o documento cabe na janela de contexto do modelo (é o caso aqui). É um contraste didático importante com as Etapas 1 e 2 desta aula: mostra que "RAG" no sentido amplo (buscar informação num documento antes de responder) pode ser tão simples quanto colar o texto todo — e por que, mesmo assim, a técnica de chunking + embeddings + retrieval existe e vale a pena para acervos maiores.</p>
+      <p style="color:var(--text-muted);">O NotebookLM dos Exercícios 1 e 2 é RAG por trás de uma interface pronta. Este bloco abre o capô com código Python de verdade, em dois notebooks que respondem à mesma pergunta de dois jeitos diferentes — rodando no <a href="https://colab.research.google.com/" target="_blank" rel="noopener">Google Colab</a>, sem instalar Python nem configurar nada na própria máquina.</p>
+      <div class="value-table-wrapper" style="margin-top:16px;">
+        <table class="value-table">
+          <thead><tr><th></th><th><code class="inline">rag_enap_colab.ipynb</code></th><th><code class="inline">rag_enap_colab_embeddings.ipynb</code></th></tr></thead>
+          <tbody>
+            <tr><td>O que faz</td><td>Extrai o texto inteiro do PDF e cola no prompt, junto com a pergunta.</td><td>Faz chunking, gera embeddings, busca por similaridade e manda só os trechos relevantes ao prompt.</td></tr>
+            <tr><td>Chunking / embeddings / retrieval</td><td>Não tem — é a abordagem mais simples possível.</td><td>Tem os três — é o fluxo completo das Etapas 1 e 2 desta aula.</td></tr>
+            <tr><td>Quando faz sentido</td><td>Documento(s) pequeno(s) o bastante para caber na janela de contexto do modelo (é o caso aqui).</td><td>Acervos maiores, onde reenviar tudo a cada pergunta fica caro ou impossível.</td></tr>
+            <tr><td>Origem</td><td>Adaptado de um app Streamlit real, construído por um servidor público num trabalho de curso.</td><td>Implementação de referência desta aula, com o mesmo par de documentos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="copy-hint">Nenhuma das duas é "a errada" — são pontos diferentes do mesmo espectro. O resto desta seção mostra as duas, começando pela mais simples.</p>
+
+      <div class="module-divider" style="margin:28px 0 0; padding:32px 28px; border-radius:12px;">
+        <span class="modnum" style="margin-bottom:8px;">Primeira implementação</span>
+        <h2 style="font-size:1.3rem;">Documento inteiro no prompt, sem retrieval</h2>
+      </div>
 
       <div class="concept-box" style="margin-top:20px;">
         <h4>As fontes: dois documentos públicos reais, não fictícios</h4>
@@ -960,14 +995,23 @@ def extrair_texto_pdf(conteudo_pdf):
     texto = ""
     leitor = PyPDF2.PdfReader(io.BytesIO(conteudo_pdf))
     for pagina in range(len(leitor.pages)):
-        texto += leitor.pages[pagina].extract_text() + "\n"
+        texto_pagina = pagina.extract_text() or ""  <span class="comment"># página sem texto extraível não quebra</span>
+        texto += texto_pagina + "\n"
     return texto
 
 enviados = files.upload()  <span class="comment"># abre a caixa de seleção de arquivo do navegador</span>
-texto_por_ano = {}
+pdf_bytes_por_ano = {}
 for nome_arquivo, conteudo in enviados.items():
-    ano = "2023" if "2023" in nome_arquivo else "2024"
-    texto_por_ano[ano] = extrair_texto_pdf(conteudo)
+    if "2023" in nome_arquivo:
+        pdf_bytes_por_ano["2023"] = conteudo
+    elif "2024" in nome_arquivo:
+        pdf_bytes_por_ano["2024"] = conteudo
+
+faltando = {"2023", "2024"} - set(pdf_bytes_por_ano.keys())
+if faltando:
+    raise RuntimeError(f"Envie os relatórios de {' e '.join(sorted(faltando))} para continuar.")
+
+texto_por_ano = {ano: extrair_texto_pdf(c) for ano, c in pdf_bytes_por_ano.items()}
 
 <span class="comment"># Passo 2 — montar o prompt: documento(s) inteiro(s) + histórico + pergunta</span>
 def perguntar(pergunta, anos=("2023", "2024")):
@@ -997,7 +1041,85 @@ ocorreu em 2024, sediado pela própria Enap."</div>
 
       <div class="insight-box">
         <span class="insight-tag">O que isso prova para a turma</span>
-        <p>Diferente do notebook com embeddings (onde o retrieval é de graça e só a geração final é paga), aqui <em>toda</em> pergunta já exige a chamada paga à OpenAI — não existe uma etapa intermediária gratuita, porque não há busca: o documento inteiro sempre vai junto. É o trade-off central desta demonstração: mais simples de programar, mas mais caro por pergunta e sem o "filtro" que o retrieval oferece.</p>
+        <p>Diferente do notebook com embeddings, a seguir (onde o retrieval é de graça e só a geração final é paga), aqui <em>toda</em> pergunta já exige a chamada paga à OpenAI — não existe uma etapa intermediária gratuita, porque não há busca: o documento inteiro sempre vai junto. É o trade-off central desta demonstração: mais simples de programar, mas mais caro por pergunta e sem o "filtro" que o retrieval oferece.</p>
+      </div>
+
+      <div class="module-divider" style="margin:36px 0 0; padding:32px 28px; border-radius:12px;">
+        <span class="modnum" style="margin-bottom:8px;">Segunda implementação</span>
+        <h2 style="font-size:1.3rem;">Com retrieval de verdade: chunking + embeddings + similaridade</h2>
+      </div>
+
+      <p style="color:var(--text-muted); margin-top:20px;">Mesmos dois relatórios, mesma pergunta de teste — mas agora o texto passa pelo fluxo completo da Etapa 2 antes de qualquer chamada paga: dividir em pedaços, transformar cada um num vetor (localmente, de graça, com a biblioteca <code class="inline">sentence-transformers</code>), comparar por similaridade de cosseno, e mandar ao modelo só os <code class="inline">TOP_K</code> pedaços mais relevantes — não os relatórios inteiros.</p>
+
+      <p style="margin:16px 0;">
+        <a href="codigo/rag-exemplo/rag_enap_colab_embeddings.ipynb" download target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; background:var(--gold); color:var(--ink); padding:10px 18px; border-radius:8px; text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+          Baixar o notebook com retrieval (.ipynb)
+        </a>
+      </p>
+      <p class="copy-hint">Usa os mesmos dois PDFs já baixados na implementação anterior — não precisa baixar de novo. Abra no Colab do mesmo jeito: Arquivo → Fazer upload de notebook.</p>
+
+      <div class="code-box"><span class="comment"># Chunking — pedaço pequeno demais perde contexto, grande demais dilui relevância</span>
+def dividir_em_chunks(texto, tamanho=800, sobreposicao=100):
+    chunks = []
+    inicio = 0
+    n = len(texto)
+    while inicio < n:
+        fim = min(inicio + tamanho, n)
+        chunk = texto[inicio:fim].strip()
+        if chunk:
+            chunks.append(chunk)
+        if fim == n:
+            break
+        inicio = fim - sobreposicao
+    return chunks
+
+<span class="comment"># Embeddings — local, de graça, modelo multilíngue (funciona em português)</span>
+from sentence_transformers import SentenceTransformer
+modelo = SentenceTransformer("paraphrase-multilingual-MiniLM-L12-v2")
+vetores = modelo.encode([c["texto"] for c in todos_chunks])
+
+<span class="comment"># Similaridade de cosseno + top-k — o coração do retrieval</span>
+def similaridade_cosseno(a, b):
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-10))
+
+def buscar(pergunta, top_k=5):
+    emb = modelo.encode([pergunta])[0]
+    resultados = [(c, similaridade_cosseno(emb, c["embedding"])) for c in todos_chunks]
+    resultados.sort(key=lambda par: par[1], reverse=True)
+    return resultados[:top_k]</div>
+      <p class="copy-hint">Código completo (incluindo a extração dos PDFs, a montagem do índice e a chamada final à OpenAI só com os trechos recuperados) no notebook.</p>
+
+      <div class="concept-box" style="margin-top:20px;">
+        <h4>Chunks recuperados de verdade — execução real, não ilustrativa</h4>
+        <p>Testado nos dois relatórios reais desta aula (395 chunks ao todo, 800 caracteres cada) para a mesma pergunta do exemplo anterior. Os scores abaixo são a saída real de <code class="inline">buscar()</code> — sem chamar a OpenAI, só a parte gratuita do pipeline:</p>
+        <div class="code-box" style="font-size:0.8rem;">Pergunta: Quantos participantes o Congresso do CLAD reuniu, e em qual ano isso aconteceu?
+
+[Relatório 2024, chunk 2024-209] score=0.612
+  "...XXIX Congresso Internacional CLAD: 'A transformação necessária
+  para um Estado inclusivo, democrático...'"
+[Relatório 2024, chunk 2024-6]   score=0.573
+[Relatório 2024, chunk 2024-168] score=0.526
+[Relatório 2024, chunk 2024-159] score=0.501
+[Relatório 2023, chunk 2023-87]  score=0.489</div>
+        <p class="copy-hint">O trecho certo (o que de fato menciona o Congresso do CLAD) ficou em primeiro, com a maior margem de score sobre os demais — o retrieval funcionou. Repare que os scores não são perto de 1.0 nem formam um "corte" óbvio entre relevante e irrelevante — é a mesma lição do exercício da Etapa 2: similaridade de cosseno é uma ordenação, não um veredito binário.</p>
+      </div>
+
+      <div class="value-table-wrapper" style="margin-top:20px;">
+        <table class="value-table">
+          <thead><tr><th></th><th>Documento inteiro</th><th>RAG com retrieval (top-5)</th></tr></thead>
+          <tbody>
+            <tr><td>O que é enviado por pergunta</td><td>Os 2 relatórios completos</td><td>5 dos 395 chunks indexados</td></tr>
+            <tr><td>Caracteres enviados (medido)</td><td>~276.000</td><td>~4.000</td></tr>
+            <tr><td>Tokens aproximados</td><td>~69.000</td><td>~1.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="copy-hint">Números medidos neste acervo específico (chunk de 800 caracteres, top-5) — mudam com outro tamanho de chunk, outro <code class="inline">TOP_K</code>, ou outro corpus. O ponto não é o número exato, é a ordem de grandeza: retrieval manda uma fração pequena do que existe, não tudo — por isso escala para acervos muito maiores do que dois relatórios.</p>
+
+      <div class="insight-box">
+        <span class="insight-tag">Companheiro em Streamlit</span>
+        <p>O mesmo fluxo com retrieval também existe como app Streamlit, em <code class="inline">streamlit-app/app_retrieval.py</code> — companheiro do <code class="inline">app.py</code> já publicado (documento inteiro), mostrando na própria interface os chunks recuperados, o score de cada um, e a fonte usada antes de exibir a resposta final.</p>
       </div>
 
       <div class="concept-box" style="margin-top:20px;">
