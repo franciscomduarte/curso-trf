@@ -124,7 +124,8 @@
 
   .shot-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:20px; margin-top:20px;}
   .shot-figure{margin:0; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--paper);}
-  .shot-figure img{width:100%; display:block;}
+  .shot-figure .shot-img-wrap{width:100%; aspect-ratio:16/9; background:var(--surface); overflow:hidden;}
+  .shot-figure img{width:100%; height:100%; object-fit:cover; object-position:top left; display:block;}
   .shot-figure figcaption{padding:12px 16px; font-family:'JetBrains Mono',monospace; font-size:0.74rem; color:var(--text-muted); border-top:1px solid var(--line);}
   .shot-placeholder{aspect-ratio:16/10; background:linear-gradient(135deg, var(--surface), rgba(184,137,43,0.08)); border:1px dashed var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--text-muted); font-size:0.85rem; padding:20px; text-align:center;}
   .shot-placeholder svg{width:34px; height:34px; color:var(--gold);}
@@ -223,15 +224,18 @@
       <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:0;">Duas capturas de tela do SISPROT em produção hoje vão servir de referência funcional para o Stitch — a listagem de protocolos e o formulário de novo protocolo. São elas que mostram todos os campos, colunas e ações que o novo design precisa preservar.</p>
       <div class="shot-grid">
         <figure class="shot-figure">
-          <img src="imagens/protocolos-lista-atual.png" alt="Tela atual de listagem de Protocolos do SISPROT, com tabela de número, assunto, requerente, data, status, prioridade, setor de origem, anexos, setor atual e ações" onerror="this.parentElement.innerHTML='&lt;div class=&quot;shot-placeholder&quot;&gt;&lt;svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.6&quot;&gt;&lt;rect x=&quot;3&quot; y=&quot;5&quot; width=&quot;18&quot; height=&quot;14&quot; rx=&quot;2&quot;/&gt;&lt;path d=&quot;M3 9h18M8 13h8M8 17h5&quot;/&gt;&lt;/svg&gt;&lt;span&gt;Salvar aqui: imagens/protocolos-lista-atual.png&lt;/span&gt;&lt;/div&gt;'">
+          <div class="shot-img-wrap">
+            <img src="imagens/protocolos-lista-atual.png" alt="Tela atual de listagem de Protocolos do SISPROT, com tabela de número, assunto, requerente, data, status, prioridade, setor de origem, anexos, setor atual e ações" onerror="this.parentElement.outerHTML='&lt;div class=&quot;shot-placeholder&quot;&gt;&lt;svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.6&quot;&gt;&lt;rect x=&quot;3&quot; y=&quot;5&quot; width=&quot;18&quot; height=&quot;14&quot; rx=&quot;2&quot;/&gt;&lt;path d=&quot;M3 9h18M8 13h8M8 17h5&quot;/&gt;&lt;/svg&gt;&lt;span&gt;Salvar aqui: imagens/protocolos-lista-atual.png&lt;/span&gt;&lt;/div&gt;'">
+          </div>
           <figcaption>Tela atual — Lista de Protocolos.</figcaption>
         </figure>
         <figure class="shot-figure">
-          <img src="imagens/novo-protocolo-atual.png" alt="Tela atual de cadastro de Novo Protocolo do SISPROT, com campos número, data de abertura, assunto, nome do requerente, status, prioridade, setor de origem e seção de anexos" onerror="this.parentElement.innerHTML='&lt;div class=&quot;shot-placeholder&quot;&gt;&lt;svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.6&quot;&gt;&lt;rect x=&quot;3&quot; y=&quot;5&quot; width=&quot;18&quot; height=&quot;14&quot; rx=&quot;2&quot;/&gt;&lt;path d=&quot;M3 9h18M8 13h8M8 17h5&quot;/&gt;&lt;/svg&gt;&lt;span&gt;Salvar aqui: imagens/novo-protocolo-atual.png&lt;/span&gt;&lt;/div&gt;'">
+          <div class="shot-img-wrap">
+            <img src="imagens/novo-protocolo-atual.jpg" alt="Tela atual de cadastro de Novo Protocolo do SISPROT, com campos número, data de abertura, assunto, nome do requerente, status, prioridade, setor de origem e seção de anexos" onerror="this.parentElement.outerHTML='&lt;div class=&quot;shot-placeholder&quot;&gt;&lt;svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.6&quot;&gt;&lt;rect x=&quot;3&quot; y=&quot;5&quot; width=&quot;18&quot; height=&quot;14&quot; rx=&quot;2&quot;/&gt;&lt;path d=&quot;M3 9h18M8 13h8M8 17h5&quot;/&gt;&lt;/svg&gt;&lt;span&gt;Salvar aqui: imagens/novo-protocolo-atual.jpg&lt;/span&gt;&lt;/div&gt;'">
+          </div>
           <figcaption>Tela atual — Formulário de Novo Protocolo.</figcaption>
         </figure>
       </div>
-      <p class="copy-hint">Se as imagens acima não aparecerem, salve as duas capturas de tela em <code class="inline">aula-extra1/imagens/</code> com os nomes <code class="inline">protocolos-lista-atual.png</code> e <code class="inline">novo-protocolo-atual.png</code>.</p>
     </div>
 
     <div class="instruction-step">
