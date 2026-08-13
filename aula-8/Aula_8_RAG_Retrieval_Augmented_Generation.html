@@ -481,7 +481,7 @@ de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
       <span class="modnum">Etapa 2</span>
     </div>
     <h2>Arquitetura de um sistema RAG</h2>
-    <p class="modsub">Quatro peças, sempre na mesma ordem: fragmentar, transformar em vetor, indexar, buscar.</p>
+    <p class="modsub">Neste exemplo, vamos visualizar quatro peças principais: fragmentar, transformar em vetor, indexar, buscar.</p>
   </div>
 </section>
 
@@ -733,8 +733,8 @@ arquivo faz isso, e o que acontece se o campo "número" vier vazio?</div>
 <section class="reveal">
   <div class="wrap">
     <div class="concept-box">
-      <h4>Definição: falha de recuperação (retrieval failure)</h4>
-      <p>RAG só funciona se o buscador encontrar o trecho certo — e ele nem sempre encontra. Dois motivos comuns: (1) um chunk isolado perde o contexto ao redor (ex.: um trecho dizendo "a receita da empresa cresceu 3%" não diz mais qual empresa, qual trimestre, depois de cortado do resto do documento); (2) busca por significado pode não bater com busca por texto exato — uma pergunta sobre um código de erro específico pode recuperar conteúdo genérico sobre "erros", não o código certo. A própria Anthropic mediu isso: no experimento de <em>contextual retrieval</em> citado nesta aula, a configuração de referência (RAG básico, buscando entre os 20 trechos mais prováveis) falhou em recuperar o trecho certo em <strong>5,7% das consultas testadas</strong>; técnicas melhores reduziram para 2,9% ou 1,9% naquele mesmo experimento — nunca chegando a zero (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>). Esses números são desse corpus e desse experimento específicos, não uma taxa universal de erro de RAG — o ponto que importa é que a falha de recuperação existe e não zera, não o percentual exato.</p>
+      <h4>Definição: falha de recuperação ou contexto insuficiente no chunk (retrieval failure)</h4>
+      <p>RAG só funciona se o buscador encontrar o trecho certo — e ele nem sempre encontra. Dois motivos comuns, com origens diferentes: (1) <strong>contexto insuficiente no chunk</strong> — o chunking cortou mal, e um pedaço isolado perde o contexto ao redor (ex.: um trecho dizendo "a receita da empresa cresceu 3%" não diz mais qual empresa, qual trimestre, depois de cortado do resto do documento); (2) <strong>falha de recuperação propriamente dita</strong> — o chunk até está bem formado, mas a busca não o encontra: busca por significado pode não bater com busca por texto exato, e uma pergunta sobre um código de erro específico pode recuperar conteúdo genérico sobre "erros", não o código certo. A própria Anthropic mediu isso: no experimento de <em>contextual retrieval</em> citado nesta aula, a configuração de referência (RAG básico, buscando entre os 20 trechos mais prováveis) falhou em recuperar o trecho certo em <strong>5,7% das consultas testadas</strong>; técnicas melhores reduziram para 2,9% ou 1,9% naquele mesmo experimento — nunca chegando a zero (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>). Esses números são desse corpus e desse experimento específicos, não uma taxa universal de erro de RAG — o ponto que importa é que a falha de recuperação existe e não zera, não o percentual exato.</p>
     </div>
 
     <div class="concept-box">
