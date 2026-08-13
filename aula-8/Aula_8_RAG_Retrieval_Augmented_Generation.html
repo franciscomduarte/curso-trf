@@ -334,7 +334,7 @@
     <div class="sec-head">
       <span class="eyebrow">Sobre esta aula</span>
       <h2>Buscar antes de responder</h2>
-      <p class="sub">Um modelo de IA "sabe" o que estava nos dados de treino — nada além disso. Ele não leu o regimento interno do seu órgão, nem a versão mais recente de uma norma, nem o código do SISPROT. RAG (Retrieval-Augmented Generation) é a técnica que resolve isso: buscar o trecho relevante de um documento de verdade e entregá-lo à IA junto com a pergunta, para a resposta nascer do texto, não da memória.</p>
+      <p class="sub">Um modelo de IA "sabe" o que estava nos dados de treino — nada além disso. Ele não leu o regimento interno do seu órgão, nem a versão mais recente de uma norma, nem o código do SISPROT. RAG (Retrieval-Augmented Generation) é a técnica que ataca isso pela raiz: fornece ao modelo trechos relevantes de documentos externos para que ele gere a resposta usando essas fontes como contexto, em vez de depender só do que aprendeu durante o treinamento.</p>
     </div>
     <div class="agenda-list">
       <div class="agenda-row"><div class="dotm">01</div><p>O que é RAG e por que ele existe</p></div>
@@ -342,7 +342,7 @@
       <div class="agenda-row"><div class="dotm">03</div><p>RAG no desenvolvimento de software</p></div>
       <div class="agenda-row"><div class="dotm">04</div><p>RAG em bases normativas</p></div>
       <div class="agenda-row"><div class="dotm">05</div><p>Limites e riscos do RAG</p></div>
-      <div class="agenda-row"><div class="dotm">06</div><p>Mão na massa: RAG de verdade, sem instalar nada</p></div>
+      <div class="agenda-row"><div class="dotm">06</div><p>Mão na massa: experimentando RAG com uma ferramenta pronta, sem instalar nada</p></div>
       <div class="agenda-row"><div class="dotm">07</div><p>Desafio final: perguntas com fontes que se cruzam</p></div>
     </div>
 
@@ -415,11 +415,11 @@ prazo de recurso para indeferimento de protocolo administrativo?
 prazo de 10 (dez) dias úteis, contados da ciência da decisão, dirigido
 à autoridade imediatamente superior."</div>
     </div>
-    <p class="copy-hint">Na primeira versão, a IA nunca viu o Regimento Interno do seu órgão — ela vai <em>tentar</em> responder mesmo assim, arriscando um número que pode estar certo por sorte ou completamente errado. Na segunda, a instrução restringe a resposta ao texto fornecido: é isso que RAG automatiza — encontrar esse trecho certo sozinho, sem alguém colar manualmente.</p>
+    <p class="copy-hint">Na primeira versão, a IA nunca viu o Regimento Interno do seu órgão — ela vai <em>tentar</em> responder mesmo assim, arriscando um número que pode estar certo por sorte ou completamente errado. Na segunda, orientamos a IA a responder com base no texto fornecido como contexto, reduzindo a dependência de informações que não estejam nas fontes recuperadas: é isso que RAG automatiza — encontrar esse trecho certo sozinho, sem alguém colar manualmente.</p>
 
     <div class="insight-box">
       <span class="insight-tag">A mesma alucinação da Aula 0, atacada pela raiz</span>
-      <p>A Aula 0 já ensinou a pedir "cite a fonte" para reduzir alucinação — um paliativo, porque a IA ainda podia inventar uma fonte que soa real. RAG é a versão estrutural dessa ideia: a fonte não é pedida depois, ela é <em>entregue antes</em>, como parte do material que a IA usa para responder. Isso reduz bastante o risco de a IA inventar um trecho que não existe — mas não elimina o risco por completo, nem garante que a interpretação do trecho real esteja certa. A resposta ainda pode sair errada; fica só mais fácil auditar de onde ela veio.</p>
+      <p>A Aula 0 já ensinou a pedir "cite a fonte" para reduzir alucinação — um paliativo, porque a IA ainda podia inventar uma fonte que soa real. RAG é a versão estrutural dessa ideia: a fonte não é pedida depois, ela é <em>entregue antes</em>, como parte do material que a IA usa para responder. A recuperação de uma fonte real reduz o risco de a IA inventar informações ou fontes, mas ainda podem ocorrer erros de interpretação, síntese ou citação — por isso as evidências recuperadas precisam ser verificadas, não só citadas.</p>
     </div>
 
     <div class="instruction-step" style="margin-top:28px;">
@@ -489,7 +489,7 @@ de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
   <div class="wrap">
     <div class="concept-box">
       <h4>Definição: chunking, embeddings e índice vetorial</h4>
-      <p><strong>Chunking</strong> é dividir um documento grande em pedaços menores (em geral, no máximo algumas centenas de palavras) — pedaço pequeno demais perde contexto, grande demais dilui o que é relevante. Cada pedaço vira um <strong>embedding</strong>: uma representação numérica (um vetor) que captura o significado do texto, não só as palavras exatas. Esses vetores ficam guardados num <strong>índice vetorial</strong> (vector database), organizado para buscar por <em>proximidade de significado</em> (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>).</p>
+      <p><strong>Chunking</strong> é dividir um documento grande em pedaços menores (em geral, no máximo algumas centenas de palavras) — pedaço pequeno demais perde contexto, grande demais dilui o que é relevante. Cada pedaço vira um <strong>embedding</strong>: uma representação numérica (um vetor) que captura o significado do texto, não só as palavras exatas. Esses vetores ficam guardados num <strong>índice vetorial</strong> (vector database), organizado para buscar por <em>proximidade de significado</em> (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>). Neste exemplo usamos embeddings para fazer busca semântica — mas isso é <strong>uma estratégia</strong> de retrieval, não sinônimo de retrieval: sistemas reais também combinam busca lexical, filtros por metadados, busca híbrida e reranking.</p>
     </div>
 
     <div class="diagram-frame">
@@ -582,7 +582,7 @@ de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
     <div class="instruction-step" style="margin-top:28px;">
       <span class="step-num">Exercício rápido · individual · 5 min</span>
       <h4>Isso bateria numa busca por significado?</h4>
-      <p style="color:var(--text-muted);">Para cada par pergunta/trecho abaixo, decida se você <em>esperaria</em> que um retrieval por embeddings desse alta relevância a esse trecho para essa pergunta — mesmo sem nenhuma palavra em comum entre os dois (<strong>S</strong>) — ou se os dois são sobre assuntos diferentes, e não seria esperado que uma busca por significado os aproximasse (<strong>N</strong>). O resultado real depende do modelo de embedding, do corpus e de como o texto foi cortado em chunks — aqui é sobre expectativa, não uma garantia matemática. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <p style="color:var(--text-muted);">Para cada par pergunta/trecho abaixo, decida: você <em>esperaria</em> que uma busca semântica considerasse esse trecho relevante para essa pergunta, mesmo sem nenhuma palavra em comum entre os dois (<strong>S</strong>) — ou os dois são sobre assuntos diferentes, e não seria esperado que uma busca por significado os aproximasse (<strong>N</strong>)? O resultado real depende do modelo de embedding, do corpus, de como o texto foi cortado em chunks, da métrica de similaridade usada e dos parâmetros de retrieval — aqui é sobre expectativa, não uma garantia matemática. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
       <div class="quiz-legend"><strong>S</strong> = esperado alta relevância, mesmo assunto com outras palavras &nbsp;·&nbsp; <strong>N</strong> = esperado baixa relevância, assunto diferente</div>
       <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
         <li>Pergunta: "Quanto tempo dura o mandato do dirigente?" · Trecho: "O gestor exerce a função por um período de quatro anos."</li>
@@ -620,7 +620,7 @@ de 5 (cinco) dias úteis, contados do protocolo do requerimento."</div>
   <div class="wrap">
     <div class="concept-box">
       <h4>Definição: RAG sobre uma base de código</h4>
-      <p>Em vez de documentos jurídicos, o "documento" pode ser todo o código-fonte, a documentação e os arquivos de configuração de um projeto — cada arquivo (ou trecho de arquivo) vira um pedaço indexado, e uma pergunta sobre o projeto busca só os arquivos relevantes antes de responder, em vez de precisar caber o projeto inteiro no prompt. O <strong>Claude Projects</strong> já faz isso sobre documentos anexados a um projeto (a Anthropic chama de <em>project knowledge</em>): RAG entra automaticamente quando o material anexado passa do que caberia direto na janela de contexto (<a href="https://support.claude.com/en/articles/11473015-retrieval-augmented-generation-rag-for-projects" target="_blank" rel="noopener">support.claude.com/.../rag-for-projects</a>).</p>
+      <p>Em vez de documentos jurídicos, o "documento" pode ser todo o código-fonte, a documentação e os arquivos de configuração de um projeto — cada arquivo (ou trecho de arquivo) vira um pedaço indexado, e uma pergunta sobre o projeto busca só os arquivos relevantes antes de responder, em vez de precisar caber o projeto inteiro no prompt. O <strong>Claude Projects</strong> possui mecanismos de recuperação sobre o conhecimento do projeto (a Anthropic chama de <em>project knowledge</em>), permitindo consultar documentos anexados sem necessariamente colocar todo o material no contexto de cada interação (<a href="https://support.claude.com/en/articles/11473015-retrieval-augmented-generation-rag-for-projects" target="_blank" rel="noopener">support.claude.com/.../rag-for-projects</a>).</p>
     </div>
 
     <div class="promptbox">
@@ -686,9 +686,9 @@ arquivo faz isso, e o que acontece se o campo "número" vier vazio?</div>
       <table class="value-table">
         <thead><tr><th>Sem RAG</th><th>Com RAG sobre a norma</th></tr></thead>
         <tbody>
-          <tr><td>A IA responde com o que "lembra" da lei — pode confundir artigos, ou citar uma versão desatualizada.</td><td>Com um índice atualizado, a IA busca o texto vigente antes de responder — a resposta tende a refletir a norma real, em vez da memória do treino.</td></tr>
+          <tr><td>A IA responde com o que "lembra" da lei — pode confundir artigos, ou citar uma versão desatualizada.</td><td>Um RAG corretamente atualizado pode recuperar a versão vigente da norma antes de responder, em vez de depender da memória do treino.</td></tr>
           <tr><td>Não dá para conferir de onde veio a resposta.</td><td>A resposta pode citar o artigo/trecho exato usado — auditável por um humano depois.</td></tr>
-          <tr><td>Atualizar a norma exige esperar o próximo treinamento do modelo.</td><td>Atualizar a norma é só trocar o documento indexado — mas alguém precisa fazer isso; um índice esquecido volta a responder com a versão antiga (a Etapa 5 detalha esse risco).</td></tr>
+          <tr><td>Atualizar a norma exige esperar o próximo treinamento do modelo.</td><td>Atualizar a norma não exige retreinar o modelo, mas exige atualizar o conteúdo indexado — chunks, embeddings e, quando aplicável, remover ou versionar o conteúdo anterior; um índice esquecido volta a responder com a versão antiga (a Etapa 5 detalha esse risco).</td></tr>
         </tbody>
       </table>
     </div>
@@ -734,7 +734,7 @@ arquivo faz isso, e o que acontece se o campo "número" vier vazio?</div>
   <div class="wrap">
     <div class="concept-box">
       <h4>Definição: falha de recuperação (retrieval failure)</h4>
-      <p>RAG só funciona se o buscador encontrar o trecho certo — e ele nem sempre encontra. Dois motivos comuns: (1) um chunk isolado perde o contexto ao redor (ex.: um trecho dizendo "a receita da empresa cresceu 3%" não diz mais qual empresa, qual trimestre, depois de cortado do resto do documento); (2) busca por significado pode não bater com busca por texto exato — uma pergunta sobre um código de erro específico pode recuperar conteúdo genérico sobre "erros", não o código certo. A própria Anthropic mediu isso: RAG básico falha em recuperar o trecho certo em <strong>5,7% das perguntas</strong> (buscando entre os 20 trechos mais prováveis); técnicas melhores reduzem para 2,9% ou 1,9% — nunca chega a zero (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>).</p>
+      <p>RAG só funciona se o buscador encontrar o trecho certo — e ele nem sempre encontra. Dois motivos comuns: (1) um chunk isolado perde o contexto ao redor (ex.: um trecho dizendo "a receita da empresa cresceu 3%" não diz mais qual empresa, qual trimestre, depois de cortado do resto do documento); (2) busca por significado pode não bater com busca por texto exato — uma pergunta sobre um código de erro específico pode recuperar conteúdo genérico sobre "erros", não o código certo. A própria Anthropic mediu isso: no experimento de <em>contextual retrieval</em> citado nesta aula, a configuração de referência (RAG básico, buscando entre os 20 trechos mais prováveis) falhou em recuperar o trecho certo em <strong>5,7% das consultas testadas</strong>; técnicas melhores reduziram para 2,9% ou 1,9% naquele mesmo experimento — nunca chegando a zero (<a href="https://www.anthropic.com/engineering/contextual-retrieval" target="_blank" rel="noopener">anthropic.com/engineering/contextual-retrieval</a>). Esses números são desse corpus e desse experimento específicos, não uma taxa universal de erro de RAG — o ponto que importa é que a falha de recuperação existe e não zera, não o percentual exato.</p>
     </div>
 
     <div class="concept-box">
@@ -813,12 +813,12 @@ resposta ainda pode estar errada, mesmo com a busca tendo funcionado perfeitamen
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow">Mão na massa</span>
-      <h2>RAG de verdade, sem instalar nada</h2>
+      <h2>Experimentando RAG com uma ferramenta pronta</h2>
     </div>
 
     <div class="callout" style="margin-bottom:24px;">
       <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-      <p><strong>Ferramenta de hoje:</strong> <a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> (Google), gratuita, sem instalar nada — só uma conta Google. Diferente do resto do curso, hoje não é um "RAG simulado" copiando texto num prompt: é RAG de verdade, com o índice sendo montado e consultado na hora, e cada resposta vem com citação clicável apontando pro trecho da fonte.</p>
+      <p><strong>Ferramenta de hoje:</strong> <a href="https://notebooklm.google.com/" target="_blank" rel="noopener">NotebookLM</a> (Google), gratuita, sem instalar nada — só uma conta Google. Diferente do resto do curso, hoje não é um "RAG simulado" copiando texto num prompt: é uma ferramenta pronta que se comporta como um sistema de retrieval de verdade — cada resposta vem com citação clicável apontando pro trecho da fonte, sinal de que ela busca antes de responder, em vez de só "parecer" ter fonte. (Os detalhes internos de indexação do NotebookLM não são públicos; o que observamos aqui é o comportamento, não a implementação exata.)</p>
     </div>
 
     <div class="block-card">
@@ -1028,7 +1028,7 @@ def perguntar(pergunta, anos=("2023", "2024")):
     resposta = completion.choices[0].message.content
     historico.append({"pergunta": pergunta, "resposta": resposta})
     return resposta</div>
-      <p class="copy-hint">Código completo (incluindo o upload, a configuração da chave via <code class="inline">python-dotenv</code>, e uma segunda pergunta testando o histórico) no notebook. Números reais, medidos antes de publicar este material: o relatório de 2023 tem ~99.600 caracteres (~25 mil tokens) e o de 2024, ~174.300 caracteres (~43,6 mil tokens) — juntos, ~68,5 mil tokens, dentro dos 128 mil da janela de contexto do <code class="inline">gpt-4o-mini</code>, mas um bloco grande para reenviar a cada pergunta.</p>
+      <p class="copy-hint">Código completo (incluindo o upload, a configuração da chave via <code class="inline">python-dotenv</code>, e uma segunda pergunta testando o histórico) no notebook. Números reais, medidos antes de publicar este material: o relatório de 2023 tem ~99.600 caracteres (~25 mil tokens) e o de 2024, ~174.300 caracteres (~43,6 mil tokens) — juntos, ~68,5 mil tokens, dentro dos 128 mil da janela de contexto do <code class="inline">gpt-4o-mini</code>, mas um bloco grande para reenviar a cada pergunta. Modelos, preços, limites e disponibilidade podem mudar ao longo do tempo — consulte a documentação do provedor antes de executar o exemplo.</p>
 
       <div class="code-box"><span class="comment"># Exemplo ilustrativo do tipo de resposta esperada — não é uma captura real da API</span>
 perguntar("Quantos participantes o Congresso do CLAD reuniu, e em qual ano isso aconteceu?")
@@ -1181,7 +1181,7 @@ def buscar(pergunta, top_k=5):
         </div>
         <span class="block-badge badge-gold">IA paga</span>
       </div>
-      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos esta aula aplicando RAG de verdade sobre o SISPROT (PHP + MySQL), com o Claude Code.</p>
+      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos esta aula aplicando retrieval sobre um projeto de verdade — o SISPROT (PHP + MySQL) — com o Claude Code.</p>
 
       <div class="instruction-step">
         <span class="step-num">Pré-requisitos</span>
