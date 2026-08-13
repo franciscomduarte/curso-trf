@@ -187,14 +187,24 @@
     { numero: 10, titulo: "Em breve", descricao: "Conteúdo desta aula ainda está em preparação.", links: [] },
   ];
 
-  const aulaExtra = {
-    numero: "EX", isExtra: true,
-    titulo: "Preparando o Ambiente: VS Code, GitHub e Copilot",
-    descricao: "Guia autocontido de instalação para quem está começando do zero: instalar o VS Code, criar uma conta no GitHub e instalar/integrar o GitHub Copilot antes das demais aulas.",
-    links: [
-      { label: "Acessar Aula", href: "aula-extra/Aula_6_Instalacao_e_Integracao_Copilot_VSCode.html" },
-    ],
-  };
+  const aulasExtras = [
+    {
+      numero: "EX", isExtra: true,
+      titulo: "Preparando o Ambiente: VS Code, GitHub e Copilot",
+      descricao: "Guia autocontido de instalação para quem está começando do zero: instalar o VS Code, criar uma conta no GitHub e instalar/integrar o GitHub Copilot antes das demais aulas.",
+      links: [
+        { label: "Acessar Aula", href: "aula-extra/Aula_6_Instalacao_e_Integracao_Copilot_VSCode.html" },
+      ],
+    },
+    {
+      numero: "EX1", isExtra: true,
+      titulo: "Redesign UX/UI do SISPROT com Google Stitch",
+      descricao: "Redesign visual do SISPROT assistido por IA, em duas etapas: gerar o novo design no Google Stitch a partir das telas atuais, e depois implementá-lo com fidelidade visual no código real do sistema com o Claude Code.",
+      links: [
+        { label: "Acessar Aula", href: "aula-extra1/Aula_Extra_1_Redesign_UXUI_SISPROT_Stitch.html" },
+      ],
+    },
+  ];
 
   const grid = document.getElementById('aulas-grid');
 
@@ -229,7 +239,7 @@
   }
 
   aulas.forEach(aula => grid.appendChild(criarCard(aula)));
-  grid.appendChild(criarCard(aulaExtra));
+  aulasExtras.forEach(aula => grid.appendChild(criarCard(aula)));
 
   document.getElementById('stat-disponiveis').textContent =
     aulas.filter(a => a.links.length > 0).length;
