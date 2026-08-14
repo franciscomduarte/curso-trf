@@ -353,6 +353,46 @@
   </div>
 </section>
 
+<!-- CAG vs RAG -->
+<section class="reveal" id="cag-vs-rag" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Antes de começar</span>
+      <h2>RAG não é a única forma de dar contexto à IA: e o CAG?</h2>
+      <p class="sub">Antes de entrar na arquitetura do RAG, vale situar uma técnica vizinha, que aparece cada vez mais em comparações de mercado: o CAG (Cache-Augmented Generation, "geração aumentada por cache"). Os dois resolvem o mesmo problema de fundo — dar à IA informação que ela não tem de memória — mas de jeitos opostos.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: CAG (Cache-Augmented Generation)</h4>
+      <p>Em vez de buscar um trecho relevante <em>no momento da pergunta</em> (como o RAG faz), o CAG <strong>pré-carrega</strong> o conhecimento relevante direto na janela de contexto do modelo, ou reaproveita o estado interno de atenção já processado (um <em>cache</em> de chave-valor) entre perguntas parecidas. Não há buscador nem índice vetorial consultado a cada pergunta — o material já está "à mão" antes de a pergunta chegar, o que elimina a etapa de busca e reduz a latência.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th></th><th>RAG</th><th>CAG</th></tr></thead>
+        <tbody>
+          <tr><td>Mecanismo</td><td>Busca dinâmica, no momento da pergunta (<em>just-in-time</em>)</td><td>Conhecimento pré-carregado no contexto ou em cache, antes da pergunta</td></tr>
+          <tr><td>Velocidade</td><td>Mais lento — cada pergunta paga o custo de buscar</td><td>Mais rápido — não há etapa de busca a cada pergunta</td></tr>
+          <tr><td>Atualização do conhecimento</td><td>Em tempo real — troca o documento indexado</td><td>Limitada à última vez que o cache foi montado</td></tr>
+          <tr><td>Escalabilidade</td><td>Horizontal, via índice/banco vetorial</td><td>Limitada pela memória disponível (RAM/contexto)</td></tr>
+          <tr><td>Complexidade de implementação</td><td>Maior — chunking, embeddings, índice, retrieval</td><td>Moderada — menos peças móveis, mas exige gerenciar o cache</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Fonte: <a href="https://www.datacamp.com/pt/blog/rag-vs-cag" target="_blank" rel="noopener">datacamp.com/pt/blog/rag-vs-cag</a>.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Quando cada um faz sentido</span>
+      <p><strong>CAG</strong> compensa quando a base de conhecimento é estável e as perguntas seguem um padrão previsível — um FAQ interno, um procedimento padrão, um regimento que não muda toda semana — e a velocidade de resposta importa mais do que buscar a última atualização. <strong>RAG</strong> compensa quando a informação muda com frequência, o acervo é grande demais para caber pré-carregado, ou o risco de responder com dado desatualizado é inaceitável — o caso das normas vigentes e da jurisprudência que esta aula trata a partir da Etapa 4. Na prática, muitas organizações combinam os dois: CAG para o que é estável e consultado o tempo todo, RAG para o que precisa estar sempre atualizado.</p>
+    </div>
+
+    <div class="callout">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <p><strong>Por que esta aula segue com RAG, não CAG:</strong> o cenário central do curso — protocolos, normas internas, código do SISPROT — muda com o tempo e não cabe inteiro pré-carregado no contexto de toda pergunta. É exatamente o perfil onde RAG compensa o custo extra de buscar. Guarde o CAG como a alternativa a considerar quando a base for pequena, estável e as perguntas, previsíveis.</p>
+    </div>
+  </div>
+</section>
+
 <!-- ETAPA 1 -->
 <section class="module-divider reveal" id="etapa1">
   <div class="wrap">
