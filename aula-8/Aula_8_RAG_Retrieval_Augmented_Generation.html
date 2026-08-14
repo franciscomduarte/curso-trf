@@ -363,8 +363,76 @@
     </div>
 
     <div class="concept-box">
+      <h4>Definição: RAG (Retrieval-Augmented Generation)</h4>
+      <p>Técnica que <strong>busca</strong> um trecho relevante num conjunto de documentos externo <em>no momento em que a pergunta chega</em>, e entrega esse trecho ao modelo junto com a pergunta — a resposta usa o que foi encontrado agora, não só o que o modelo aprendeu no treinamento. É o assunto do resto desta aula, detalhado a partir da Etapa 1.</p>
+    </div>
+
+    <div class="concept-box">
       <h4>Definição: CAG (Cache-Augmented Generation)</h4>
       <p>Em vez de buscar um trecho relevante <em>no momento da pergunta</em> (como o RAG faz), o CAG <strong>pré-carrega</strong> o conhecimento relevante direto na janela de contexto do modelo, ou reaproveita o estado interno de atenção já processado (um <em>cache</em> de chave-valor) entre perguntas parecidas. Não há buscador nem índice vetorial consultado a cada pergunta — o material já está "à mão" antes de a pergunta chegar, o que elimina a etapa de busca e reduz a latência.</p>
+    </div>
+
+    <div class="diagram-pair" style="margin-top:20px;">
+      <div class="diagram-frame">
+        <svg viewBox="0 0 490 140" xmlns="http://www.w3.org/2000/svg">
+          <style>
+            .lbl{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#1A2233;}
+            .sub{font-family:'JetBrains Mono',monospace; font-size:9.5px; fill:#5B6478;}
+            .lbl-inv{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#fff;}
+            .sub-inv{font-family:'JetBrains Mono',monospace; font-size:9.5px; fill:#c7d2ea;}
+            .box{fill:#F3F5F9; stroke:#DEE2EA; stroke-width:1.5;}
+            .boxink{fill:#0F1C36; stroke:#0F1C36;}
+            .arrow{stroke:#0E7C7B; stroke-width:2; fill:none; marker-end:url(#arrowRAGc);}
+          </style>
+          <defs>
+            <marker id="arrowRAGc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="#0E7C7B"/>
+            </marker>
+          </defs>
+          <rect class="box" x="10" y="42" width="130" height="56" rx="8"/>
+          <text class="lbl" x="75" y="66" text-anchor="middle">Pergunta</text>
+          <text class="sub" x="75" y="84" text-anchor="middle">chega agora</text>
+          <path class="arrow" d="M140 70 L175 70"/>
+          <rect class="box" x="180" y="42" width="130" height="56" rx="8"/>
+          <text class="lbl" x="245" y="66" text-anchor="middle">Busca no índice</text>
+          <text class="sub" x="245" y="84" text-anchor="middle">a cada pergunta nova</text>
+          <path class="arrow" d="M310 70 L345 70"/>
+          <rect class="boxink" x="350" y="42" width="130" height="56" rx="8"/>
+          <text class="lbl-inv" x="415" y="66" text-anchor="middle">Resposta</text>
+          <text class="sub-inv" x="415" y="84" text-anchor="middle">com o trecho encontrado</text>
+        </svg>
+        <p class="diagram-caption">RAG — busca acontece toda vez, com o custo (e a atualização) que isso traz.</p>
+      </div>
+      <div class="diagram-frame">
+        <svg viewBox="0 0 490 140" xmlns="http://www.w3.org/2000/svg">
+          <style>
+            .lbl2{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#1A2233;}
+            .sub2{font-family:'JetBrains Mono',monospace; font-size:9.5px; fill:#5B6478;}
+            .lbl2-inv{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#fff;}
+            .sub2-inv{font-family:'JetBrains Mono',monospace; font-size:9.5px; fill:#c7d2ea;}
+            .box2{fill:#F3F5F9; stroke:#DEE2EA; stroke-width:1.5;}
+            .box2ink{fill:#0F1C36; stroke:#0F1C36;}
+            .arrow2{stroke:#B8892B; stroke-width:2; fill:none; marker-end:url(#arrowCAGc);}
+          </style>
+          <defs>
+            <marker id="arrowCAGc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0L10 5L0 10z" fill="#B8892B"/>
+            </marker>
+          </defs>
+          <rect class="box2" x="10" y="42" width="130" height="56" rx="8"/>
+          <text class="lbl2" x="75" y="66" text-anchor="middle">Documentos</text>
+          <text class="sub2" x="75" y="84" text-anchor="middle">pré-carregados antes</text>
+          <path class="arrow2" d="M140 70 L175 70"/>
+          <rect class="box2" x="180" y="42" width="130" height="56" rx="8"/>
+          <text class="lbl2" x="245" y="66" text-anchor="middle">Contexto / cache</text>
+          <text class="sub2" x="245" y="84" text-anchor="middle">já prontos, sem buscar</text>
+          <path class="arrow2" d="M310 70 L345 70"/>
+          <rect class="box2ink" x="350" y="42" width="130" height="56" rx="8"/>
+          <text class="lbl2-inv" x="415" y="66" text-anchor="middle">Resposta</text>
+          <text class="sub2-inv" x="415" y="84" text-anchor="middle">gerada na hora, sem busca</text>
+        </svg>
+        <p class="diagram-caption">CAG — a pergunta chega e o material já está lá; nenhuma busca acontece nesse momento.</p>
+      </div>
     </div>
 
     <div class="value-table-wrapper">
