@@ -1086,7 +1086,12 @@ Digital, em tópicos.</div>
         <span class="block-badge badge-teal">20 min</span>
       </div>
       <p style="color:var(--text-muted);">Identificar dado pessoal que não deveria estar no prompt, mesmo quando não é óbvio.</p>
-      <p style="color:var(--text-muted); margin-top:10px;">O documento abaixo é um processo administrativo fictício, com um pedido de tarefa no final ("resumir este processo... indicando apenas o tipo de licença e o prazo"). A maioria das pessoas, ao procurar "dado que não deveria estar ali", só olha para nome e CPF — mas este documento tem outras categorias sensíveis mencionadas no meio da descrição do pedido, não numa lista separada de campos. O trabalho é ler o documento inteiro (não só os campos de cadastro), decidir campo por campo se ele é necessário para a tarefa pedida, e só então reescrever o pedido — mantendo-o funcional com o que sobrou.</p>
+      <p style="color:var(--text-muted); margin-top:10px;">O documento abaixo é um processo administrativo fictício, com um pedido de tarefa no final. A maioria das pessoas, ao procurar "dado que não deveria estar ali", só olha para nome e CPF — mas este documento tem outras categorias sensíveis mencionadas no meio da descrição do pedido, não numa lista separada de campos. O trabalho é ler o documento inteiro (não só os campos de cadastro), decidir campo por campo se ele é necessário para a tarefa pedida, e só então reescrever o pedido — mantendo-o funcional com o que sobrou.</p>
+
+      <div class="callout" style="margin:16px 0;">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <p><strong>A tarefa é sempre a mesma, do início ao fim do exercício — é o que você vai pedir de novo, num prompt reescrito:</strong> "Resumir este processo em um parágrafo, indicando apenas o tipo de licença e o prazo." (No documento abaixo, essa é a "TAREFA PEDIDA" no final.) O que muda entre a versão original e a que você vai escrever não é a tarefa — é quais campos do documento entram no prompt.</p>
+      </div>
 
       <p style="margin:16px 0;">
         <a href="documento-ficticio.txt" download style="display:inline-flex; align-items:center; gap:8px; background:var(--ink); color:#fff; padding:10px 18px; border-radius:8px; text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600;">
@@ -1145,7 +1150,7 @@ apenas o tipo de licença e o prazo."</textarea>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:10px; font-size:0.95rem;">
           <li><strong>Baixar ou copiar</strong> o documento fictício desta aula — um processo administrativo com a "TAREFA PEDIDA" descrita no final.</li>
           <li><strong>Ler o documento inteiro</strong> e anotar, à parte (papel, bloco de notas — não precisa ser bonito), se cada campo é dado comum, dado sensível ou não é dado pessoal, segundo os critérios da Etapa 1. Este documento tem mais de uma categoria escondida, não só CPF — e elas aparecem no meio do texto do pedido, não só nos campos de cadastro.</li>
-          <li><strong>Sem editar o documento original</strong>, escrever um <strong>prompt novo, do zero</strong>, pedindo exatamente a mesma tarefa ("resumir... indicando apenas o tipo de licença e o prazo") — usando só os campos que sobraram depois de tirar o que a tarefa não precisa (minimização) e disfarçar o que precisa ficar, mas não pode apontar para a pessoa real (anonimização).</li>
+          <li><strong>Sem editar o documento original</strong>, escrever um <strong>prompt novo, do zero</strong>, pedindo exatamente a mesma tarefa — "resumir este processo em um parágrafo, indicando apenas o tipo de licença e o prazo" — usando só os campos que sobraram depois de tirar o que a tarefa não precisa (minimização) e disfarçar o que precisa ficar, mas não pode apontar para a pessoa real (anonimização).</li>
           <li><strong>Colar só esse prompt novo</strong> — nunca o documento original — numa IA de chat gratuita, e confirmar que a resposta ainda cumpre a tarefa (indica o tipo de licença e o prazo).</li>
         </ol>
         <p class="copy-hint" style="margin-top:10px;">O documento original nunca vai para a IA — nem antes, nem depois, nem para comparar. Só o prompt novo do passo 3 é enviado, uma única vez, no passo 4.</p>
