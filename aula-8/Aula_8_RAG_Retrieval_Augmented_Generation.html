@@ -834,7 +834,7 @@ arquivo faz isso, e o que acontece se o campo "número" vier vazio?</div>
       <span class="modnum">Etapa 5</span>
     </div>
     <h2>Limites e riscos do RAG</h2>
-    <p class="modsub">A busca pode falhar, o meio do contexto pode ser ignorado, e o índice pode ser envenenado — RAG reduz alucinação, não elimina cuidado.</p>
+    <p class="modsub">A busca pode falhar, o meio do contexto pode ser ignorado, o índice pode ser envenenado ou ficar desatualizado, e a IA pode recuperar algo que quem perguntou não deveria ver — RAG reduz alucinação, não elimina cuidado.</p>
   </div>
 </section>
 
@@ -873,8 +873,27 @@ esse artigo falso como se fosse norma vigente.</div>
     </div>
 
     <div class="concept-box">
+      <h4>Um quinto risco, específico do setor público: controle de acesso</h4>
+      <p>Indexar um documento não é o mesmo que autorizar todo mundo a vê-lo. Se o sistema de RAG não filtra por quem está perguntando, ele pode recuperar — e citar, com aparência de resposta oficial — um documento que aquele usuário não deveria acessar: um protocolo sigiloso, um processo de outro setor, um dado de RH que só a chefia deveria ver. O <a href="https://www.gov.br/governodigital/pt-br/infraestrutura-nacional-de-dados/inteligencia-artificial-1/publicacoes/guia-de-rag" target="_blank" rel="noopener">Guia de Introdução ao RAG no Setor Público</a>, do Governo Digital (gov.br), trata isso como risco próprio, distinto dos quatro anteriores: <em>"se o sistema não respeita permissões de usuário, a IA pode recuperar informações que o servidor não deveria acessar."</em> Para o SISPROT — onde protocolos tramitam entre setores com graus de sigilo diferentes — é talvez o risco mais fácil de esquecer, porque um índice pode estar tecnicamente perfeito (busca certa, chunk certo, sem veneno, sempre atualizado) e ainda assim vazar informação, só por não checar permissão antes de responder.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Risco</th><th>Sintoma</th><th>Como mitigar</th></tr></thead>
+        <tbody>
+          <tr><td>Falha de recuperação</td><td>A busca não encontra o trecho certo</td><td>Busca híbrida (lexical + semântica) e reranking (Etapa 2); ajustar o tamanho do chunk e o <code class="inline">top-k</code></td></tr>
+          <tr><td>Lost in the middle</td><td>O trecho certo foi achado, mas ignorado no meio da pilha</td><td>Enviar menos chunks por pergunta; colocar os mais relevantes no início ou no fim do prompt, não no meio</td></tr>
+          <tr><td>Envenenamento do índice</td><td>Um documento malicioso influencia a resposta como se fosse fonte legítima</td><td>Validar a origem antes de indexar; revisão humana de novos documentos; controlar quem pode adicionar ao índice</td></tr>
+          <tr><td>Índice desatualizado</td><td>A resposta reflete uma versão antiga do documento</td><td>Pipeline de reindexação sempre que a fonte mudar; versionar o índice; monitorar a "idade" do que está indexado</td></tr>
+          <tr><td>Controle de acesso inadequado</td><td>A IA recupera um documento que aquele usuário não deveria ver</td><td>Retrieval "ciente de permissão" — filtrar por quem pergunta <em>antes</em> de buscar, não só ao exibir o resultado</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Fonte da linha "Controle de acesso": <a href="https://www.gov.br/governodigital/pt-br/infraestrutura-nacional-de-dados/inteligencia-artificial-1/publicacoes/guia-de-rag" target="_blank" rel="noopener">gov.br/governodigital — Guia de Introdução ao RAG no Setor Público</a>.</p>
+
+    <div class="concept-box">
       <h4>RAG não é garantia de verdade</h4>
-      <p>Os quatro riscos desta etapa se encaixam em duas cadeias de falha, e só uma delas está no buscador:</p>
+      <p>Os quatro riscos de busca/índice desta etapa (mais o de controle de acesso, acima) se encaixam em duas cadeias de falha, e só uma delas está no buscador:</p>
       <div class="code-box" style="font-size:0.86rem;">Fonte errada (ou envenenada, ou desatualizada)
     ↓
 retrieval "funciona" — encontra o trecho, só que o trecho está errado
@@ -891,10 +910,20 @@ resposta ainda pode estar errada, mesmo com a busca tendo funcionado perfeitamen
       <p style="margin-top:10px;">A mensagem central: <strong>RAG melhora o acesso a evidências — buscar antes de responder é sempre mais auditável do que confiar só na memória do modelo — mas não substitui validação humana.</strong> Uma resposta com fonte citada ainda precisa ser conferida, principalmente antes de qualquer uso oficial; a citação prova de onde a IA <em>disse</em> que tirou a informação, não que a resposta está certa.</p>
     </div>
 
+    <div class="insight-box">
+      <span class="insight-tag">"A IA não decide, ela sugere" — o mesmo guia oficial, sobre revisão humana</span>
+      <p>O Guia de Introdução ao RAG no Setor Público (gov.br/governodigital, citado acima) descreve exatamente o tipo de erro que passa despercebido mesmo com RAG funcionando: um servidor <em>"confundindo uma lei estrangeira com um decreto do Brasil, ou citando uma regra que foi revogada há dois anos"</em> — a resposta parece embasada, cita algo, mas ainda está errada. A responsabilidade legal permanece do servidor público, não da IA. Antes de usar qualquer resposta de um sistema de RAG em algo oficial, o guia recomenda checar três pontos:</p>
+      <ul class="checklist" style="margin-top:14px;">
+        <li><span class="xicn">&#10003;</span>Se a IA citou o documento correto — não só um documento parecido.</li>
+        <li><span class="xicn">&#10003;</span>Se a interpretação da IA corresponde mesmo ao conteúdo original da fonte.</li>
+        <li><span class="xicn">&#10003;</span>Se há sinal de alucinação, ou mistura de fontes/jurisdições diferentes na mesma resposta.</li>
+      </ul>
+    </div>
+
     <div class="instruction-step" style="margin-top:28px;">
       <span class="step-num">Exercício rápido · individual · 5 min</span>
       <h4>Qual dos quatro riscos é esse?</h4>
-      <p style="color:var(--text-muted);">Esta etapa apresentou quatro formas de RAG falhar. Para cada cenário abaixo, identifique qual delas está em jogo. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <p style="color:var(--text-muted);">Esta etapa apresentou cinco riscos ao todo — este exercício testa os quatro ligados a busca e índice (o de controle de acesso, visto acima, fica de fora desta rodada). Para cada cenário abaixo, identifique qual dos quatro está em jogo. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
       <div class="quiz-legend"><strong>Q</strong> = falha de recuperação &nbsp;·&nbsp; <strong>M</strong> = lost in the middle &nbsp;·&nbsp; <strong>V</strong> = envenenamento do índice &nbsp;·&nbsp; <strong>D</strong> = índice desatualizado</div>
       <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
         <li>A IA busca pelo código de erro "E-4021" mas só recupera trechos genéricos sobre "erros do sistema" — nunca o trecho certo.</li>
