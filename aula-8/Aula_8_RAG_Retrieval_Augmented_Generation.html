@@ -971,11 +971,29 @@ resposta ainda pode estar errada, mesmo com a busca tendo funcionado perfeitamen
         <span class="step-num">Enunciado</span>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
           <li>Abriremos o NotebookLM e criaremos um notebook novo.</li>
-          <li>Como fonte, colaremos um texto público e não sensível — por exemplo, o texto de um artigo da LGPD (<a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">camara.leg.br/legin</a>) ou o Regimento Interno fictício de um órgão qualquer.</li>
-          <li>Faremos pelo menos três perguntas sobre o conteúdo da fonte, incluindo uma pergunta cuja resposta <em>não está</em> no texto colado.</li>
+          <li>Como fonte, colaremos um texto público e não sensível — por exemplo, o texto de um artigo da LGPD (<a href="https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-publicacaooriginal-156212-pl.html" target="_blank" rel="noopener">camara.leg.br/legin</a>) ou o Regimento Interno fictício de um órgão qualquer — pode reaproveitar os Art. 15 e Art. 42 já usados como exemplo na Etapa 1 desta aula.</li>
+          <li>Faremos pelo menos três perguntas sobre o conteúdo da fonte, incluindo uma pergunta cuja resposta <em>não está</em> no texto colado — veja sugestões abaixo, para cada fonte.</li>
           <li>Observaremos as citações que o NotebookLM mostra em cada resposta, clicando para conferir se realmente batem com o trecho usado.</li>
         </ol>
       </div>
+
+      <div class="diagram-pair" style="margin-top:16px;">
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">Se a fonte for a LGPD (Art. 5º e 6º, por exemplo)</span>1. "O que a lei considera dado pessoal sensível?"
+2. "Qual é o princípio da necessidade, segundo a lei?"
+3. Fora do escopo: "Qual é a multa máxima prevista para
+   descumprimento da LGPD?" (só existe resposta se você também
+   colou os artigos sobre sanções, Art. 52 em diante)</div>
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">Se a fonte for o Regimento Interno fictício (Art. 15 e 42)</span>1. "Qual é o prazo de recurso previsto para indeferimento de
+   protocolo administrativo?"
+2. "Qual é o prazo para atender um pedido de vista de processo
+   administrativo?"
+3. Fora do escopo: "Qual é o prazo para recorrer de uma multa
+   de trânsito?" (assunto que esse Regimento Interno não trata)</div>
+      </div>
+      <p class="copy-hint">A pergunta 3, em cada coluna, é a mais importante do exercício — é ela que mostra se a ferramenta admite não saber, em vez de inventar um número ou prazo que não estava na fonte.</p>
+
       <div class="tech-grid" style="margin-top:20px;">
         <div class="tech-card">
           <h3 style="display:block;">Dificuldades comuns</h3>
