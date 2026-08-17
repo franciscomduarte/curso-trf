@@ -58,6 +58,20 @@
   .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem); font-weight:600; color:var(--ink);}
   .sec-head .sub{margin-top:14px; color:var(--text-muted); font-size:1.03rem;}
 
+  .curriculo{background:var(--paper);}
+  .curriculo-table-wrapper{margin-top:8px; overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius);}
+  .curriculo-table{width:100%; border-collapse:collapse; font-size:0.9rem; text-align:left;}
+  .curriculo-table th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; padding:14px 16px; white-space:nowrap;}
+  .curriculo-table td{padding:16px; border-bottom:1px solid var(--line); color:var(--text); line-height:1.55; vertical-align:top;}
+  .curriculo-table tr:last-child td{border-bottom:none;}
+  .curriculo-table tr:nth-child(even){background:var(--surface);}
+  .curriculo-table strong{color:var(--ink);}
+  .curriculo-table .horas{font-family:'JetBrains Mono',monospace; font-size:0.82rem; color:var(--gold); white-space:nowrap;}
+  .curriculo-table a{color:var(--teal); text-decoration:underline; text-underline-offset:2px; font-weight:600;}
+  .curriculo-table a:hover{color:var(--ink);}
+  .curriculo-note{margin-top:18px; font-size:0.86rem; color:var(--text-muted); line-height:1.6;}
+  .curriculo-note + .curriculo-note{margin-top:10px;}
+
   .aulas{background:var(--surface);}
 
   .aulas-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:22px;}
@@ -141,6 +155,49 @@
   </div>
 </header>
 
+<section class="curriculo reveal" id="curriculo">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sobre o curso</span>
+      <h2>Como o curso se organiza</h2>
+      <p class="sub">A ementa oficial reúne 40 horas em 4 módulos. Cada módulo vira um bloco de aulas neste site — a tabela abaixo mostra a distribuição.</p>
+    </div>
+    <div class="curriculo-table-wrapper">
+      <table class="curriculo-table">
+        <thead><tr><th>Módulo</th><th>Carga horária</th><th>Foco</th><th>Aulas</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>1</strong> — Fundamentos e Conceitos de IA</td>
+            <td class="horas">8h</td>
+            <td>O que é IA, tipos de aprendizado, LLMs, ecossistema de ferramentas, terminologia, contexto e Spec-Driven Development.</td>
+            <td><a href="#aula-1">Aula 1</a>, <a href="#aula-2">Aula 2</a></td>
+          </tr>
+          <tr>
+            <td><strong>2</strong> — IA Aplicada ao Ciclo de Desenvolvimento</td>
+            <td class="horas">12h</td>
+            <td>Engenharia de prompt, Spec-Driven Development na prática, requisitos e critérios de aceitação, início do SISPROT.</td>
+            <td><a href="#aula-3">Aula 3</a>, <a href="#aula-4">Aula 4</a>, <a href="#aula-5">Aula 5</a></td>
+          </tr>
+          <tr>
+            <td><strong>3</strong> — Qualidade, Segurança e Governança</td>
+            <td class="horas">10h</td>
+            <td>Código legado, refatoração, performance, segurança (OWASP), LGPD, LLMs locais e governança de IA no setor público.</td>
+            <td><a href="#aula-6">Aula 6</a>, <a href="#aula-7">Aula 7</a></td>
+          </tr>
+          <tr>
+            <td><strong>4</strong> — RAG, Agentes e Projeto Aplicado</td>
+            <td class="horas">10h</td>
+            <td>RAG, otimização de performance, múltiplos agentes, MCP, e o projeto final em equipe.</td>
+            <td><a href="#aula-8">Aula 8</a>, <a href="#aula-9">Aula 9</a>, <a href="#aula-10">Aula 10</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="curriculo-note">A Aula 3 é a abertura prática do Módulo 2 — a jornada pessoal que faz a ponte entre a teoria dos fundamentos e a construção do SISPROT nas aulas seguintes. A Aula 10, reservada ao projeto aplicado do Módulo 4, ainda está em preparação.</p>
+    <p class="curriculo-note">A Aula Extra e a Aula Extra 1 são conteúdo complementar (preparação de ambiente e um redesign de UX/UI do SISPROT) — não fazem parte da carga horária dos 4 módulos acima.</p>
+  </div>
+</section>
+
 <section class="aulas reveal" id="aulas">
   <div class="wrap">
     <div class="sec-head">
@@ -183,7 +240,9 @@
     { numero: 8, titulo: "RAG: Buscando Antes de Responder", descricao: "A técnica que ataca a alucinação pela raiz — buscar o trecho certo de um documento real antes de responder, em vez de confiar só na memória do modelo, aplicada à consulta das próprias normas do SISPROT.", links: [
       { label: "Acessar Aula", href: "aula-8/Aula_8_RAG_Retrieval_Augmented_Generation.html" },
     ]},
-    { numero: 9, titulo: "Em breve", descricao: "Conteúdo desta aula ainda está em preparação.", links: [] },
+    { numero: 9, titulo: "Além do Código: Otimização, Múltiplos Agentes e MCP", descricao: "Otimizar com medição de verdade em vez de \"parece mais rápido\", coordenar mais de uma IA trabalhando na mesma tarefa, e conectar essas ferramentas a fontes de dados reais através do MCP, um protocolo aberto.", links: [
+      { label: "Acessar Aula", href: "aula-9/Aula_9_Otimizacao_Agentes_e_MCP.html" },
+    ]},
     { numero: 10, titulo: "Em breve", descricao: "Conteúdo desta aula ainda está em preparação.", links: [] },
   ];
 
@@ -212,6 +271,7 @@
     const temLinks = aula.links.length > 0;
     const card = document.createElement('article');
     card.className = 'aula-card' + (temLinks ? '' : ' is-disabled') + (aula.isExtra ? ' is-extra' : '');
+    card.id = aula.isExtra ? `aula-${aula.numero === 'EX1' ? 'extra1' : 'extra'}` : `aula-${aula.numero}`;
 
     const numero = aula.isExtra ? aula.numero : String(aula.numero).padStart(2, '0');
     const titulo = aula.isExtra ? `Aula Extra — ${aula.titulo}` : `Aula ${aula.numero} — ${aula.titulo}`;

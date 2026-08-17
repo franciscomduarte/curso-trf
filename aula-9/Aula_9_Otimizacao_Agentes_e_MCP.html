@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 9 · Otimização, Múltiplos Agentes e MCP · SISPROT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#0F1C36">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1C36;
+    --ink-2:#16274a;
+    --paper:#FFFFFF;
+    --surface:#F3F5F9;
+    --surface-2:#EAEDF3;
+    --line:#DEE2EA;
+    --text:#1A2233;
+    --text-muted:#5B6478;
+    --gold:#B8892B;
+    --gold-soft:#E9D9B4;
+    --teal:#0E7C7B;
+    --teal-soft:#D6ECEB;
+    --radius:14px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; color-scheme:light only; background:#FFFFFF;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    margin:0;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;line-height:1.6;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  section{padding:96px 0;}
+  @media (max-width:640px){ section{padding:64px 0;} .wrap{padding:0 20px;} }
+
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px;
+    background:rgba(15,28,54,0.88);
+    backdrop-filter:blur(8px);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:600;}
+  .topbar .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .topbar .step{color:#9fb0d1;}
+  @media (max-width:640px){
+    .topbar{padding:12px 20px;}
+    .topbar .step{display:none;}
+  }
+  #progress{
+    position:fixed; top:0; left:0; height:2px; background:var(--gold); z-index:60; width:0%;
+    transition:width .1s linear;
+  }
+
+  .hero{
+    background:radial-gradient(120% 140% at 78% -10%, #1c3568 0%, var(--ink) 55%, #0a1428 100%);
+    color:#fff;
+    padding:180px 0 120px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; right:-180px; top:-120px;
+    width:640px; height:640px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-60px; top:60px;
+    width:420px; height:420px;
+    border-radius:50%;
+    border:1px solid rgba(184,137,43,0.22);
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero .eyebrow{color:var(--gold-soft); margin-bottom:22px; display:block;}
+  .hero h1{font-size:clamp(2.1rem, 4.6vw, 3.6rem); font-weight:600; max-width:760px;}
+  .hero .lede{
+    margin-top:26px; font-size:1.15rem; color:#c7d2ea; max-width:620px; line-height:1.65;
+  }
+  .hero .meta-row{
+    margin-top:52px; display:flex; gap:36px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:#8fa0c4;
+  }
+  .hero .meta-row strong{color:#fff; display:block; font-family:'Fraunces',serif; font-size:1.3rem; font-weight:600; margin-bottom:2px;}
+
+  .sec-head{max-width:680px; margin-bottom:52px;}
+  .sec-head .eyebrow{display:block; margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem); font-weight:600; color:var(--ink);}
+  .sec-head .sub{margin-top:14px; color:var(--text-muted); font-size:1.03rem;}
+
+  .why{background:var(--surface);}
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media (max-width:800px){ .why-grid{grid-template-columns:1fr;} }
+  .why-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 26px;
+  }
+  .why-card .tag{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:14px;}
+  .why-card h3{font-size:1.15rem; font-weight:600; color:var(--ink); margin-bottom:10px;}
+  .why-card p{color:var(--text-muted); font-size:0.96rem;}
+
+  .shift .grid{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .shift .grid{grid-template-columns:1fr;} }
+  .shift-card{border-radius:var(--radius); padding:30px 28px; border:1px solid var(--line);}
+  .shift-card.old{background:var(--surface);}
+  .shift-card.new{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .shift-card h3{font-size:1.05rem; margin-bottom:12px;}
+  .shift-card.old h3{color:var(--ink);}
+  .shift-card.new h3{color:var(--gold-soft);}
+  .shift-card p{font-size:0.96rem; color:var(--text-muted); line-height:1.65;}
+  .shift-card.new p{color:#c7d2ea;}
+
+  .callout{
+    background:var(--surface); border-radius:var(--radius); padding:26px 28px;
+    display:flex; gap:18px; align-items:flex-start;
+  }
+  .callout .icn{flex:none; width:26px; height:26px; color:var(--gold); margin-top:2px;}
+  .callout p{color:var(--text); font-size:0.97rem; line-height:1.65;}
+
+  .pullquote{padding:100px 0; text-align:center;}
+  .pullquote blockquote{
+    max-width:760px; margin:0 auto; font-family:'Fraunces',serif; font-size:clamp(1.3rem,2.6vw,1.9rem);
+    font-weight:500; color:var(--ink); line-height:1.5;
+  }
+  .pullquote .rule{width:44px; height:2px; background:var(--gold); margin:0 auto 30px;}
+  footer{background:var(--ink); color:#8fa0c4; padding:44px 0; font-size:0.82rem; font-family:'JetBrains Mono',monospace;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; row-gap:14px;}
+
+  .reveal{opacity:1; transform:none;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  .agenda-list{position:relative; margin-top:12px;}
+  .agenda-list::before{content:""; position:absolute; left:15px; top:6px; bottom:6px; width:1px; background:var(--line);}
+  .agenda-row{display:flex; gap:16px; padding:8px 0; align-items:flex-start;}
+  .agenda-row .dotm{flex:none; width:30px;height:30px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--ink); position:relative; z-index:1;}
+  .agenda-row p{font-size:0.94rem; color:var(--text); padding-top:5px;}
+
+  .module-divider{
+    background:linear-gradient(120deg, var(--ink) 0%, #1c3568 100%); color:#fff;
+    padding:72px 0 56px; position:relative; overflow:hidden;
+  }
+  .module-divider::before{content:""; position:absolute; right:-140px; top:-100px; width:420px; height:420px; border-radius:50%; border:1px solid rgba(255,255,255,0.08);}
+  .module-divider .modnum{font-family:'JetBrains Mono',monospace; color:var(--gold-soft); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:16px;}
+  .module-divider h2{font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:600; max-width:760px; color:#fff;}
+  .module-divider .modsub{margin-top:14px; color:#c7d2ea; font-size:1.02rem; max-width:640px; line-height:1.6;}
+
+  .anatomy-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:800px){ .anatomy-grid{grid-template-columns:1fr 1fr;} }
+  @media (max-width:560px){ .anatomy-grid{grid-template-columns:1fr;} }
+  .anatomy-card{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px 20px;}
+  .anatomy-card .anum{font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gold); letter-spacing:0.1em; display:block; margin-bottom:10px;}
+  .anatomy-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px;}
+  .anatomy-card p{font-size:0.88rem; color:var(--text-muted); line-height:1.55;}
+
+  .tech-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:700px){ .tech-grid{grid-template-columns:1fr;} }
+  .tech-card{border:1px solid var(--line); border-radius:12px; padding:22px 22px; background:var(--paper);}
+  .tech-card h3{font-size:1rem; color:var(--ink); margin-bottom:8px; display:flex; align-items:center; gap:10px;}
+  .tech-card .tnum{
+    flex:none; width:26px;height:26px; border-radius:50%; background:var(--ink); color:#fff;
+    font-family:'JetBrains Mono',monospace; font-size:0.72rem; display:flex; align-items:center; justify-content:center;
+  }
+  .tech-card p{font-size:0.9rem; color:var(--text-muted); line-height:1.6;}
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .checklist li{
+    display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line);
+    border-radius:10px; padding:16px 18px; font-size:0.94rem; color:var(--text); line-height:1.55;
+  }
+  .checklist li .xicn{flex:none; width:20px;height:20px; color:var(--teal); margin-top:1px;}
+
+  .callout-alert{ background:var(--ink); color:#fff; border-radius:var(--radius); padding:28px 26px; margin-top:24px; }
+  .callout-alert .eyebrow{color:var(--gold-soft); display:block; margin-bottom:10px;}
+  .callout-alert p{color:#dce3f2; font-size:0.95rem; line-height:1.68;}
+</style>
+<style>
+  /* complementos desta aula (padrão reaproveitado das aulas do projeto) */
+  a{color:var(--teal); text-decoration:underline; text-underline-offset:2px; font-weight:600;}
+  a:hover{color:var(--ink);}
+  .promptbox{background:var(--ink); color:#e8edf6; border-radius:12px; padding:20px 22px; margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; line-height:1.7; white-space:pre-wrap; overflow-x:auto;}
+  .promptbox .plabel{display:block; font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-soft); margin-bottom:12px; font-weight:600;}
+  .promptbox .blk{color:var(--gold-soft); font-weight:600;}
+  .copy-hint{margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted);}
+  code.inline{font-family:'JetBrains Mono',monospace; font-size:0.85em; background:var(--surface-2); padding:2px 6px; border-radius:5px; color:var(--ink);}
+
+  .block-card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:36px; margin-bottom:40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
+  .block-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:1px solid var(--line); padding-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .block-title-area h3{font-size:1.4rem; color:var(--ink); font-weight:600;}
+  .block-badge{font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px; border-radius:20px; font-weight:600;}
+  .badge-teal{background:var(--teal-soft); color:var(--teal);}
+  .badge-gold{background:var(--gold-soft); color:var(--ink);}
+
+  .concept-box{background:var(--surface); border-left:4px solid var(--ink); border-radius:0 8px 8px 0; padding:20px; margin:20px 0;}
+  .concept-box h4{font-size:1.05rem; color:var(--ink); margin-bottom:8px;}
+  .concept-box p{color:var(--text); font-size:0.95rem; line-height:1.6;}
+
+  .insight-box{background:var(--teal-soft); border:1px solid var(--teal); border-radius:8px; padding:20px; margin:20px 0; color:var(--ink);}
+  .insight-box .insight-tag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); font-weight:600; display:block; margin-bottom:6px;}
+  .insight-box p{font-size:0.93rem; line-height:1.55;}
+
+  .instruction-step{margin:28px 0;}
+  .instruction-step .step-num{font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:600; color:var(--gold); display:block; margin-bottom:4px;}
+  .instruction-step h4{font-size:1.1rem; color:var(--ink); margin-bottom:8px;}
+
+  .code-box{background:var(--ink); color:#f0f4fc; font-family:'JetBrains Mono',monospace; font-size:0.82rem; padding:18px 20px; border-radius:10px; margin:16px 0; overflow-x:auto; white-space:pre-wrap; line-height:1.6; border-left:4px solid var(--gold);}
+  .code-box .comment{color:#7e93ba;}
+
+  .value-table-wrapper{margin-top:28px; overflow-x:auto; border:1px solid var(--line); border-radius:10px;}
+  .value-table{width:100%; border-collapse:collapse; font-size:0.9rem; text-align:left;}
+  .value-table th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; padding:14px 16px;}
+  .value-table td{padding:14px 16px; border-bottom:1px solid var(--line); color:var(--text); line-height:1.5; vertical-align:top;}
+  .value-table tr:last-child td{border-bottom:none;}
+  .value-table tr:nth-child(even){background:var(--surface);}
+  .value-table strong{color:var(--ink);}
+
+  /* --- elementos visuais (ícones, diagramas, fotos) --- */
+  .icon-badge{
+    display:inline-flex; align-items:center; justify-content:center; flex:none;
+    width:38px; height:38px; border-radius:50%; background:var(--ink); color:#fff;
+  }
+  .icon-badge svg{width:20px; height:20px;}
+  .icon-badge.gold{background:var(--gold-soft); color:var(--ink);}
+  .icon-badge.teal{background:var(--teal-soft); color:var(--teal);}
+  .icon-badge.sm{width:26px; height:26px;}
+  .icon-badge.sm svg{width:14px; height:14px;}
+
+  .legend-row{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:18px;}
+  .legend-chip{display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; color:var(--text);}
+
+  .acard-head{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .acard-head h3{margin:0;}
+  .anatomy-card .anum{display:none;}
+
+  .concept-box > summary{display:flex; align-items:center; gap:14px; cursor:pointer; list-style:none;}
+  .concept-box > summary::-webkit-details-marker{display:none;}
+  .concept-box > summary h4{margin:0; flex:1;}
+  .concept-box > summary .chev{flex:none; width:18px; height:18px; color:var(--text-muted); transition:transform .2s ease;}
+  .concept-box[open] > summary .chev{transform:rotate(180deg);}
+  .concept-box > p{margin-top:14px;}
+
+  .divider-head{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+  .divider-head .modnum{margin-bottom:0;}
+  .divider-icon{flex:none; width:34px; height:34px; color:var(--gold-soft);}
+
+  .diagram-frame{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:24px; margin:24px 0; overflow-x:auto;}
+  .diagram-frame svg{width:100%; height:auto; display:block;}
+  .diagram-frame .diagram-caption{margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted); text-align:center;}
+  .diagram-pair{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  @media (max-width:800px){ .diagram-pair{grid-template-columns:1fr;} }
+  .diagram-pair .diagram-frame{margin:0; height:100%;}
+
+  .photo-frame{
+    width:100%; aspect-ratio:4/3; border-radius:14px;
+    background:linear-gradient(135deg, var(--surface), rgba(184,137,43,0.08));
+    border:1px dashed var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:var(--text-muted); font-size:0.85rem; padding:24px; text-align:center; gap:10px;
+    margin:24px 0;
+  }
+  .photo-frame.wide{aspect-ratio:16/9;}
+  .photo-frame .pf-icon{width:40px; height:40px; color:var(--gold);}
+  .photo-frame .pf-label{font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted);}
+  .photo-frame.has-img{padding:0; border:1px solid var(--line); border-style:solid; overflow:hidden;}
+  .photo-frame.has-img img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  .demo-head-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:28px; align-items:center; margin:44px 0 20px;}
+  @media (max-width:800px){ .demo-head-grid{grid-template-columns:1fr;} }
+
+  .quiz-legend{font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin:14px 0;}
+  .quiz-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:16px;}
+  .quiz-input{font-family:'JetBrains Mono',monospace; font-size:0.9rem; padding:10px 14px; border:1px solid var(--line); border-radius:8px; width:220px; letter-spacing:0.1em; text-transform:uppercase;}
+  .quiz-btn{font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600; padding:10px 18px; border-radius:8px; border:none; background:var(--ink); color:#fff; cursor:pointer;}
+  .quiz-btn:hover{background:var(--ink-2);}
+  .quiz-msg{margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; min-height:1.2em;}
+  .quiz-gabarito{display:none; margin-top:16px;}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> SISPROT · Aula 9</div>
+  <div class="step">Otimização, Agentes e MCP</div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Curso · IA aplicada ao desenvolvimento de software · Aula 9</span>
+    <h1>Além do Código: Otimização, Múltiplos Agentes e MCP</h1>
+    <p class="lede">Até aqui, cada aula ensinou a IA a gerar, testar, documentar e buscar informação para responder melhor. Hoje olhamos para dentro do que ela já gerou — otimizar com medição de verdade, não com "parece mais rápido" — e para além de uma única IA: coordenar mais de uma trabalhando na mesma tarefa, e conectar essas ferramentas a fontes de dados reais através de um protocolo aberto, o MCP.</p>
+    <div class="meta-row">
+      <div><strong>9</strong>de 10 aulas</div>
+      <div><strong>81x</strong>menos consultas, medido nesta aula</div>
+      <div><strong>1</strong>protocolo aberto (MCP)</div>
+      <div><strong>SISPROT</strong>· otimizando o que já existe</div>
+    </div>
+  </div>
+</header>
+
+<!-- AGENDA -->
+<section class="why reveal" id="agenda">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sobre esta aula</span>
+      <h2>Medir, coordenar, conectar</h2>
+      <p class="sub">Três habilidades que só aparecem depois que o código já existe e já funciona: saber se ele está rápido de verdade (não só "parece"), saber quando vale a pena colocar mais de uma IA trabalhando na mesma tarefa, e saber como uma IA se conecta a dados e ferramentas fora da conversa — o protocolo por trás de boa parte do ecossistema de IA de hoje.</p>
+    </div>
+    <div class="agenda-list">
+      <div class="agenda-row"><div class="dotm">01</div><p>Otimização de código com medição real</p></div>
+      <div class="agenda-row"><div class="dotm">02</div><p>Múltiplos agentes de IA na mesma tarefa</p></div>
+      <div class="agenda-row"><div class="dotm">03</div><p>O que é o Model Context Protocol (MCP)</p></div>
+      <div class="agenda-row"><div class="dotm">04</div><p>MCP na prática: conectando uma IA a uma fonte real</p></div>
+      <div class="agenda-row"><div class="dotm">05</div><p>Riscos e limites dos três temas</p></div>
+      <div class="agenda-row"><div class="dotm">06</div><p>Mão na massa: medir, otimizar, conectar</p></div>
+      <div class="agenda-row"><div class="dotm">07</div><p>Desafio final: otimizar e documentar com evidência</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Regra de ouro do curso (continua valendo):</strong> os exemplos de hoje usam dado fictício do SISPROT, como sempre. A novidade é que, na Etapa 4, vamos conectar uma IA a uma fonte de documentação real via MCP, e na "Mão na massa" vamos conectar de verdade um servidor MCP a um sistema de arquivos, o do computador de cada um — nenhum dos dois exige instalar banco de dados nem serviço extra, só o Node.js já usado no restante do curso — mais um motivo para o cuidado de sempre com o que se expõe a uma ferramenta externa.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 1 -->
+<section class="module-divider reveal" id="etapa1">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M18.7 8 13 13.7l-4-4L3 16"/></svg>
+      <span class="modnum">Etapa 1</span>
+    </div>
+    <h2>Otimização de código com medição real</h2>
+    <p class="modsub">"Ficou mais rápido" não é dado — é impressão. Hoje a régua é o cronômetro.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: otimização baseada em medição</h4>
+      <p>Mudar código para ficar mais rápido, mas só decidir que funcionou depois de <strong>medir antes e depois</strong>, com o mesmo método, nas mesmas condições. Sem essa medição, uma mudança "otimizada" pode não ter feito diferença nenhuma — ou pode até ter piorado algo que ninguém percebeu a olho nu. Pedir para a IA "deixar mais rápido" sem pedir também a medição é repetir, na performance, o mesmo erro que o curso já cobriu para código gerado sem revisão: aceitar o resultado pela aparência, não pela evidência.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:0;">
+      <span class="step-num">Cenário desta etapa</span>
+      <h4>Um relatório novo no SISPROT — e um problema clássico de performance</h4>
+      <p style="color:var(--text-muted);">O SISPROT ganhou um relatório simples: quantos protocolos cada requerente já abriu. A primeira versão, gerada rápido, funciona — mas tem um problema que só aparece quando o banco cresce.</p>
+    </div>
+
+    <div class="code-box"><span class="comment">// relatorio.php — versão inicial (aula-9/codigo/relatorio.php)</span>
+$stmt = $pdo->query('SELECT DISTINCT requerente FROM protocolos ORDER BY requerente');
+$requerentes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+$contagem = [];
+foreach ($requerentes as $requerente) {
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM protocolos WHERE requerente = ?');
+    $stmt->execute([$requerente]);
+    $contagem[$requerente] = $stmt->fetchColumn();
+}</div>
+
+    <div class="concept-box">
+      <h4>Definição: problema N+1</h4>
+      <p>Um padrão clássico de lentidão: 1 consulta para buscar uma lista, e mais N consultas — uma para cada item da lista — para completar o resto da informação. No relatório acima: 1 consulta para listar os requerentes, mais 1 consulta <em>por requerente</em> para contar os protocolos dele. Com 80 requerentes, isso é 81 idas ao banco para responder uma pergunta que uma única consulta bem escrita resolveria.</p>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Prompt · pedir medição antes de pedir otimização</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP com experiência em performance de
+banco de dados.
+
+<span class="blk">[CONTEXTO]</span> O arquivo relatorio.php do SISPROT (anexo) lista protocolos
+por requerente. Suspeito que ele faça uma consulta ao banco por requerente,
+dentro de um loop.
+
+<span class="blk">[TAREFA]</span> Antes de propor qualquer otimização, adicione uma contagem de
+quantas consultas o código faz e quanto tempo total leva. Não mude a lógica
+ainda — só instrumente a medição.
+
+<span class="blk">[FORMATO]</span> O código com a instrumentação adicionada, e uma explicação de
+onde cada contagem é somada.</div>
+    <p class="copy-hint">Pedir a medição <em>antes</em> da otimização, como um passo separado, é o que garante ter um "antes" para comparar — se pedirmos direto "otimize", perdemos a chance de provar que a mudança valeu a pena.</p>
+
+    <div class="code-box"><span class="comment">// Números medidos localmente (PHP + SQLite, 2.000 protocolos fictícios, 80 requerentes) — antes de publicar este material</span>
+--- Versão com N+1 ---
+Consultas ao banco: 81
+Tempo: 8,368 ms
+
+--- Versão otimizada (GROUP BY) ---
+Consultas ao banco: 1
+Tempo: 1,027 ms
+
+--- Comparação ---
+Redução de consultas: 81 → 1 (81x menos)
+Resultado: 8,1x mais rápido
+Resultados idênticos: SIM</div>
+    <p class="copy-hint">Medido de verdade, com um script isolado, não estimado — script e método descritos em <code class="inline">aula-9/codigo/README.md</code>. Os números absolutos mudam de banco para banco e de máquina para máquina; o que não muda é a proporção do problema — trocar 81 idas ao banco por 1 é sempre uma redução grande, e numa rede real (não numa consulta local em memória, como neste teste) cada uma dessas 81 idas ainda carregaria a latência de rede até o servidor MySQL — a diferença tende a ser ainda maior em produção.</p>
+
+    <div class="instruction-step">
+      <span class="step-num">A versão corrigida</span>
+      <h4>Uma consulta, com GROUP BY, faz o mesmo trabalho</h4>
+    </div>
+    <div class="code-box"><span class="comment">// relatorio.php — versão otimizada</span>
+$stmt = $pdo->query(
+    'SELECT requerente, COUNT(*) as total FROM protocolos GROUP BY requerente ORDER BY requerente'
+);
+$contagem = [];
+foreach ($stmt as $linha) {
+    $contagem[$linha['requerente']] = $linha['total'];
+}</div>
+    <p class="copy-hint">O banco de dados já sabe agrupar e contar — pedir isso numa única consulta SQL (<code class="inline">GROUP BY</code>) é sempre mais rápido que pedir ao PHP para fazer, uma pergunta de cada vez, o que o próprio banco faz de uma vez só.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Por que medir depois importa tanto quanto medir antes</span>
+      <p>Uma otimização só vale se o resultado continuar <em>certo</em> — não só rápido. Antes de aceitar a versão nova, comparamos as duas saídas campo a campo (no teste desta aula, "Resultados idênticos: SIM") — sem essa checagem, uma versão mais rápida mas errada seria pior que a lenta e certa. É o mesmo princípio de testes da Aula 3, agora aplicado a uma mudança de performance.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Isso tem N+1?</h4>
+      <p style="color:var(--text-muted);">Para cada descrição abaixo, decida se o padrão tem um problema N+1, precisando de otimização (<strong>N</strong>), ou se já é uma única consulta bem escrita (<strong>O</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>N</strong> = tem N+1, precisa otimizar &nbsp;·&nbsp; <strong>O</strong> = uma consulta só, já está ok</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Buscar todos os protocolos com uma consulta, depois um <code class="inline">SELECT COUNT</code> separado para cada requerente da lista.</li>
+        <li>Buscar requerente e total de protocolos numa única consulta com <code class="inline">GROUP BY</code>.</li>
+        <li>Para cada um dos 50 protocolos da tela, fazer uma consulta separada perguntando o nome do setor atual.</li>
+        <li>Uma única consulta que já traz tudo que a tela precisa mostrar, incluindo nome do setor via <code class="inline">JOIN</code>.</li>
+        <li>Uma única consulta que já traz tudo que a tela precisa mostrar.</li>
+        <li>Listar todos os requerentes, depois abrir um <code class="inline">SELECT COUNT(*)</code> por requerente dentro de um <code class="inline">foreach</code>.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaOPT1" class="quiz-input" placeholder="ex.: NONOON" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaOPT1','NONOON','gabaritoOPT1','msgOPT1')">Verificar sequência</button>
+      </div>
+      <p id="msgOPT1" class="quiz-msg"></p>
+      <div id="gabaritoOPT1" class="quiz-gabarito">
+        <p class="copy-hint">1, 3 e 6 descrevem o mesmo padrão (uma consulta a mais por item de uma lista, dentro de um loop) — é N+1, não importa se é contar, buscar nome de setor, ou qualquer outra coisa. 2, 4 e 5 já resolvem tudo numa consulta só, com <code class="inline">GROUP BY</code> ou <code class="inline">JOIN</code> — nada a otimizar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="module-divider reveal" id="etapa2">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M6 9v2a4 4 0 0 0 4 4M18 9v2a4 4 0 0 0-4 4"/></svg>
+      <span class="modnum">Etapa 2</span>
+    </div>
+    <h2>Múltiplos agentes de IA na mesma tarefa</h2>
+    <p class="modsub">Uma conversa, um agente, um contexto — até a tarefa ficar grande demais para caber numa só.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: subagente</h4>
+      <p>Um assistente de IA especializado, com seu <strong>próprio contexto</strong>, que a conversa principal invoca para uma tarefa específica — e que devolve só o resultado, não todo o processo. A ideia central: uma tarefa que exigiria vasculhar 40 arquivos de log encheria a conversa principal de conteúdo que não importa depois; um subagente faz essa busca isolado, e volta só com a resposta. O Claude Code documenta oficialmente essa capacidade — cada subagente roda com prompt de sistema próprio, ferramentas específicas e permissões independentes (<a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">code.claude.com/docs/en/sub-agents</a>).</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Isso já aconteceu nesta aula</span>
+      <p>Boa parte da pesquisa por trás deste material — conferir a sintaxe exata de um comando, checar se uma página ainda está no ar, comparar várias fontes sobre o mesmo assunto — foi feita chamando um agente de pesquisa separado, que devolveu só a resposta resumida, sem encher a conversa principal com cada página visitada. É a mesma lógica que esta etapa está descrevendo, só que já em uso, não em teoria.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Tipo</th><th>Como funciona</th><th>Quando usar</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Subagente</strong></td><td>Dentro da mesma sessão — a conversa principal delega e espera o resultado antes de continuar.</td><td>Pesquisa ou exploração que geraria muito conteúdo descartável (logs, buscas, leitura de vários arquivos).</td></tr>
+          <tr><td><strong>Agent teams</strong></td><td>Várias sessões paralelas, uma coordenando as outras, cada uma com seu contexto — recurso ainda experimental.</td><td>Trabalho que dá para dividir em partes independentes, revisadas depois por quem coordena.</td></tr>
+          <tr><td><strong>Background agents</strong></td><td>Sessões longas, monitoradas à parte, sem travar o que está sendo feito no momento.</td><td>Tarefas demoradas (ex.: uma auditoria grande) que não precisam de atenção constante.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Fonte: documentação oficial do Claude Code sobre subagentes, agent teams e background agents (<a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">code.claude.com/docs/en/sub-agents</a>).</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">A turma usa Claude e GitHub Copilot — os quatro exemplos abaixo mostram os dois</span>
+      <p>Nada aqui é exclusivo do Claude Code. O GitHub Copilot, no VS Code, também tem agente próprio, subagentes de verdade e um agente autônomo em nuvem — com nomes e arquivos diferentes, mas resolvendo o mesmo problema. Os quatro blocos a seguir respondem, na ordem, às perguntas que mais aparecem quando alguém começa a usar agentes de IA de verdade.</p>
+    </div>
+
+    <div class="code-box"><span class="comment">// trecho de exemplo — padrão comum em formulários HTML com campo oculto, de qualquer sistema</span>
+&lt;?php if ($id): ?&gt;
+  &lt;input type="hidden" name="id" value="&lt;?= $id ?&gt;"&gt;
+&lt;?php endif; ?&gt;</div>
+    <p class="copy-hint"><code class="inline">$id</code>, aqui, vem direto de <code class="inline">$_GET</code> ou <code class="inline">$_POST</code>, sem passar por <code class="inline">htmlspecialchars()</code> — um padrão de XSS real e comum, não exclusivo de nenhum sistema específico. É o trecho que os quatro exemplos abaixo usam — basta colar esse código na conversa, sem precisar de nenhum arquivo ou projeto instalado.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">1 · Como criar um agente?</span>
+      <h4>Um arquivo de texto com instruções — não é mais complicado que isso</h4>
+      <p style="color:var(--text-muted);">Um agente especializado é, na prática, um arquivo Markdown com um cabeçalho (nome, descrição, quais ferramentas ele pode usar) e um prompt de sistema embaixo. Exemplo: um agente que revisa qualquer trecho de código PHP mostrado a ele — como o de cima — procurando saída HTML sem <code class="inline">htmlspecialchars()</code>.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Campo</th><th>Para que serve</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">name</code></td><td>Identificador do agente — o nome do arquivo e o nome que aparece se você quiser chamá-lo diretamente (ex.: "use o agente revisor-seguranca").</td></tr>
+          <tr><td><code class="inline">description</code></td><td>O que decide quando o agente é acionado <strong>automaticamente</strong>: a ferramenta compara o pedido feito na conversa com essa descrição, e casa sozinha quando fazem sentido juntos — quanto mais específica, melhor o casamento.</td></tr>
+          <tr><td><code class="inline">tools</code></td><td>Quais ferramentas o agente pode usar. Aqui, só leitura (<code class="inline">Read</code>, <code class="inline">Grep</code>) — nunca escrita, porque a tarefa dele é revisar e apontar, não corrigir sozinho o código.</td></tr>
+          <tr><td>Texto depois do segundo <code class="inline">---</code></td><td>O prompt de sistema — as instruções que definem como o agente deve se comportar, escritas como se estivesse falando diretamente com ele.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">As duas linhas <code class="inline">---</code> delimitam o cabeçalho YAML — tudo entre elas é configuração; tudo depois da segunda é o prompt de sistema, em texto livre.</p>
+
+    <div class="code-box"><span class="comment"># Claude Code — .claude/agents/revisor-seguranca.md</span>
+---
+name: revisor-seguranca
+description: Revisa trechos de código PHP em busca de saída HTML sem escape
+tools: Read, Grep
+---
+Você revisa trechos de código PHP colados na conversa, procurando
+variáveis impressas em HTML sem passar por htmlspecialchars(). Para
+cada achado, aponte a linha e sugira a correção.
+
+<span class="comment"># GitHub Copilot (VS Code) — .github/agents/revisor-seguranca.agent.md</span>
+---
+name: Revisor de Segurança
+description: Revisa trechos de código PHP em busca de saída HTML sem escape
+tools: ['search/codebase', 'read']
+---
+Você revisa trechos de código PHP colados na conversa, procurando
+variáveis impressas em HTML sem passar por htmlspecialchars(). Para
+cada achado, aponte a linha e sugira a correção.</div>
+    <p class="copy-hint">Mesma ideia, dois formatos quase idênticos: cabeçalho YAML + instruções em texto simples. O caminho muda (<code class="inline">.claude/agents/</code> vs. <code class="inline">.github/agents/</code>), a lógica não. Em ambos, também dá para simplesmente pedir — "crie um agente que revise saídas HTML sem escape" — e deixar a própria ferramenta escrever o arquivo.</p>
+    <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Passo a passo, depois de salvar o arquivo</span>
+      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+        <li>Salvar o arquivo no caminho exato acima — dentro do projeto, não solto em outra pasta.</li>
+        <li>Pedir uma tarefa que bata com a <code class="inline">description</code> do agente — não precisa chamar o agente pelo nome, a ferramenta casa sozinha (ex.: "revise este trecho: [colar o código acima] procurando saída sem escape").</li>
+        <li>Confirmar que o agente certo respondeu, perguntando de volta: "qual agente você usou para isso?".</li>
+      </ol>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">2 · Como ver o agente funcionando?</span>
+      <h4>"Funcionou" não é suficiente — é preciso conseguir ver o que ele fez</h4>
+      <p style="color:var(--text-muted);">O mesmo princípio de transparência do curso inteiro, aplicado a um agente: nunca confiar só porque ele disse que terminou.</p>
+    </div>
+    <div class="code-box"><span class="comment"># Claude Code — achado real, rodando o agente do bloco 1 sobre o trecho colado (testado de verdade, não ilustrativo)</span>
+⏺ Task(revisor-seguranca): revisar o trecho de código colado na conversa
+  ⎿ Achado: XSS refletido em atributo HTML — linha 2, sem escape
+  ⎿ Cenário de exploração: $id = '"&gt;&lt;script&gt;alert(document.cookie)&lt;/script&gt;'
+     fecha a tag value="..." e injeta um &lt;script&gt; executado ao carregar
+  ⎿ Correção: value="&lt;?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?&gt;"
+  ⎿ Concluído — 1 achado
+
+<span class="comment"># GitHub Copilot (Chat, agent mode) — mesmo padrão, formato ilustrativo (não testado neste material)</span>
+▸ Analyzed pasted snippet
+▸ Ran search: htmlspecialchars
+▸ Found 1 issue — XSS via unescaped $id, line 2
+▸ Summary: 1 achado, com cenário de exploração e correção sugerida</div>
+    <p class="copy-hint">O achado do Claude Code acima não é um exemplo fabricado para o material — é a saída real do agente <code class="inline">revisor-seguranca</code> rodando sobre o trecho desta etapa. Repare que ele não só apontou a falta de <code class="inline">htmlspecialchars()</code>: também explicou o cenário de exploração (o payload que quebra o atributo) e recomendou <code class="inline">ENT_QUOTES, 'UTF-8'</code> — mais preciso que só "use htmlspecialchars()", porque sem <code class="inline">ENT_QUOTES</code> o escape de aspas depende da versão e configuração do PHP. Antes de aceitar qualquer resultado de agente, três coisas precisam aparecer: qual agente rodou, o que ele analisou, e o que ele concluiu — se uma faltar, peça para detalhar antes de confiar.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">3 · Como delegar para um subagente?</span>
+      <h4>Pedir, nomeando a tarefa e o que deve voltar</h4>
+    </div>
+    <div class="promptbox">
+<span class="plabel">Claude Code · delegação implícita, pelo tipo de tarefa</span>Enquanto revisamos este trecho juntos, use um agente separado para
+pesquisar: quais outras funções do PHP, além de htmlspecialchars(),
+também protegem contra saída insegura, e quando cada uma se aplica
+(atributo HTML, JavaScript, URL). Quero só uma lista curta com
+justificativa, não o processo de pesquisa.</div>
+    <div class="promptbox">
+<span class="plabel">GitHub Copilot · delegação explícita, com #runSubagent</span>#runSubagent Rode o agente "Revisor de Segurança" para revisar este
+trecho: [colar o código do exemplo acima] procurando saída sem
+htmlspecialchars(). Quero só a lista de achados.</div>
+    <p class="copy-hint">O ganho não é velocidade — muitas vezes é o oposto, já que rodar um subagente tem custo próprio. O ganho é a conversa principal continuar limpa, sem se perder em conteúdo que só importava para a pesquisa ou a revisão, não para o código sendo escrito agora.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">4 · Como montar um time de agentes?</span>
+      <h4>Mais de um especialista, cada um com seu escopo, ao mesmo tempo</h4>
+      <p style="color:var(--text-muted);">Cenário: um agente revisando segurança (o trecho de saída HTML sem escape, do topo desta etapa) e outro otimizando um trecho com problema N+1 (o de baixo), rodando ao mesmo tempo — sem um atrapalhar o outro, porque cada um trabalha sobre um trecho de código diferente.</p>
+    </div>
+    <div class="code-box"><span class="comment">// trecho de exemplo 2 — problema N+1, para o segundo agente do time</span>
+$stmt = $pdo->query('SELECT DISTINCT categoria FROM produtos');
+$categorias = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+$contagem = [];
+foreach ($categorias as $categoria) {
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM produtos WHERE categoria = ?');
+    $stmt->execute([$categoria]);
+    $contagem[$categoria] = $stmt->fetchColumn();
+}</div>
+    <p class="copy-hint">Mesmo padrão da Etapa 1 (uma consulta para listar, mais uma consulta por item dentro do loop), só que genérico — não precisa de nenhum arquivo ou banco instalado, basta colar este trecho na conversa junto com o de segurança do topo.</p>
+
+    <div class="code-box"><span class="comment"># Claude Code — agent teams é experimental, precisa ser ligado antes</span>
+<span class="comment"># uma vez, no ~/.claude/settings.json:</span>
+{ "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" } }
+
+<span class="comment"># ou, só para essa sessão:</span>
+CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude</div>
+    <p class="copy-hint">Agent teams vem <strong>desligado por padrão</strong>, por ainda ser experimental — sem uma dessas duas linhas, pedir "use agent teams" não faz nada, o Claude Code ignora. A diferença entre as duas: a primeira (dentro do <code class="inline">settings.json</code>) liga o recurso <strong>para sempre</strong>, em toda sessão futura, até alguém tirar essa linha de novo; a segunda (o prefixo antes de <code class="inline">claude</code>) liga <strong>só para aquela sessão</strong> que está sendo aberta — da próxima vez que rodar <code class="inline">claude</code> sem o prefixo, volta desligado. Para só testar uma vez, a segunda opção evita mexer em configuração permanente.</p>
+    <div class="promptbox">
+<span class="plabel">Claude Code · pedindo o time, depois de ligar o recurso e referenciar o arquivo</span>Use agent teams para trabalhar em paralelo no arquivo @exemplo.php. Um
+agente revisa o primeiro trecho (saída HTML sem escape), outro revisa
+o segundo (a consulta dentro do loop) e propõe a versão com GROUP BY.
+No final, sintetize os dois resultados num único resumo.</div>
+    <p class="copy-hint">Uma sessão vira "team lead": divide o pedido em duas tarefas, cada agente trabalha no seu próprio contexto, e a sessão principal junta os dois resultados no final — sem um agente ver o histórico do outro enquanto trabalha. Não precisa nomear os agentes dos blocos 1-3 — basta descrever as duas tarefas, e o team lead casa cada uma com o especialista certo.</p>
+    <div class="code-box"><span class="comment"># GitHub Copilot — duas issues delegadas ao coding agent, viram time por serem paralelas</span>
+gh issue edit 101 --add-assignee "@copilot"   <span class="comment"># issue: revisar o trecho 1 (saída sem escape)</span>
+gh issue edit 102 --add-assignee "@copilot"   <span class="comment"># issue: otimizar o trecho 2 (consulta N+1)</span></div>
+    <p class="copy-hint"><strong>Apenas um exemplo de uso</strong> — 101 e 102 são números ilustrativos, não issues que existem de verdade neste curso. Para rodar isso de fato, é preciso um repositório no GitHub com Copilot habilitado, e issues reais criadas nele (com o número de cada uma) descrevendo essas duas tarefas.</p>
+    <p class="copy-hint">Cada issue vira, sozinha, uma sessão independente do coding agent — que trabalha num sandbox do GitHub Actions e devolve um Pull Request. Duas issues ao mesmo tempo já são, na prática, um time: mais próximo de dois PRs revisados depois do que de uma conversa única coordenando os dois. Para um time dentro da mesma conversa, o caminho mais maduro do Copilot hoje é rodar dois <code class="inline">#runSubagent</code> na mesma mensagem, um para cada tarefa.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício prático · individual · 15 min</span>
+      <h4>Crie seu próprio agente — com SQL, dessa vez</h4>
+      <p style="color:var(--text-muted);">Os quatro exemplos desta etapa usaram sempre o mesmo tipo de problema (saída HTML sem escape, N+1). Agora é sua vez, com um terceiro problema: injeção de SQL por concatenação de string, em vez de parâmetro vinculado.</p>
+    </div>
+    <div class="code-box"><span class="comment">// trecho de exemplo — para o exercício, ainda não usado nesta etapa</span>
+$sql = "SELECT * FROM produtos WHERE nome = '" . $_GET['nome'] . "'";
+$resultado = $pdo->query($sql);</div>
+    <p class="copy-hint">Diferente do exemplo de segurança do topo (saída sem escape) e do de N+1 do bloco 4 (consulta repetida em loop) — aqui o problema é outro: <code class="inline">$_GET['nome']</code> entra direto na string do SQL, sem passar por <code class="inline">prepare()</code>/<code class="inline">execute()</code> com parâmetro.</p>
+    <div class="code-box"><span class="comment"># Claude Code — .claude/agents/revisor-sql.md</span>
+---
+name: revisor-sql
+description: Revisa trechos de código PHP com SQL montado por concatenação de string, sem parâmetro vinculado
+tools: Read, Grep
+---
+Você revisa trechos de código PHP com consultas SQL, procurando
+strings SQL montadas por concatenação com dado de entrada não
+confiável ($_GET, $_POST, etc.), em vez de prepared statement com
+parâmetro vinculado. Para cada achado, aponte a linha, explique um
+cenário de exploração com um valor concreto que quebra a consulta, e
+proponha a correção com prepare()/execute() e parâmetro vinculado.
+
+<span class="comment"># GitHub Copilot (VS Code) — .github/agents/revisor-sql.agent.md</span>
+---
+name: Revisor de SQL
+description: Revisa trechos de código PHP com SQL montado por concatenação de string, sem parâmetro vinculado
+tools: ['search/codebase', 'read']
+---
+Você revisa trechos de código PHP com consultas SQL, procurando
+strings SQL montadas por concatenação com dado de entrada não
+confiável ($_GET, $_POST, etc.), em vez de prepared statement com
+parâmetro vinculado. Para cada achado, aponte a linha, explique um
+cenário de exploração com um valor concreto que quebra a consulta, e
+proponha a correção com prepare()/execute() e parâmetro vinculado.</div>
+    <p class="copy-hint">Mesmo formato do <code class="inline">revisor-seguranca</code> do bloco 1 — só a especialidade muda. Pode salvar exatamente assim e usar, ou pedir "crie um agente que detecte SQL montado por concatenação" e deixar a própria ferramenta escrever o arquivo.</p>
+    <div class="instruction-step" style="margin-top:0;">
+      <span class="step-num">O que o seu agente precisa entregar</span>
+      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Criar um agente (no formato do bloco 1, <code class="inline">.claude/agents/</code> ou <code class="inline">.github/agents/</code>) especializado em detectar consultas SQL montadas por concatenação de string, com dado de entrada não confiável.</li>
+        <li>Colar o trecho acima na conversa e pedir para o agente revisar.</li>
+        <li>Conferir se a resposta traz, no mínimo, as três coisas que o <code class="inline">revisor-seguranca</code> do bloco 2 trouxe para o exemplo de XSS: onde está o problema (com a linha), um cenário de exploração real (um valor de <code class="inline">nome</code> que quebra a consulta — ex.: fechando as aspas e adicionando uma condição sempre verdadeira), e a correção com <code class="inline">prepare()</code>/parâmetro vinculado.</li>
+      </ol>
+    </div>
+    <div class="callout-alert">
+      <span class="eyebrow">Critério de sucesso</span>
+      <ul class="checklist" style="margin-top:12px;">
+        <li><span class="xicn">&#10003;</span>O agente existe como arquivo, não como instrução repetida a cada pergunta.</li>
+        <li><span class="xicn">&#10003;</span>A resposta aponta a linha exata e explica, com um valor concreto de <code class="inline">nome</code>, como a consulta é quebrada.</li>
+        <li><span class="xicn">&#10003;</span>A correção sugerida usa parâmetro vinculado (<code class="inline">?</code> ou <code class="inline">:nome</code>), não apenas escapar aspas manualmente.</li>
+      </ul>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Vale a pena um subagente aqui?</h4>
+      <p style="color:var(--text-muted);">Para cada situação abaixo, decida se um subagente ajudaria (<strong>S</strong>) — a tarefa geraria muito conteúdo descartável — ou se é mais simples resolver direto, sem separar contexto (<strong>N</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>S</strong> = sim, um subagente ajudaria &nbsp;·&nbsp; <strong>N</strong> = não, mais simples resolver direto</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Pesquisar, entre 40 arquivos de log, qual gerou o erro de ontem.</li>
+        <li>Corrigir um erro de digitação numa mensagem de erro.</li>
+        <li>Adicionar um novo campo obrigatório num formulário.</li>
+        <li>Revisar segurança do projeto inteiro antes de um deploy, sem interromper o trabalho atual.</li>
+        <li>Renomear uma variável em um único arquivo.</li>
+        <li>Ler a documentação inteira de uma biblioteca para responder uma pergunta específica.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaAGT1" class="quiz-input" placeholder="ex.: SNNSNS" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaAGT1','SNNSNS','gabaritoAGT1','msgAGT1')">Verificar sequência</button>
+      </div>
+      <p id="msgAGT1" class="quiz-msg"></p>
+      <div id="gabaritoAGT1" class="quiz-gabarito">
+        <p class="copy-hint">1, 4 e 6 envolvem vasculhar muito conteúdo (logs, o projeto inteiro, uma biblioteca inteira) para chegar a uma resposta curta — exatamente o que um subagente resolve sem poluir a conversa principal. 2, 3 e 5 são mudanças pontuais, diretas, sem exploração — um subagente aqui só adicionaria custo e complexidade sem necessidade.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="module-divider reveal" id="etapa3">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="7" height="7" rx="1.5"/><rect x="14" y="9" width="7" height="7" rx="1.5"/><path d="M10 12.5h4"/></svg>
+      <span class="modnum">Etapa 3</span>
+    </div>
+    <h2>O que é o Model Context Protocol (MCP)</h2>
+    <p class="modsub">Um jeito padrão de uma IA se conectar a dados e ferramentas de verdade — não mais um por ferramenta.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: MCP (Model Context Protocol)</h4>
+      <p>Um protocolo aberto, criado pela Anthropic, para conectar aplicações de IA a sistemas externos — fontes de dados (arquivos locais, bancos de dados), ferramentas (buscadores, calculadoras) e fluxos de trabalho (prompts especializados). A própria documentação oficial usa a analogia: MCP é como uma porta USB-C para aplicações de IA — assim como USB-C padronizou como conectar aparelhos eletrônicos, o MCP padroniza como conectar uma IA a qualquer sistema externo, sem precisar de uma integração feita à mão para cada ferramenta (<a href="https://modelcontextprotocol.io/introduction" target="_blank" rel="noopener">modelcontextprotocol.io/introduction</a>). É um protocolo aberto, com suporte de Claude, ChatGPT, VS Code, Cursor e outras ferramentas — não é exclusivo de nenhuma delas.</p>
+    </div>
+
+    <div class="diagram-frame">
+      <svg viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .lbl9{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#1A2233;}
+          .sub9{font-family:'JetBrains Mono',monospace; font-size:10px; fill:#5B6478;}
+          .lbl9-inv{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#fff;}
+          .sub9-inv{font-family:'JetBrains Mono',monospace; font-size:10px; fill:#c7d2ea;}
+          .box9{fill:#F3F5F9; stroke:#DEE2EA; stroke-width:1.5;}
+          .box9ink{fill:#0F1C36; stroke:#0F1C36;}
+          .arrow9{stroke:#B8892B; stroke-width:2; fill:none; marker-end:url(#arrow9head);}
+        </style>
+        <defs>
+          <marker id="arrow9head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill="#B8892B"/>
+          </marker>
+        </defs>
+
+        <rect class="box9" x="10" y="55" width="170" height="70" rx="8"/>
+        <text class="lbl9" x="95" y="86" text-anchor="middle">Host</text>
+        <text class="sub9" x="95" y="104" text-anchor="middle">Claude Code, Claude Desktop</text>
+
+        <path class="arrow9" d="M180 90 L235 90"/>
+        <rect class="box9" x="240" y="55" width="170" height="70" rx="8"/>
+        <text class="lbl9" x="325" y="86" text-anchor="middle">Cliente MCP</text>
+        <text class="sub9" x="325" y="104" text-anchor="middle">1 por servidor conectado</text>
+
+        <path class="arrow9" d="M410 90 L465 90"/>
+        <rect class="box9ink" x="470" y="55" width="170" height="70" rx="8"/>
+        <text class="lbl9-inv" x="555" y="86" text-anchor="middle">Servidor MCP</text>
+        <text class="sub9-inv" x="555" y="104" text-anchor="middle">ex.: arquivos, banco, Sentry</text>
+
+        <path class="arrow9" d="M640 90 L695 90"/>
+        <rect class="box9" x="700" y="30" width="190" height="120" rx="8"/>
+        <text class="lbl9" x="795" y="60" text-anchor="middle">O que o servidor expõe</text>
+        <text class="sub9" x="795" y="85" text-anchor="middle">Tools — ações</text>
+        <text class="sub9" x="795" y="102" text-anchor="middle">Resources — dados</text>
+        <text class="sub9" x="795" y="119" text-anchor="middle">Prompts — modelos prontos</text>
+      </svg>
+      <p class="diagram-caption">O host cria um cliente para cada servidor conectado; cada servidor expõe algum conjunto de tools, resources e prompts.</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Definição: os três primitivos de um servidor MCP</h4>
+      <p><strong>Tools</strong> são ações executáveis — algo que a IA pode chamar para fazer alguma coisa (ex.: buscar um protocolo pelo número). <strong>Resources</strong> são dados que a IA pode consultar como contexto, mas não executar (ex.: o schema do banco do SISPROT). <strong>Prompts</strong> são modelos prontos de interação, reutilizáveis (ex.: um template para gerar um relatório mensal). Um mesmo servidor pode oferecer os três tipos ao mesmo tempo — a IA descobre o que está disponível ao se conectar, sem precisar saber de antemão (<a href="https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture" target="_blank" rel="noopener">modelcontextprotocol.io/.../architecture</a>).</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">MCP e RAG resolvem um problema parecido, de jeitos diferentes</span>
+      <p>A Aula 8 ensinou RAG: buscar um trecho de texto e colar no prompt antes de responder. MCP também dá à IA acesso a informação que ela não tem de cabeça — mas em vez de um texto estático colado no prompt, é uma <em>conexão viva</em>: a IA pode consultar, e em muitos casos até agir (uma tool pode alterar dado, não só ler). RAG resolve "a IA não sabe isso"; MCP resolve "a IA não consegue chegar nisso sozinha, nem fazer nada a respeito".</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Tool, resource ou prompt?</h4>
+      <p style="color:var(--text-muted);">Para cada descrição abaixo, identifique qual dos três primitivos do MCP ela representa. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>T</strong> = tool (ação) &nbsp;·&nbsp; <strong>R</strong> = resource (dado) &nbsp;·&nbsp; <strong>P</strong> = prompt (modelo)</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Uma função que a IA pode chamar para buscar um protocolo pelo número.</li>
+        <li>O schema do banco de dados do SISPROT, disponível para a IA consultar como contexto.</li>
+        <li>Uma ação que atualiza o status de um protocolo no banco.</li>
+        <li>Um modelo pronto de pergunta para gerar um relatório mensal, reutilizável.</li>
+        <li>O conteúdo de um arquivo de configuração, exposto só para leitura.</li>
+        <li>Um template com exemplos prontos de como pedir um resumo de tramitação.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaMCP1" class="quiz-input" placeholder="ex.: TRTPRP" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaMCP1','TRTPRP','gabaritoMCP1','msgMCP1')">Verificar sequência</button>
+      </div>
+      <p id="msgMCP1" class="quiz-msg"></p>
+      <div id="gabaritoMCP1" class="quiz-gabarito">
+        <p class="copy-hint">1 e 3 são tools — a IA executa uma ação (buscar, atualizar). 2 e 5 são resources — dado disponível para consulta, sem executar nada. 4 e 6 são prompts — modelos reutilizáveis de como pedir algo, não dado nem ação.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 4 -->
+<section class="module-divider reveal" id="etapa4">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 3 6v6c0 5 4 9 9 10 5-1 9-5 9-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+      <span class="modnum">Etapa 4</span>
+    </div>
+    <h2>MCP na prática: conectando uma IA a uma fonte real</h2>
+    <p class="modsub">Instalar um servidor MCP leva um comando. Confiar nele é a parte que exige critério.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: instalar um servidor MCP no Claude Code</h4>
+      <p>Comando geral, para um servidor local (stdio): <code class="inline">claude mcp add &lt;nome&gt; -- &lt;comando&gt; &lt;argumentos...&gt;</code>. Exemplo oficial: <code class="inline">claude mcp add context7 -- npx -y @upstash/context7-mcp</code>. Também existe a opção de escopo — <code class="inline">--scope project</code> (compartilhado via git com quem clonar o projeto) ou <code class="inline">--scope user</code> (disponível em todos os seus projetos, só para você). Depois de adicionado, o Claude Code se conecta ao servidor e busca sozinho a lista de tools, resources e prompts que ele oferece — não é preciso descrever isso manualmente (<a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener">code.claude.com/docs/en/mcp</a>).</p>
+    </div>
+
+    <div class="concept-box">
+      <h4>Cenário desta etapa: consultar documentação real, não a memória do modelo, via MCP</h4>
+      <p><a href="https://github.com/upstash/context7" target="_blank" rel="noopener">Context7</a> é um servidor MCP que busca documentação atual de linguagens e bibliotecas direto da fonte, no momento da pergunta — em vez de confiar só no que o modelo aprendeu no treinamento (que pode estar desatualizado, ou nunca ter existido, se a versão for recente). Cenário: um time de PHP está avaliando trocar os parâmetros posicionais (<code class="inline">?</code>) do <code class="inline">PDO::prepare()</code> por parâmetros nomeados (<code class="inline">:campo</code>). Antes de mudar, confirmar a sintaxe e as restrições atuais direto da documentação oficial do PHP, não da lembrança do modelo.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Diferente do exemplo de banco de dados que este material já teve — aqui não se instala nada</span>
+      <p>Context7 roda via <code class="inline">npx</code>, o mesmo comando já usado no exercício de sistema de arquivos da "Mão na massa" — sem banco, sem servidor, sem conta obrigatória (uma chave de API é opcional, só para aumentar o limite de uso). Se o Node.js já está instalado (pré-requisito do curso desde as primeiras aulas), não falta mais nada.</p>
+    </div>
+
+    <div class="code-box"><span class="comment"># Já citado acima como o exemplo oficial de instalação — repetido aqui como o exemplo prático desta etapa</span>
+claude mcp add context7 -- npx -y @upstash/context7-mcp
+
+<span class="comment"># Conferir que conectou</span>
+claude mcp list</div>
+    <p class="copy-hint">Depois de rodar <code class="inline">claude mcp add</code>, o Claude Code costuma avisar que é preciso reiniciar a sessão para as ferramentas do servidor ficarem disponíveis — o cliente MCP só é montado quando o processo inicia, então adicionar um servidor no meio de uma sessão não é suficiente. O procedimento: (1) sair da sessão atual (<code class="inline">/exit</code>, ou <code class="inline">Ctrl+D</code>); (2) abrir de novo, na mesma pasta do projeto (<code class="inline">claude</code>); (3) confirmar com <code class="inline">claude mcp list</code>, ou perguntando direto "quais ferramentas você tem disponíveis agora?". Não precisa fechar o terminal nem reiniciar o VS Code — só encerrar e reabrir o processo do <code class="inline">claude</code>.</p>
+
+    <div class="concept-box">
+      <h4>O mesmo servidor funciona no GitHub Copilot</h4>
+      <p>O agent mode do Copilot, no VS Code, já suporta servidores MCP — hoje por transporte <em>stdio</em>. Como o Context7 roda localmente por stdio, o mesmo servidor conecta no Copilot, com um arquivo de configuração no workspace:</p>
+    </div>
+    <div class="code-box"><span class="comment">// .vscode/mcp.json</span>
+{
+  "servers": {
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    }
+  }
+}</div>
+    <p class="copy-hint">Mesmo servidor, mesmo comando — só o formato do arquivo muda (JSON, não linha de comando).</p>
+
+    <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Passo a passo, no VS Code</span>
+      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Criar a pasta <code class="inline">.vscode</code> na raiz do workspace (se ainda não existir), e dentro dela o arquivo <code class="inline">mcp.json</code> com o conteúdo acima.</li>
+        <li>Com o arquivo aberto no editor, aparece um link clicável <strong>Start</strong> em cima da entrada do servidor — clicar nele inicia o Context7. (Alternativa: Command Palette → <strong>MCP: List Servers</strong> → selecionar <code class="inline">context7</code> → iniciar.)</li>
+        <li>Confirmar que conectou: rodar de novo <strong>MCP: List Servers</strong> na Command Palette — o servidor aparece como ativo, com a lista de tools que ele expõe.</li>
+        <li>Abrir o Chat (<code class="inline">Ctrl+Alt+I</code>) e trocar o modo, no menu suspenso da caixa de mensagem, de <strong>Ask</strong> para <strong>Agent</strong> — as tools de servidores MCP só ficam disponíveis nesse modo. O botão <strong>Configure Tools</strong>, na própria caixa de chat, mostra e permite ligar/desligar cada tool individualmente antes de perguntar.</li>
+      </ol>
+    </div>
+
+    <div class="instruction-step">
+      <span class="step-num">Consultar, aplicar, confirmar</span>
+      <h4>Três prompts — sempre com a fonte, nunca só a resposta</h4>
+    </div>
+    <div class="promptbox">
+<span class="plabel">1 · Consultar a documentação atual</span>Usando o Context7, busque a documentação do PHP sobre
+PDOStatement::execute() — especificamente: dá para misturar parâmetros
+nomeados (:campo) e posicionais (?) na mesma consulta preparada?</div>
+    <div class="code-box"><span class="comment"># Resposta esperada e correta — dá para conferir em php.net, independente do modelo</span>
+Não. Uma mesma instrução preparada precisa escolher um estilo só —
+todo nomeado (:campo) ou todo posicional (?). Misturar os dois na
+mesma consulta não é suportado.</div>
+    <div class="code-box"><span class="comment">// trecho de exemplo — cole isso na conversa junto com o prompt 2, abaixo</span>
+$stmt = $pdo->prepare('SELECT COUNT(*) FROM produtos WHERE categoria = ?');
+$stmt->execute([$categoria]);</div>
+    <div class="promptbox">
+<span class="plabel">2 · Aplicar a um trecho de código real</span>Esse trecho usa parâmetro posicional. Reescreva-o (prepare + execute)
+usando parâmetro nomeado.</div>
+    <div class="code-box"><span class="comment">// Resposta esperada e correta</span>
+$stmt = $pdo->prepare('SELECT COUNT(*) FROM produtos WHERE categoria = :categoria');
+$stmt->execute(['categoria' => $categoria]);</div>
+    <p class="copy-hint">Mesmo padrão do trecho de N+1 já usado na Etapa 2 (Bloco 4) — genérico, sem precisar de nenhum arquivo ou sistema específico.</p>
+    <div class="promptbox">
+<span class="plabel">3 · Confirmar a única coisa que realmente importa aqui</span>Essa troca muda alguma coisa na proteção contra SQL injection, comparado
+com o parâmetro posicional que já estava lá?</div>
+    <p class="copy-hint">Resposta esperada e correta: não muda nada — os dois estilos usam parâmetro vinculado (prepared statement) da mesma forma, e protegem igual contra SQL injection. A escolha entre nomeado e posicional é só de legibilidade do código, nunca de segurança. É exatamente esse tipo de resposta que confirma o valor do Context7 aqui: sem ele, o modelo poderia responder de memória e errar numa mudança recente do PHP; com ele, a resposta vem de documentação atual, com fonte — a mesma diferença que a Aula 8 já ensinou entre confiar de cabeça e confiar com uma fonte citada.</p>
+    <p class="copy-hint">Os três prompts acima e suas respostas são fatos verificáveis (documentação do PHP, sintaxe real do PDO) — não depende de MySQL, Postgres, nem de nenhum banco de dados rodando para ser testado de verdade em sala.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Verdadeiro ou falso?</h4>
+      <p style="color:var(--text-muted);">Para cada afirmação abaixo sobre usar MCP no Claude Code, decida se é verdadeira (<strong>V</strong>) ou falsa (<strong>F</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>V</strong> = verdadeiro &nbsp;·&nbsp; <strong>F</strong> = falso</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+        <li><code class="inline">claude mcp add nome -- comando args</code> é a sintaxe geral para conectar um servidor MCP local (stdio).</li>
+        <li>Um servidor instalado com <code class="inline">--scope project</code> fica disponível só para quem instalou, nunca para quem clonar o repositório.</li>
+        <li><code class="inline">--scope user</code> deixa o servidor disponível em todos os seus projetos, não só no atual.</li>
+        <li>Depois de conectado, o Claude Code busca sozinho a lista de tools, resources e prompts do servidor.</li>
+        <li>É preciso escrever manualmente, em JSON, a lista de tools de um servidor MCP antes de poder usá-lo.</li>
+        <li>Servidores MCP só existem para sistema de arquivos — bancos de dados e APIs não têm suporte.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaMCP2" class="quiz-input" placeholder="ex.: VFVVFF" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaMCP2','VFVVFF','gabaritoMCP2','msgMCP2')">Verificar sequência</button>
+      </div>
+      <p id="msgMCP2" class="quiz-msg"></p>
+      <div id="gabaritoMCP2" class="quiz-gabarito">
+        <p class="copy-hint">1, 3 e 4 são exatamente o que a documentação oficial descreve. 2 é o oposto do real: <code class="inline">--scope project</code> é compartilhado via git com quem clonar o projeto — é <code class="inline">--scope user</code> que fica só com quem instalou. 5 é falso — a descoberta de tools é automática, o cliente pergunta ao servidor. 6 é falso — bancos de dados e APIs têm servidores de referência oficiais, arquivos é só o exemplo mais simples.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 5 -->
+<section class="module-divider reveal" id="etapa5">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <span class="modnum">Etapa 5</span>
+    </div>
+    <h2>Riscos e limites</h2>
+    <p class="modsub">Medir errado, coordenar mal, ou conectar sem checar — os três temas de hoje têm sua própria forma de dar errado.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: otimização prematura</h4>
+      <p>"Devíamos esquecer pequenas eficiências, digamos em 97% do tempo: otimização prematura é a raiz de todo mal" — frase atribuída a Donald Knuth, num dos textos mais citados da engenharia de software. Aplicada a esta aula: otimizar algo que não é o gargalo real, sem medir primeiro <em>onde</em> o tempo está indo, é gastar esforço (e arriscar introduzir bug) por um ganho que talvez nem exista. A régua da Etapa 1 — medir antes, medir depois — é exatamente o antídoto para esse risco.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Medir no ambiente errado engana tanto quanto não medir</span>
+      <p>Uma otimização testada com 10 registros de banco pode não mostrar diferença nenhuma — e a mesma mudança, nos 50 mil registros reais da produção, pode ser a diferença entre 1 segundo e 1 minuto. O oposto também acontece: uma "otimização" que parece ótima com poucos dados pode se comportar mal em volume real. Medir com dado parecido com o real (em volume, não necessariamente sensível) é parte da disciplina, não um detalhe.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Risco</th><th>O que dá errado</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Múltiplos agentes: conflito de edição</strong></td><td>Dois agentes mexendo no mesmo arquivo ao mesmo tempo podem sobrescrever o trabalho um do outro — quem coordena precisa dividir o trabalho por área, não só "mandar os dois tentarem".</td></tr>
+          <tr><td><strong>Múltiplos agentes: custo multiplicado</strong></td><td>Cada agente consome tokens de forma independente — rodar três agentes numa tarefa que um resolveria sozinho triplica o custo sem necessariamente triplicar a qualidade.</td></tr>
+          <tr><td><strong>MCP: Tool Poisoning</strong></td><td>Um servidor MCP malicioso pode devolver, junto com o dado pedido, uma instrução escondida na resposta — a IA trata tudo como contexto confiável e pode acabar executando uma ação que ninguém pediu (ex.: ler um arquivo sensível e enviá-lo para fora). É uma categoria de ataque reconhecida pela própria OWASP.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Sobre Tool Poisoning: mitigação recomendada inclui exigir respostas estruturadas (schema fixo), isolar ferramentas sensíveis, não confiar só em instrução de prompt para controle de acesso, usar apenas servidores de uma lista de confiança, e pedir confirmação explícita antes de ações sensíveis (<a href="https://owasp.org/www-community/attacks/MCP_Tool_Poisoning" target="_blank" rel="noopener">owasp.org/www-community/attacks/MCP_Tool_Poisoning</a>) — a mesma lógica de "verificar antes de instalar" já vista na Aula 6 para skills de terceiros, e na Aula 8 para envenenamento de índice de RAG.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Qual dos três riscos é esse?</h4>
+      <p style="color:var(--text-muted);">Para cada cenário abaixo, identifique a qual dos três temas desta aula o risco pertence. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>O</strong> = risco de otimização/medição &nbsp;·&nbsp; <strong>A</strong> = risco de múltiplos agentes &nbsp;·&nbsp; <strong>M</strong> = risco de MCP</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Um servidor MCP malicioso devolve, junto com o dado pedido, uma instrução escondida para ler um arquivo de senhas.</li>
+        <li>Dois agentes editam o mesmo arquivo ao mesmo tempo, e um sobrescreve o trabalho do outro.</li>
+        <li>Uma equipe reescreve uma função que já era rápida, sem medir antes — o sistema não fica perceptivelmente mais rápido, só mais arriscado.</li>
+        <li>O custo em tokens triplica porque três agentes trabalham em paralelo numa tarefa simples que um resolveria sozinho.</li>
+        <li>A medição de performance rodou só com 10 registros de teste, e a versão "otimizada" piora com os 50 mil registros reais.</li>
+        <li>Um servidor MCP diz, na própria lista de tools, que pode "ler qualquer arquivo do sistema" — e ninguém checou essa permissão antes de conectar.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaRISK1" class="quiz-input" placeholder="ex.: MAOAOM" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaRISK1','MAOAOM','gabaritoRISK1','msgRISK1')">Verificar sequência</button>
+      </div>
+      <p id="msgRISK1" class="quiz-msg"></p>
+      <div id="gabaritoRISK1" class="quiz-gabarito">
+        <p class="copy-hint">1 e 6 são risco de MCP (instrução escondida na resposta; permissão excessiva não checada). 2 e 4 são risco de múltiplos agentes (conflito de edição; custo multiplicado). 3 e 5 são risco de otimização/medição (mudar sem medir; medir no ambiente errado).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRÁTICA -->
+<section class="reveal" id="pratica" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Mão na massa</span>
+      <h2>Medir, otimizar, conectar</h2>
+    </div>
+
+    <div class="callout" style="margin-bottom:24px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Ferramenta de hoje:</strong> a mesma IA de código que o restante do curso já usa (Claude Code ou equivalente), com acesso à cópia local do SISPROT em <code class="inline">aula-9/codigo/</code>.</p>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 1 · individual · 20 min</span>
+          <h3>Medir antes de otimizar, num cenário novo</h3>
+        </div>
+        <span class="block-badge badge-teal">20 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Aplicar o raciocínio da Etapa 1 a um trecho diferente do relatorio.php.</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Escolheremos outro ponto do SISPROT que pareça repetir uma consulta (ex.: uma versão do relatório que também buscasse o status mais comum de cada requerente, do mesmo jeito ingênuo).</li>
+          <li>Pediremos à IA para instrumentar a medição primeiro (contagem de consultas + tempo), sem otimizar ainda — o mesmo prompt em duas etapas da Etapa 1.</li>
+          <li>Rodaremos, anotaremos os números reais, e só então pediremos a versão otimizada.</li>
+          <li>Compararemos os resultados das duas versões campo a campo, não só o tempo — confirmando que a versão rápida também está certa.</li>
+        </ol>
+      </div>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Pedir a otimização direto, sem instrumentar a medição antes — sem isso, não há "antes" para comparar depois.</li>
+            <li>Aceitar a versão nova só porque "parece" ter rodado rápido, sem checar se o resultado continua idêntico ao original.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li><code class="inline">microtime(true)</code> ou <code class="inline">hrtime(true)</code> antes e depois do trecho, mais um contador simples de quantas vezes uma consulta rodou, já bastam — não precisa de ferramenta extra para este exercício.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 2 · individual · 20 min</span>
+          <h3>Conectar e testar um servidor MCP</h3>
+        </div>
+        <span class="block-badge badge-teal">20 min</span>
+      </div>
+      <p style="color:var(--text-muted);">A Etapa 4 mostrou o padrão com bancos de dados, de forma guiada; aqui repetimos o mesmo padrão de comando (<code class="inline">claude mcp add</code>), com as próprias mãos, com um servidor mais simples de instalar (arquivos, sem precisar de banco nenhum).</p>
+      <div class="instruction-step">
+        <span class="step-num">Enunciado</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Instalaremos o servidor de arquivos de referência apontando para <code class="inline">aula-9/codigo/</code>, com <code class="inline">claude mcp add</code>.</li>
+          <li>Faremos uma pergunta que dependa de olhar vários arquivos ao mesmo tempo (ex.: "qual desses arquivos PHP não usa <code class="inline">htmlspecialchars()</code> em nenhuma saída?").</li>
+          <li>Removeremos o servidor (<code class="inline">claude mcp remove</code>) e faremos a mesma pergunta de novo, comparando o que muda.</li>
+        </ol>
+      </div>
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Esperar uma diferença dramática — com o Claude Code, que já lê arquivos nativamente, a diferença pode ser sutil. O objetivo é entender o mecanismo, não provar que é indispensável neste caso específico.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Vale perguntar diretamente à IA, depois de conectar: "que ferramentas você ganhou com esse servidor MCP?" — a resposta mostra os tools/resources descobertos automaticamente.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESAFIO -->
+<section class="reveal" id="desafio" style="background:var(--surface);">
+  <div class="wrap">
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Desafio final · sem roteiro</span>
+          <h3>Otimizar e documentar com evidência</h3>
+        </div>
+        <span class="block-badge badge-gold">25 min</span>
+      </div>
+      <p style="color:var(--text-muted); margin-bottom:20px;">Juntar performance, medição e documentação — o SISPROT ganha um registro formal de uma otimização real.</p>
+      <p style="color:var(--text-muted);">Escolheremos uma parte do SISPROT (pode ser o próprio <code class="inline">index.php</code>, o <code class="inline">relatorio.php</code> com outra métrica, ou algo criado por conta própria) e aplicaremos o ciclo completo: medir, otimizar, medir de novo, documentar a diferença com números reais — não com "ficou mais rápido".</p>
+
+      <div class="instruction-step" style="margin-top:0;">
+        <span class="step-num">Regras</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+          <li>A medição "antes" precisa existir antes de qualquer mudança de código — sem isso, não há comparação possível depois.</li>
+          <li>A documentação final (um parágrafo curto, ou um comentário no código) precisa citar números reais: quantas consultas, quanto tempo, não uma descrição vaga.</li>
+          <li>Confirmaremos que o resultado da versão otimizada é idêntico ao da versão original, campo a campo — não só mais rápido.</li>
+        </ol>
+      </div>
+
+      <div class="callout-alert">
+        <span class="eyebrow">Critério de sucesso</span>
+        <ul class="checklist" style="margin-top:12px;">
+          <li><span class="xicn">&#10003;</span>Existe um número de "antes" e um número de "depois", medidos com o mesmo método.</li>
+          <li><span class="xicn">&#10003;</span>Conferimos que o resultado da versão nova é o mesmo da antiga, não só mais rápido.</li>
+          <li><span class="xicn">&#10003;</span>A documentação final cita os números, não uma impressão subjetiva.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Demonstração final · depois do tempo de execução · SISPROT ao vivo</span>
+          <h3>Otimizando com a turma, ao vivo</h3>
+        </div>
+        <span class="block-badge badge-gold">IA paga</span>
+      </div>
+      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos esta aula aplicando o ciclo completo — medir, otimizar, medir de novo — sobre um trecho do SISPROT escolhido na hora pela turma, com o Claude Code.</p>
+
+      <div class="instruction-step">
+        <span class="step-num">Pré-requisitos</span>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+          <li>Usaremos a cópia em <code class="inline">aula-9/codigo/</code>.</li>
+          <li>Um terminal com <code class="inline">claude</code> rodando dentro da pasta, e o servidor de arquivos MCP do Exercício 2 da "Mão na massa" já conectado, se quisermos mostrar as duas coisas juntas.</li>
+        </ol>
+      </div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Ao vivo</span>
+        <h4>A turma escolhe o alvo</h4>
+      </div>
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt · pedido em duas etapas, ao vivo</span>[Escolhido com a turma, ex.: "o index.php busca todos os protocolos
+mesmo quando a lista fica grande — meça o tempo e o tamanho do
+resultado antes de propor qualquer mudança."]</div>
+      <p class="copy-hint">Vale nomear, ao vivo, cada uma das duas rodadas de prompt: primeiro pedir só a medição, depois pedir a otimização — a mesma disciplina da Etapa 1, agora sem roteiro pronto.</p>
+
+      <div class="insight-box">
+        <span class="insight-tag">Fechando a aula</span>
+        <p>Os três temas de hoje têm uma coisa em comum: nenhum deles é sobre a IA escrever código novo — são sobre usar a IA com critério <em>depois</em> que o código já existe. Medir antes de confiar numa mudança, decidir com intenção quando vale coordenar mais de uma IA, e verificar o que se está conectando antes de dar acesso a algo real. É a mesma disciplina do curso inteiro — desconfiar da aparência, confirmar com evidência — aplicada a três situações novas.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FECHAMENTO -->
+<section class="pullquote reveal">
+  <div class="wrap" style="text-align:center;">
+    <div class="rule"></div>
+    <blockquote>De gerar código a medir se ele é bom de verdade: hoje a régua passou a ser o número, não a impressão. Otimizar com evidência, coordenar mais de uma IA com intenção, e conectar ferramentas reais com o mesmo cuidado de sempre — são as mesmas perguntas de todo o curso, agora aplicadas ao que vem depois do código pronto.</blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-left" style="display:flex; align-items:center; gap:14px;">
+      <span>SISPROT · Aula 9 · Otimização, Múltiplos Agentes e MCP</span>
+    </div>
+    <div class="footer-right"><span>Aula 9</span></div>
+  </div>
+</footer>
+
+<script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = scrolled + '%';
+  });
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  items.forEach(i => io.observe(i));
+
+  function verificarSequencia(inputId, resposta, gabaritoId, msgId) {
+    const raw = document.getElementById(inputId).value;
+    const input = raw.trim().toUpperCase().replace(/[^A-Z]/g, '');
+    const msg = document.getElementById(msgId);
+    const gabarito = document.getElementById(gabaritoId);
+    if (input === resposta) {
+      gabarito.style.display = 'block';
+      msg.textContent = 'Sequência correta — gabarito liberado abaixo.';
+      msg.style.color = 'var(--teal)';
+    } else {
+      gabarito.style.display = 'none';
+      msg.textContent = 'Ainda não — confira os itens de novo (só as letras da legenda, sem espaços).';
+      msg.style.color = 'var(--gold)';
+    }
+  }
+</script>
+</body>
+</html>
