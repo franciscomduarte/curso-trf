@@ -1071,14 +1071,29 @@ resposta ainda pode estar errada, mesmo com a busca tendo funcionado perfeitamen
         <span class="block-badge badge-gold">20 min</span>
       </div>
       <p style="color:var(--text-muted); margin-bottom:20px;">Testar RAG no cenário em que ele realmente prova o valor: múltiplos documentos, nem sempre alinhados.</p>
-      <p style="color:var(--text-muted);">Este desafio é <strong>continuação</strong> do que já estava aberto nos Exercícios 1 e 2 — o mesmo <strong>NotebookLM</strong>, não o notebook Python da demonstração a seguir. No mesmo notebook (ou um novo, se preferir), adicionaremos pelo menos dois textos fictícios (ex.: dois trechos de "normas internas" inventadas, um dizendo que um prazo é de 10 dias, outro dizendo 15) e faremos perguntas que só uma leitura cruzada dos dois resolve.</p>
+      <p style="color:var(--text-muted);">Este desafio é <strong>continuação</strong> do que já estava aberto nos Exercícios 1 e 2 — o mesmo <strong>NotebookLM</strong>, não o notebook Python da demonstração a seguir. No mesmo notebook (ou um novo, se preferir), adicionaremos duas fontes fictícias que se contradizem sobre o mesmo prazo — veja o texto pronto abaixo — e faremos perguntas que só uma leitura cruzada dos dois resolve.</p>
 
-      <div class="instruction-step" style="margin-top:0;">
+      <div class="diagram-pair" style="margin-top:16px;">
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">Fonte A · Regimento Interno (fictício)</span>"Art. 42. Do indeferimento de protocolo administrativo cabe
+recurso no prazo de 10 (dez) dias úteis, contados da ciência
+da decisão, dirigido à autoridade imediatamente superior."</div>
+        <div class="promptbox" style="margin:0;">
+<span class="plabel">Fonte B · Nota Técnica nº 08/2026 (fictícia)</span>"NOTA TÉCNICA Nº 08/2026 — Setor de Normas Internas. Em
+complementação ao Regimento Interno vigente, o prazo de recurso
+contra indeferimento de protocolo administrativo passa a ser
+de 15 (quinze) dias úteis, contados da ciência da decisão,
+aplicável a partir da publicação desta nota."</div>
+      </div>
+      <p class="copy-hint">É um conflito realista, não forçado: um artigo antigo do Regimento e uma nota técnica mais recente atualizando só aquele ponto — exatamente o tipo de situação que gera normas desalinhadas num órgão de verdade, sem que ninguém tenha "errado" de propósito.</p>
+
+      <div class="instruction-step" style="margin-top:20px;">
         <span class="step-num">Regras</span>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
-          <li>Os documentos precisam ser fictícios, escritos por nós mesmos — nada de norma real do próprio órgão.</li>
-          <li>Pelo menos uma pergunta deve ter resposta que depende dos dois documentos ao mesmo tempo (ex.: "existe conflito entre as duas normas sobre este prazo?").</li>
-          <li>Anotaremos se a ferramenta identificou o conflito sozinha, ou só respondeu com uma das duas fontes.</li>
+          <li>Cole as duas fontes acima como dois textos separados no notebook (ou escreva as suas próprias, fictícias, com o mesmo tipo de conflito).</li>
+          <li>Pergunte primeiro, sozinha: <em>"Qual é o prazo de recurso contra indeferimento de protocolo administrativo?"</em> — sem mencionar que há duas fontes.</li>
+          <li>Depois pergunte diretamente: <em>"As duas fontes concordam sobre esse prazo? Se não, qual deveria prevalecer, e por quê?"</em></li>
+          <li>Anotaremos se a ferramenta identificou o conflito sozinha na pergunta 2, ou só respondeu com uma das duas fontes sem perceber a divergência.</li>
         </ol>
       </div>
 
