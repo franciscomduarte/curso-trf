@@ -1379,6 +1379,35 @@ def buscar(pergunta, top_k=5):
         </ol>
       </div>
 
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Como executar, passo a passo</span>
+        <h4>Dois caminhos possíveis — escolha um antes da pergunta ao vivo</h4>
+        <p style="color:var(--text-muted); margin-bottom:6px;">Os dois demonstram RAG sobre o projeto de verdade; a diferença é só onde a busca fica visível.</p>
+      </div>
+
+      <div class="tech-grid" style="margin-top:12px;">
+        <div class="tech-card">
+          <h3><span class="tnum">A</span>Claude Projects (claude.ai) — mais visual</h3>
+          <ol style="color:var(--text); line-height:1.7; padding-left:18px; display:grid; gap:8px; font-size:0.92rem; margin:0;">
+            <li>Acesse <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> e crie um projeto novo ("Projects" → "Create project").</li>
+            <li>Dê um nome (ex.: "SISPROT — Aula 8") e abra a área "Project knowledge" / "Add content" desse projeto.</li>
+            <li>Envie os arquivos de <code class="inline">aula-8/codigo/</code> — pelo menos <code class="inline">protocolo_form.php</code> e <code class="inline">conexao.php</code>, ou a pasta inteira. O Claude indexa o material automaticamente; pode levar alguns segundos até o índice ficar pronto.</li>
+            <li>Abra uma conversa dentro desse projeto e cole a pergunta do bloco "Pergunta ao vivo", logo abaixo.</li>
+            <li>Confira se a resposta traz uma referência clicável indicando de qual arquivo cada parte veio — é a busca acontecendo à vista.</li>
+          </ol>
+        </div>
+        <div class="tech-card">
+          <h3><span class="tnum">B</span>Claude Code (terminal) — mais rápido de preparar</h3>
+          <ol style="color:var(--text); line-height:1.7; padding-left:18px; display:grid; gap:8px; font-size:0.92rem; margin:0;">
+            <li>Abra um terminal e entre na pasta do projeto: <code class="inline">cd aula-8/codigo</code>.</li>
+            <li>Rode <code class="inline">claude</code> para abrir o Claude Code interativo dentro dessa pasta (mesma ferramenta já usada na Aula 6).</li>
+            <li>Cole a pergunta do bloco "Pergunta ao vivo", logo abaixo, direto no prompt do terminal.</li>
+            <li>Acompanhe na tela quais arquivos o Claude Code abre antes de responder — ele mostra isso como parte do próprio processo, sem precisar pedir.</li>
+          </ol>
+        </div>
+      </div>
+      <p class="copy-hint">Nenhum dos dois caminhos precisa de crédito da OpenAI — essa etapa está aqui só como referência para quem quiser testar o notebook Python da demonstração anterior depois da aula.</p>
+
       <div class="concept-box" style="margin-top:20px;">
         <h4>Comprar créditos na OpenAI, passo a passo</h4>
         <p>É a mesma API usada no notebook Python da demonstração anterior (Passo 5, geração da resposta) — vale a pena conhecer o passo a passo de compra antes de precisar dele ao vivo. Não tem assinatura mensal: é crédito pré-pago, consumido por uso.</p>
