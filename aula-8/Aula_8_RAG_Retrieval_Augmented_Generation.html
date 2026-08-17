@@ -1023,16 +1023,34 @@ resposta ainda pode estar errada, mesmo com a busca tendo funcionado perfeitamen
       <div class="instruction-step">
         <span class="step-num">Enunciado</span>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
-          <li>No mesmo notebook (ou um novo), adicionaremos como fonte um texto técnico público — por exemplo, a documentação de uma linguagem ou biblioteca que já usamos no curso (ex.: a página do PDO no manual do PHP).</li>
-          <li>Perguntaremos algo específico que exigiria ler várias seções para responder manualmente.</li>
-          <li>Compararemos: essa pergunta seria mais rápida de responder lendo a documentação inteira, ou usando a busca da ferramenta?</li>
+          <li>No mesmo notebook (ou um novo), adicionaremos como fonte a documentação oficial do PDO — a mesma tecnologia usada em todo o SISPROT desde a Aula 0. Três páginas do manual do PHP, em português:
+            <ul style="margin-top:6px; padding-left:18px; display:grid; gap:4px;">
+              <li><a href="https://www.php.net/manual/pt_BR/book.pdo.php" target="_blank" rel="noopener">php.net/manual/pt_BR/book.pdo.php</a> — visão geral do PDO</li>
+              <li><a href="https://www.php.net/manual/pt_BR/pdo.error-handling.php" target="_blank" rel="noopener">php.net/manual/pt_BR/pdo.error-handling.php</a> — tratamento de erros</li>
+              <li><a href="https://www.php.net/manual/pt_BR/class.pdoexception.php" target="_blank" rel="noopener">php.net/manual/pt_BR/class.pdoexception.php</a> — a classe <code class="inline">PDOException</code></li>
+            </ul>
+          </li>
+          <li>Perguntaremos algo específico que exigiria ler mais de uma dessas páginas para responder manualmente — veja sugestões abaixo.</li>
+          <li>Compararemos: essa pergunta seria mais rápida de responder lendo as três páginas inteiras, ou usando a busca da ferramenta?</li>
         </ol>
       </div>
+
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Perguntas sugeridas, cruzando as três páginas</span>1. "Quais são os três modos de tratamento de erro do PDO, e qual é
+   o padrão a partir do PHP 8.0?"
+2. "Que classe de exceção o PDO lança quando o modo é
+   PDO::ERRMODE_EXCEPTION — e existe algum caso em que essa mesma
+   exceção é lançada mesmo sem esse modo estar ativo?"
+3. Fora do escopo, se colar só a página de tratamento de erros:
+   "Como faço para preparar e executar uma consulta parametrizada
+   com PDO?" (está na página de visão geral, não na de erros)</div>
+      <p class="copy-hint">A pergunta 2 é a mais reveladora do trio: a resposta completa (o construtor do PDO sempre lança <code class="inline">PDOException</code> numa falha de conexão, independente do modo configurado) só aparece cruzando a página de tratamento de erros com a da própria classe — o tipo de pergunta que mostra o valor de indexar mais de uma fonte.</p>
+
       <div class="tech-grid" style="margin-top:20px;">
         <div class="tech-card">
           <h3 style="display:block;">Dificuldades comuns</h3>
           <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
-            <li>Escolher uma fonte curta demais, onde a diferença entre "buscar" e "ler tudo" não aparece.</li>
+            <li>Colar só uma das três páginas — a diferença entre "buscar" e "ler tudo" fica mais clara quando a resposta exige cruzar mais de uma fonte.</li>
           </ul>
         </div>
         <div class="tech-card">

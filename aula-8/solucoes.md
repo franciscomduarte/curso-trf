@@ -25,12 +25,18 @@ Um trecho da LGPD (Lei 13.709/2018) — por exemplo, os artigos 5º (definiçõe
 
 ## Exercício 2 — RAG sobre uma documentação técnica
 
-### Fonte sugerida
+### Fontes (já indicadas na própria aula, com link)
 
-A página do PDO (PHP Data Objects) no manual oficial do PHP (<a href="https://www.php.net/manual/pt_BR/book.pdo.php">php.net/manual/pt_BR/book.pdo.php</a>) — já é a tecnologia usada em todo o SISPROT desde a Aula 0, então a pergunta pode ser bem concreta.
+Três páginas do manual oficial do PHP, em português — a mesma tecnologia usada em todo o SISPROT desde a Aula 0:
 
-### Pergunta de referência
+- [php.net/manual/pt_BR/book.pdo.php](https://www.php.net/manual/pt_BR/book.pdo.php) — visão geral do PDO
+- [php.net/manual/pt_BR/pdo.error-handling.php](https://www.php.net/manual/pt_BR/pdo.error-handling.php) — tratamento de erros
+- [php.net/manual/pt_BR/class.pdoexception.php](https://www.php.net/manual/pt_BR/class.pdoexception.php) — a classe `PDOException`
 
-"Como faço para capturar uma exceção de conexão com PDO, e qual classe de exceção devo usar?" — uma pergunta que normalmente exigiria abrir duas ou três páginas diferentes do manual (conexão, tratamento de exceção, a classe `PDOException`) para responder por completo.
+### Perguntas de referência (as mesmas sugeridas na aula)
 
-**O que discutir com a turma:** o ganho de tempo fica mais claro em documentações longas e bem organizadas — se alguém escolheu uma fonte curta demais, a diferença entre "buscar" e "ler tudo" quase não aparece. Vale perguntar quem escolheu fontes diferentes e comparar a experiência.
+1. "Quais são os três modos de tratamento de erro do PDO, e qual é o padrão a partir do PHP 8.0?" — resposta esperada: `PDO::ERRMODE_SILENT`, `PDO::ERRMODE_WARNING` e `PDO::ERRMODE_EXCEPTION`; o padrão era `ERRMODE_SILENT` antes do PHP 8.0, e passou a ser `ERRMODE_EXCEPTION` a partir do PHP 8.0.
+2. **A mais reveladora do trio:** "Que classe de exceção o PDO lança quando o modo é `PDO::ERRMODE_EXCEPTION` — e existe algum caso em que essa mesma exceção é lançada mesmo sem esse modo estar ativo?" — resposta esperada: `PDOException`; o construtor do `PDO` sempre lança `PDOException` numa falha de conexão, **independente** do `PDO::ATTR_ERRMODE` configurado. A resposta completa só existe cruzando a página de tratamento de erros com a da própria classe — se a ferramenta responder só com a primeira metade (a classe), sem mencionar o caso do construtor, é sinal de que ela não buscou nas duas fontes.
+3. **Pergunta fora do escopo, se colar só a página de tratamento de erros:** "Como faço para preparar e executar uma consulta parametrizada com PDO?" — essa resposta está na página de visão geral (`book.pdo.php`), não na de tratamento de erros; sem essa página indexada, a ferramenta deve admitir que não encontrou.
+
+**O que discutir com a turma:** o ganho de tempo fica mais claro quando a pergunta exige cruzar mais de uma página — a pergunta 2 é o exemplo mais nítido disso neste exercício. Se alguém indexou só uma das três páginas, vale comparar a experiência com quem indexou as três.
