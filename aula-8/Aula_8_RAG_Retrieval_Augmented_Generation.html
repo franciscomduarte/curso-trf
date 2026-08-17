@@ -1354,6 +1354,30 @@ def buscar(pergunta, top_k=5):
         <span class="insight-tag">Exemplo publicado de verdade</span>
         <p>O app deste bloco não é só teoria — está publicado em <a href="https://franciscomolina.streamlit.app/" target="_blank" rel="noopener">franciscomolina.streamlit.app</a>, feito por um servidor público que passou por este mesmo processo. Abra no celular ou no computador antes da aula para conferir se ainda está no ar e público (apps gratuitos hibernam depois de 12h sem acesso — visitar a URL já reativa sozinho).</p>
       </div>
+
+      <div class="concept-box" style="margin-top:20px;">
+        <h4>Comprar créditos na OpenAI, passo a passo</h4>
+        <p>É a mesma API usada nos dois notebooks e nos dois apps Streamlit deste bloco — vale a pena conhecer o passo a passo de compra antes de precisar dele ao vivo. Não tem assinatura mensal: é crédito pré-pago, consumido por uso.</p>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; margin-top:10px; display:grid; gap:6px; font-size:0.92rem;">
+          <li>Crie uma conta em <code class="inline">platform.openai.com</code> → "Sign up" (separada de uma eventual assinatura do ChatGPT).</li>
+          <li>Gere a chave: "Settings" → "API keys" → <strong>"Create new secret key"</strong> → nomeie → <strong>"Create secret key"</strong> — copie na hora, ela só aparece uma vez.</li>
+          <li>Sem crédito, a chave não funciona: "Settings" → "Billing" → <strong>"Add payment method"</strong> → cadastrar cartão → <strong>"Add credit"</strong> → comprar um valor pré-pago (mínimo de US$ 5, na cobrança atual).</li>
+          <li>Créditos comprados expiram em um ano e não são reembolsáveis — comprar pouco de cada vez, conforme o uso, é mais seguro que comprar um valor alto de uma vez.</li>
+        </ol>
+
+        <div class="value-table-wrapper" style="margin-top:16px;">
+          <table class="value-table">
+            <thead><tr><th>Campo da tela</th><th>O que escolher, e por quê</th></tr></thead>
+            <tbody>
+              <tr><td>"Add payment method"</td><td>Cadastra o cartão — obrigatório antes de comprar qualquer crédito; sem isso a chave de API fica criada, mas não funciona.</td></tr>
+              <tr><td>"Add credit" (valor da compra)</td><td>US$ 5 (o mínimo atual) já é suficiente para testar bastante — o teste deste notebook consome só poucos centavos disso.</td></tr>
+              <tr><td>Auto-recharge (recarga automática)</td><td>Manter desligado num primeiro teste — evita comprar mais crédito automaticamente sem perceber; só vale ligar para um uso contínuo e já dimensionado.</td></tr>
+              <tr><td>Nome da chave (API key)</td><td>Um nome descritivo (ex.: "aula-rag") facilita identificar e revogar essa chave depois, sem afetar outras chaves da mesma conta.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="copy-hint">Passo a passo cruzado com a documentação da API (<a href="https://developers.openai.com/api/docs/quickstart" target="_blank" rel="noopener">developers.openai.com/api/docs/quickstart</a>) e múltiplas fontes independentes — o help center oficial da OpenAI bloqueou o acesso automatizado no momento da pesquisa, então nomes exatos de botão podem variar ligeiramente na tela real. Mesma lógica de custo por token da Etapa 3 da Aula 7 — vale decidir com critério antes de comprar um valor alto de uma vez.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -1406,30 +1430,24 @@ def buscar(pergunta, top_k=5):
           </ol>
         </div>
       </div>
-      <p class="copy-hint">Nenhum dos dois caminhos precisa de crédito da OpenAI — essa etapa está aqui só como referência para quem quiser testar o notebook Python da demonstração anterior depois da aula.</p>
-
       <div class="concept-box" style="margin-top:20px;">
-        <h4>Comprar créditos na OpenAI, passo a passo</h4>
-        <p>É a mesma API usada no notebook Python da demonstração anterior (Passo 5, geração da resposta) — vale a pena conhecer o passo a passo de compra antes de precisar dele ao vivo. Não tem assinatura mensal: é crédito pré-pago, consumido por uso.</p>
+        <h4>Acesso ao Claude: conta gratuita ou Claude Code, passo a passo</h4>
+        <p>Os dois caminhos exigem níveis de acesso diferentes — vale conferir antes de escolher qual seguir ao vivo.</p>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; margin-top:10px; display:grid; gap:6px; font-size:0.92rem;">
-          <li>Crie uma conta em <code class="inline">platform.openai.com</code> → "Sign up" (separada de uma eventual assinatura do ChatGPT).</li>
-          <li>Gere a chave: "Settings" → "API keys" → <strong>"Create new secret key"</strong> → nomeie → <strong>"Create secret key"</strong> — copie na hora, ela só aparece uma vez.</li>
-          <li>Sem crédito, a chave não funciona: "Settings" → "Billing" → <strong>"Add payment method"</strong> → cadastrar cartão → <strong>"Add credit"</strong> → comprar um valor pré-pago (mínimo de US$ 5, na cobrança atual).</li>
-          <li>Créditos comprados expiram em um ano e não são reembolsáveis — comprar pouco de cada vez, conforme o uso, é mais seguro que comprar um valor alto de uma vez.</li>
+          <li><strong>Caminho A (Claude Projects) — plano gratuito já basta.</strong> Desde fevereiro de 2026, Projects (com "Project knowledge") está disponível também no plano gratuito do Claude, com até 5 projetos por conta. Acesse <code class="inline">claude.ai</code> → "Sign up" → confirme o e-mail — o menu "Projects" já aparece pronto para uso. O código do SISPROT usado nesta demonstração é pequeno o suficiente para caber sem precisar do recurso de indexação ampliada dos planos pagos.</li>
+          <li><strong>Caminho B (Claude Code) — exige plano Pro, Max, Team ou Enterprise.</strong> Diferente do Caminho A, o Claude Code não está disponível no plano gratuito. Com Node.js 18 ou mais recente já instalado: rode <code class="inline">npm install -g @anthropic-ai/claude-code@latest</code> no terminal, confirme com <code class="inline">claude --version</code>, e autentique com <code class="inline">claude login</code> — abre o navegador para você entrar com a conta Claude.</li>
         </ol>
 
         <div class="value-table-wrapper" style="margin-top:16px;">
           <table class="value-table">
-            <thead><tr><th>Campo da tela</th><th>O que escolher, e por quê</th></tr></thead>
+            <thead><tr><th>Caminho</th><th>O que exige</th></tr></thead>
             <tbody>
-              <tr><td>"Add payment method"</td><td>Cadastra o cartão — obrigatório antes de comprar qualquer crédito; sem isso a chave de API fica criada, mas não funciona.</td></tr>
-              <tr><td>"Add credit" (valor da compra)</td><td>US$ 5 (o mínimo atual) já é suficiente para testar bastante — o teste deste notebook consome só poucos centavos disso.</td></tr>
-              <tr><td>Auto-recharge (recarga automática)</td><td>Manter desligado num primeiro teste — evita comprar mais crédito automaticamente sem perceber; só vale ligar para um uso contínuo e já dimensionado.</td></tr>
-              <tr><td>Nome da chave (API key)</td><td>Um nome descritivo (ex.: "aula-rag") facilita identificar e revogar essa chave depois, sem afetar outras chaves da mesma conta.</td></tr>
+              <tr><td>A — Claude Projects</td><td>Conta gratuita em <code class="inline">claude.ai</code>; nenhum cartão de crédito necessário.</td></tr>
+              <tr><td>B — Claude Code</td><td>Conta Claude num plano pago (Pro, Max, Team ou Enterprise) + Node.js 18+ instalado na máquina.</td></tr>
             </tbody>
           </table>
         </div>
-        <p class="copy-hint">Passo a passo cruzado com a documentação da API (<a href="https://developers.openai.com/api/docs/quickstart" target="_blank" rel="noopener">developers.openai.com/api/docs/quickstart</a>) e múltiplas fontes independentes — o help center oficial da OpenAI bloqueou o acesso automatizado no momento da pesquisa, então nomes exatos de botão podem variar ligeiramente na tela real. Mesma lógica de custo por token da Etapa 3 da Aula 7 — vale decidir com critério antes de comprar um valor alto de uma vez.</p>
+        <p class="copy-hint">Se ninguém na turma tiver plano pago no dia, o Caminho A sozinho já demonstra RAG sobre o SISPROT sem custo nenhum — o Caminho B é só uma segunda forma de ver a mesma coisa, mais rápida de repetir depois se você já usa Claude Code no dia a dia.</p>
       </div>
 
       <div class="instruction-step" style="margin-top:24px;">
