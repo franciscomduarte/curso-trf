@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$dbname = 'sisprot';
+$dbname = 'empresta_ti';
 $user = 'root';
 $pass = '';
 

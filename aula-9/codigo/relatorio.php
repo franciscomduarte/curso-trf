@@ -1,33 +1,33 @@
 <?php
 require 'conexao.php';
 
-// Relatório: quantos protocolos cada requerente já abriu.
-$stmt = $pdo->query('SELECT DISTINCT requerente FROM protocolos ORDER BY requerente');
-$requerentes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+// Relatório: quantos empréstimos cada equipamento já teve.
+$stmt = $pdo->query('SELECT id, nome FROM equipamentos ORDER BY nome');
+$equipamentos = $stmt->fetchAll();
 
 $contagem = [];
-foreach ($requerentes as $requerente) {
-    $stmt = $pdo->prepare('SELECT COUNT(*) FROM protocolos WHERE requerente = ?');
-    $stmt->execute([$requerente]);
-    $contagem[$requerente] = $stmt->fetchColumn();
+foreach ($equipamentos as $equipamento) {
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM emprestimos WHERE equipamento_id = ?');
+    $stmt->execute([$equipamento['id']]);
+    $contagem[$equipamento['nome']] = $stmt->fetchColumn();
 }
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Relatório por Requerente · SISPROT</title>
+<title>Relatório por Equipamento · EmprestaTI</title>
 <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
 <div class="container">
-  <h1>Protocolos por requerente</h1>
+  <h1>Empréstimos por equipamento</h1>
   <table>
-    <thead><tr><th>Requerente</th><th>Total de protocolos</th></tr></thead>
+    <thead><tr><th>Equipamento</th><th>Total de empréstimos</th></tr></thead>
     <tbody>
-      <?php foreach ($contagem as $requerente => $total): ?>
+      <?php foreach ($contagem as $nome => $total): ?>
       <tr>
-        <td><?= htmlspecialchars($requerente) ?></td>
+        <td><?= htmlspecialchars($nome) ?></td>
         <td><?= (int)$total ?></td>
       </tr>
       <?php endforeach; ?>

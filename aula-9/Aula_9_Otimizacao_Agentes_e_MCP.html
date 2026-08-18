@@ -322,9 +322,9 @@
     <p class="lede">Até aqui, cada aula ensinou a IA a gerar, testar, documentar e buscar informação para responder melhor. Hoje olhamos para dentro do que ela já gerou — otimizar com medição de verdade, não com "parece mais rápido" — e para além de uma única IA: coordenar mais de uma trabalhando na mesma tarefa, e conectar essas ferramentas a fontes de dados reais através de um protocolo aberto, o MCP.</p>
     <div class="meta-row">
       <div><strong>9</strong>de 10 aulas</div>
-      <div><strong>81x</strong>menos consultas, medido nesta aula</div>
+      <div><strong>31x</strong>menos consultas, medido nesta aula</div>
       <div><strong>1</strong>protocolo aberto (MCP)</div>
-      <div><strong>SISPROT</strong>· otimizando o que já existe</div>
+      <div><strong>EmprestaTI</strong>· otimizando o que já existe</div>
     </div>
   </div>
 </header>
@@ -349,7 +349,7 @@
 
     <div class="callout" style="margin-top:32px;">
       <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-      <p><strong>Regra de ouro do curso (continua valendo):</strong> os exemplos de hoje usam dado fictício do SISPROT, como sempre. A novidade é que, na Etapa 4, vamos conectar uma IA a uma fonte de documentação real via MCP, e na "Mão na massa" vamos conectar de verdade um servidor MCP a um sistema de arquivos (Exercício 2) e a uma conta real do Notion (Exercício 3) — nenhum dos três exige instalar banco de dados nem serviço extra, só o Node.js já usado no restante do curso. A regra vale também para o conteúdo colado no Notion: só a especificação fictícia do exercício, nunca dado real de protocolo ou de cidadão.</p>
+      <p><strong>Regra de ouro do curso (continua valendo):</strong> os exemplos de hoje usam dado fictício do EmprestaTI, como sempre. A novidade é que, na Etapa 4, vamos conectar uma IA a uma fonte de documentação real via MCP, e na "Mão na massa" vamos conectar de verdade um servidor MCP a um sistema de arquivos (Exercício 2), a uma conta real do Notion (Exercício 3), a um repositório real do GitHub (Exercício 4) e a uma planilha real do Google Sheets (Exercício 5) — nenhum deles exige instalar banco de dados. A regra vale também para o conteúdo colado nessas contas reais: só especificações, issues e planilhas fictícias dos exercícios, nunca dado real de servidor, equipamento ou cidadão.</p>
     </div>
   </div>
 </section>
@@ -375,33 +375,33 @@
 
     <div class="instruction-step" style="margin-top:0;">
       <span class="step-num">Cenário desta etapa</span>
-      <h4>Um relatório novo no SISPROT — e um problema clássico de performance</h4>
-      <p style="color:var(--text-muted);">O SISPROT ganhou um relatório simples: quantos protocolos cada requerente já abriu. A primeira versão, gerada rápido, funciona — mas tem um problema que só aparece quando o banco cresce.</p>
+      <h4>Um relatório novo no EmprestaTI — e um problema clássico de performance</h4>
+      <p style="color:var(--text-muted);">A partir de hoje, o projeto de exemplo muda: em vez do SISPROT, vamos usar o <strong>EmprestaTI</strong>, um sisteminha fictício de empréstimo de equipamentos (notebooks, projetores) entre servidores — mesma estrutura simples de sempre (PHP + MySQL/PDO), domínio novo. Ele ganhou um relatório simples: quantos empréstimos cada equipamento já teve. A primeira versão, gerada rápido, funciona — mas tem um problema que só aparece quando o banco cresce.</p>
     </div>
 
     <div class="code-box"><span class="comment">// relatorio.php — versão inicial (aula-9/codigo/relatorio.php)</span>
-$stmt = $pdo->query('SELECT DISTINCT requerente FROM protocolos ORDER BY requerente');
-$requerentes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+$stmt = $pdo->query('SELECT id, nome FROM equipamentos ORDER BY nome');
+$equipamentos = $stmt->fetchAll();
 
 $contagem = [];
-foreach ($requerentes as $requerente) {
-    $stmt = $pdo->prepare('SELECT COUNT(*) FROM protocolos WHERE requerente = ?');
-    $stmt->execute([$requerente]);
-    $contagem[$requerente] = $stmt->fetchColumn();
+foreach ($equipamentos as $equipamento) {
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM emprestimos WHERE equipamento_id = ?');
+    $stmt->execute([$equipamento['id']]);
+    $contagem[$equipamento['nome']] = $stmt->fetchColumn();
 }</div>
 
     <div class="concept-box">
       <h4>Definição: problema N+1</h4>
-      <p>Um padrão clássico de lentidão: 1 consulta para buscar uma lista, e mais N consultas — uma para cada item da lista — para completar o resto da informação. No relatório acima: 1 consulta para listar os requerentes, mais 1 consulta <em>por requerente</em> para contar os protocolos dele. Com 80 requerentes, isso é 81 idas ao banco para responder uma pergunta que uma única consulta bem escrita resolveria.</p>
+      <p>Um padrão clássico de lentidão: 1 consulta para buscar uma lista, e mais N consultas — uma para cada item da lista — para completar o resto da informação. No relatório acima: 1 consulta para listar os equipamentos, mais 1 consulta <em>por equipamento</em> para contar os empréstimos dele. Com 30 equipamentos, isso é 31 idas ao banco para responder uma pergunta que uma única consulta bem escrita resolveria.</p>
     </div>
 
     <div class="promptbox">
 <span class="plabel">Prompt · pedir medição antes de pedir otimização</span><span class="blk">[PAPEL]</span> Você é um desenvolvedor PHP com experiência em performance de
 banco de dados.
 
-<span class="blk">[CONTEXTO]</span> O arquivo relatorio.php do SISPROT (anexo) lista protocolos
-por requerente. Suspeito que ele faça uma consulta ao banco por requerente,
-dentro de um loop.
+<span class="blk">[CONTEXTO]</span> O arquivo relatorio.php do EmprestaTI (anexo) lista
+empréstimos por equipamento. Suspeito que ele faça uma consulta ao banco
+por equipamento, dentro de um loop.
 
 <span class="blk">[TAREFA]</span> Antes de propor qualquer otimização, adicione uma contagem de
 quantas consultas o código faz e quanto tempo total leva. Não mude a lógica
@@ -411,34 +411,38 @@ ainda — só instrumente a medição.
 onde cada contagem é somada.</div>
     <p class="copy-hint">Pedir a medição <em>antes</em> da otimização, como um passo separado, é o que garante ter um "antes" para comparar — se pedirmos direto "otimize", perdemos a chance de provar que a mudança valeu a pena.</p>
 
-    <div class="code-box"><span class="comment">// Números medidos localmente (PHP + SQLite, 2.000 protocolos fictícios, 80 requerentes) — antes de publicar este material</span>
+    <div class="code-box"><span class="comment">// Números medidos localmente (PHP + SQLite, 2.000 empréstimos fictícios, 30 equipamentos) — antes de publicar este material</span>
 --- Versão com N+1 ---
-Consultas ao banco: 81
-Tempo: 8,368 ms
+Consultas ao banco: 31
+Tempo: 2,633 ms
 
---- Versão otimizada (GROUP BY) ---
+--- Versão otimizada (LEFT JOIN + GROUP BY) ---
 Consultas ao banco: 1
-Tempo: 1,027 ms
+Tempo: 0,922 ms
 
 --- Comparação ---
-Redução de consultas: 81 → 1 (81x menos)
-Resultado: 8,1x mais rápido
+Redução de consultas: 31 → 1 (31x menos)
+Resultado: 2,9x mais rápido
 Resultados idênticos: SIM</div>
-    <p class="copy-hint">Medido de verdade, com um script isolado, não estimado — script e método descritos em <code class="inline">aula-9/codigo/README.md</code>. Os números absolutos mudam de banco para banco e de máquina para máquina; o que não muda é a proporção do problema — trocar 81 idas ao banco por 1 é sempre uma redução grande, e numa rede real (não numa consulta local em memória, como neste teste) cada uma dessas 81 idas ainda carregaria a latência de rede até o servidor MySQL — a diferença tende a ser ainda maior em produção.</p>
+    <p class="copy-hint">Medido de verdade, com um script isolado, não estimado — script e método descritos em <code class="inline">aula-9/codigo/README.md</code>. Os números absolutos mudam de banco para banco e de máquina para máquina; o que não muda é a proporção do problema — trocar 31 idas ao banco por 1 é sempre uma redução grande, e numa rede real (não numa consulta local em memória, como neste teste) cada uma dessas 31 idas ainda carregaria a latência de rede até o servidor MySQL — a diferença tende a ser ainda maior em produção.</p>
 
     <div class="instruction-step">
       <span class="step-num">A versão corrigida</span>
-      <h4>Uma consulta, com GROUP BY, faz o mesmo trabalho</h4>
+      <h4>Uma consulta, com LEFT JOIN + GROUP BY, faz o mesmo trabalho</h4>
     </div>
     <div class="code-box"><span class="comment">// relatorio.php — versão otimizada</span>
 $stmt = $pdo->query(
-    'SELECT requerente, COUNT(*) as total FROM protocolos GROUP BY requerente ORDER BY requerente'
+    'SELECT equipamentos.nome, COUNT(emprestimos.id) as total
+     FROM equipamentos
+     LEFT JOIN emprestimos ON emprestimos.equipamento_id = equipamentos.id
+     GROUP BY equipamentos.id, equipamentos.nome
+     ORDER BY equipamentos.nome'
 );
 $contagem = [];
 foreach ($stmt as $linha) {
-    $contagem[$linha['requerente']] = $linha['total'];
+    $contagem[$linha['nome']] = $linha['total'];
 }</div>
-    <p class="copy-hint">O banco de dados já sabe agrupar e contar — pedir isso numa única consulta SQL (<code class="inline">GROUP BY</code>) é sempre mais rápido que pedir ao PHP para fazer, uma pergunta de cada vez, o que o próprio banco faz de uma vez só.</p>
+    <p class="copy-hint">O banco de dados já sabe agrupar e contar — pedir isso numa única consulta SQL (<code class="inline">GROUP BY</code>) é sempre mais rápido que pedir ao PHP para fazer, uma pergunta de cada vez, o que o próprio banco faz de uma vez só. O <code class="inline">LEFT JOIN</code> (em vez de <code class="inline">JOIN</code>) garante que um equipamento sem nenhum empréstimo ainda apareça no relatório, com total zero.</p>
 
     <div class="insight-box">
       <span class="insight-tag">Por que medir depois importa tanto quanto medir antes</span>
@@ -451,12 +455,12 @@ foreach ($stmt as $linha) {
       <p style="color:var(--text-muted);">Para cada descrição abaixo, decida se o padrão tem um problema N+1, precisando de otimização (<strong>N</strong>), ou se já é uma única consulta bem escrita (<strong>O</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
       <div class="quiz-legend"><strong>N</strong> = tem N+1, precisa otimizar &nbsp;·&nbsp; <strong>O</strong> = uma consulta só, já está ok</div>
       <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
-        <li>Buscar todos os protocolos com uma consulta, depois um <code class="inline">SELECT COUNT</code> separado para cada requerente da lista.</li>
-        <li>Buscar requerente e total de protocolos numa única consulta com <code class="inline">GROUP BY</code>.</li>
-        <li>Para cada um dos 50 protocolos da tela, fazer uma consulta separada perguntando o nome do setor atual.</li>
-        <li>Uma única consulta que já traz tudo que a tela precisa mostrar, incluindo nome do setor via <code class="inline">JOIN</code>.</li>
+        <li>Buscar todos os empréstimos com uma consulta, depois um <code class="inline">SELECT COUNT</code> separado para cada equipamento da lista.</li>
+        <li>Buscar equipamento e total de empréstimos numa única consulta com <code class="inline">GROUP BY</code>.</li>
+        <li>Para cada um dos 50 empréstimos da tela, fazer uma consulta separada perguntando o nome do servidor responsável.</li>
+        <li>Uma única consulta que já traz tudo que a tela precisa mostrar, incluindo nome do servidor via <code class="inline">JOIN</code>.</li>
         <li>Uma única consulta que já traz tudo que a tela precisa mostrar.</li>
-        <li>Listar todos os requerentes, depois abrir um <code class="inline">SELECT COUNT(*)</code> por requerente dentro de um <code class="inline">foreach</code>.</li>
+        <li>Listar todos os equipamentos, depois abrir um <code class="inline">SELECT COUNT(*)</code> por equipamento dentro de um <code class="inline">foreach</code>.</li>
       </ol>
       <div class="quiz-row">
         <input type="text" id="respostaOPT1" class="quiz-input" placeholder="ex.: NONOON" maxlength="10">
@@ -808,7 +812,7 @@ proponha a correção com prepare()/execute() e parâmetro vinculado.</div>
 
     <div class="concept-box">
       <h4>Definição: os três primitivos de um servidor MCP</h4>
-      <p><strong>Tools</strong> são ações executáveis — algo que a IA pode chamar para fazer alguma coisa (ex.: buscar um protocolo pelo número). <strong>Resources</strong> são dados que a IA pode consultar como contexto, mas não executar (ex.: o schema do banco do SISPROT). <strong>Prompts</strong> são modelos prontos de interação, reutilizáveis (ex.: um template para gerar um relatório mensal). Um mesmo servidor pode oferecer os três tipos ao mesmo tempo — a IA descobre o que está disponível ao se conectar, sem precisar saber de antemão (<a href="https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture" target="_blank" rel="noopener">modelcontextprotocol.io/.../architecture</a>).</p>
+      <p><strong>Tools</strong> são ações executáveis — algo que a IA pode chamar para fazer alguma coisa (ex.: buscar um equipamento pelo número de patrimônio). <strong>Resources</strong> são dados que a IA pode consultar como contexto, mas não executar (ex.: o schema do banco do EmprestaTI). <strong>Prompts</strong> são modelos prontos de interação, reutilizáveis (ex.: um template para gerar um relatório mensal). Um mesmo servidor pode oferecer os três tipos ao mesmo tempo — a IA descobre o que está disponível ao se conectar, sem precisar saber de antemão (<a href="https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture" target="_blank" rel="noopener">modelcontextprotocol.io/.../architecture</a>).</p>
     </div>
 
     <div class="insight-box">
@@ -822,12 +826,12 @@ proponha a correção com prepare()/execute() e parâmetro vinculado.</div>
       <p style="color:var(--text-muted);">Para cada descrição abaixo, identifique qual dos três primitivos do MCP ela representa. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
       <div class="quiz-legend"><strong>T</strong> = tool (ação) &nbsp;·&nbsp; <strong>R</strong> = resource (dado) &nbsp;·&nbsp; <strong>P</strong> = prompt (modelo)</div>
       <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
-        <li>Uma função que a IA pode chamar para buscar um protocolo pelo número.</li>
-        <li>O schema do banco de dados do SISPROT, disponível para a IA consultar como contexto.</li>
-        <li>Uma ação que atualiza o status de um protocolo no banco.</li>
+        <li>Uma função que a IA pode chamar para buscar um equipamento pelo número de patrimônio.</li>
+        <li>O schema do banco de dados do EmprestaTI, disponível para a IA consultar como contexto.</li>
+        <li>Uma ação que registra a devolução de um equipamento no banco.</li>
         <li>Um modelo pronto de pergunta para gerar um relatório mensal, reutilizável.</li>
         <li>O conteúdo de um arquivo de configuração, exposto só para leitura.</li>
-        <li>Um template com exemplos prontos de como pedir um resumo de tramitação.</li>
+        <li>Um template com exemplos prontos de como pedir um resumo de empréstimos em atraso.</li>
       </ol>
       <div class="quiz-row">
         <input type="text" id="respostaMCP1" class="quiz-input" placeholder="ex.: TRTPRP" maxlength="10">
@@ -1027,7 +1031,7 @@ com o parâmetro posicional que já estava lá?</div>
 
     <div class="callout" style="margin-bottom:24px;">
       <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-      <p><strong>Ferramenta de hoje:</strong> a mesma IA de código que o restante do curso já usa (Claude Code ou equivalente), com acesso à cópia local do SISPROT em <code class="inline">aula-9/codigo/</code>.</p>
+      <p><strong>Ferramenta de hoje:</strong> a mesma IA de código que o restante do curso já usa (Claude Code ou equivalente), com acesso à cópia local do EmprestaTI em <code class="inline">aula-9/codigo/</code>. Os Exercícios 3, 4 e 5 seguem o mesmo padrão — especificar/relatar num lugar, conectar via MCP, pedir a implementação — com uma ferramenta diferente cada um; se o tempo apertar, vale fazer só um ou dois dos três, já que dominar um ensina o resto.</p>
     </div>
 
     <div class="block-card">
@@ -1042,12 +1046,32 @@ com o parâmetro posicional que já estava lá?</div>
       <div class="instruction-step">
         <span class="step-num">Enunciado</span>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
-          <li>Escolheremos outro ponto do SISPROT que pareça repetir uma consulta (ex.: uma versão do relatório que também buscasse o status mais comum de cada requerente, do mesmo jeito ingênuo).</li>
+          <li>Estenderemos <code class="inline">relatorio.php</code> para também mostrar quantos empréstimos de cada equipamento estão em atraso (data prevista de devolução já passou, sem devolução registrada) — implementado, de propósito, com mais uma consulta empilhada dentro do mesmo loop que já existe.</li>
           <li>Pediremos à IA para instrumentar a medição primeiro (contagem de consultas + tempo), sem otimizar ainda — o mesmo prompt em duas etapas da Etapa 1.</li>
           <li>Rodaremos, anotaremos os números reais, e só então pediremos a versão otimizada.</li>
           <li>Compararemos os resultados das duas versões campo a campo, não só o tempo — confirmando que a versão rápida também está certa.</li>
         </ol>
       </div>
+
+      <div class="promptbox" style="margin-top:16px;">
+<span class="plabel">Prompt 1 · estender o relatório com o problema de propósito, e medir antes de otimizar</span>Estenda relatorio.php do EmprestaTI: além do total de empréstimos por
+equipamento que já existe, mostre também quantos desses empréstimos
+estão em atraso (data_prevista_devolucao já passou e data_devolucao
+ainda é NULL). Implemente com mais uma consulta dentro do mesmo loop
+que já existe — mesmo padrão da versão inicial do relatório, uma
+consulta a mais por equipamento. Junto com isso, adicione uma
+contagem de quantas consultas o código faz ao banco e quanto tempo
+total leva. Não otimize nada ainda — só implemente a funcionalidade e
+instrumente a medição.</div>
+      <p class="copy-hint">Repare que o próprio pedido já embute o problema de propósito (mais uma consulta por equipamento, dentro do loop) — é assim que este exercício garante ter algo real para medir e otimizar depois, sem depender de encontrar um bug pronto.</p>
+
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Prompt 2 · só depois de rodar e anotar os números do "antes"</span>Agora otimize a consulta de atrasados, reduzindo para uma única
+consulta ao banco (sem tirar a contagem de empréstimos que já
+existia). Depois, mostre de novo a contagem de consultas e o tempo,
+para eu comparar com os números de antes.</div>
+      <p class="copy-hint">Só peça isso depois de rodar a primeira versão e anotar os números reais — pedir a otimizada direto, sem medir antes, é exatamente a "dificuldade comum" listada abaixo.</p>
+
       <div class="tech-grid" style="margin-top:20px;">
         <div class="tech-card">
           <h3 style="display:block;">Dificuldades comuns</h3>
@@ -1068,12 +1092,12 @@ com o parâmetro posicional que já estava lá?</div>
     <div class="block-card">
       <div class="block-header">
         <div class="block-title-area">
-          <span class="eyebrow">Exercício 2 · individual · 20 min</span>
+          <span class="eyebrow">Exercício 2 · individual · 15 min</span>
           <h3>Conectar e testar um servidor MCP</h3>
         </div>
-        <span class="block-badge badge-teal">20 min</span>
+        <span class="block-badge badge-teal">15 min</span>
       </div>
-      <p style="color:var(--text-muted);">A Etapa 4 mostrou o padrão com bancos de dados, de forma guiada; aqui repetimos o mesmo padrão de comando (<code class="inline">claude mcp add</code>), com as próprias mãos, com um servidor mais simples de instalar (arquivos, sem precisar de banco nenhum).</p>
+      <p style="color:var(--text-muted);">A Etapa 4 mostrou o padrão com documentação, de forma guiada; aqui repetimos o mesmo padrão de comando (<code class="inline">claude mcp add</code>), com as próprias mãos, com um servidor mais simples de instalar (arquivos, sem precisar de banco nenhum) — o aquecimento antes dos três exercícios de MCP "de verdade" a seguir.</p>
       <div class="instruction-step">
         <span class="step-num">Enunciado</span>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
@@ -1082,6 +1106,32 @@ com o parâmetro posicional que já estava lá?</div>
           <li>Removeremos o servidor (<code class="inline">claude mcp remove</code>) e faremos a mesma pergunta de novo, comparando o que muda.</li>
         </ol>
       </div>
+
+      <div class="code-box" style="margin-top:16px;"><span class="comment"># Claude Code — servidor de arquivos de referência (oficial, mantido pela Anthropic)</span>
+claude mcp add fs -- npx -y @modelcontextprotocol/server-filesystem /caminho/absoluto/para/aula-9/codigo
+
+<span class="comment"># Conferir que conectou</span>
+claude mcp list</div>
+      <p class="copy-hint">O argumento depois do nome do pacote é a pasta que o servidor pode enxergar — use o caminho absoluto até <code class="inline">aula-9/codigo</code> na sua máquina (no Windows, algo como <code class="inline">C:\trf1\curso\aula-9\codigo</code>).</p>
+
+      <div class="code-box"><span class="comment"># GitHub Copilot (VS Code) — .vscode/mcp.json</span>
+{
+  "servers": {
+    "fs": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/caminho/absoluto/para/aula-9/codigo"]
+    }
+  }
+}</div>
+
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Prompt · a pergunta que depende de olhar vários arquivos ao mesmo tempo</span>Qual desses arquivos PHP não usa htmlspecialchars() em nenhuma saída?</div>
+      <p class="copy-hint">Faça essa mesma pergunta duas vezes: uma com o servidor de arquivos conectado, outra depois de removê-lo — o objetivo é comparar, não só rodar uma vez.</p>
+
+      <div class="code-box"><span class="comment"># Remover o servidor, para comparar sem ele</span>
+claude mcp remove fs</div>
+
       <div class="tech-grid" style="margin-top:20px;">
         <div class="tech-card">
           <h3 style="display:block;">Dificuldades comuns</h3>
@@ -1101,108 +1151,293 @@ com o parâmetro posicional que já estava lá?</div>
     <div class="block-card">
       <div class="block-header">
         <div class="block-title-area">
-          <span class="eyebrow">Exercício 3 · individual · 25 min</span>
-          <h3>Encerrando com uma especificação real</h3>
+          <span class="eyebrow">Exercício 3 · individual · 20 min · MCP #1</span>
+          <h3>Notion — especificar e implementar</h3>
         </div>
-        <span class="block-badge badge-teal">25 min</span>
+        <span class="block-badge badge-teal">20 min</span>
       </div>
-      <p style="color:var(--text-muted);">O exercício de fechamento da aula — e do curso: uma especificação de verdade, escrita no Notion, que uma IA vai ler via MCP e implementar. O alvo é, de propósito, a função <code class="inline">encerrar.php</code> do SISPROT: hoje ela só muda o status para "Arquivado", sem registrar o motivo. Encerrar um protocolo com justificativa, no último exercício do curso — o mesmo verbo fechando as duas coisas.</p>
+      <p style="color:var(--text-muted);">O primeiro dos três exemplos "escrevo num lugar, conecto por MCP, peço a implementação": uma especificação de verdade, escrita no Notion, que a IA vai ler e implementar. O alvo é, de propósito, o <code class="inline">emprestimo_form.php</code> do EmprestaTI: hoje ele deixa emprestar um equipamento mesmo que ele já esteja emprestado e não devolvido.</p>
 
       <div class="instruction-step">
         <span class="step-num">Passo 1 · a especificação</span>
         <h4>Cole isto numa página nova do Notion</h4>
       </div>
       <div class="promptbox" style="margin-top:10px;">
-<span class="plabel">Especificação · colar numa página nova do Notion</span>Contexto: no SISPROT, encerrar.php muda o status de um protocolo para
-"Arquivado", sem registrar por quê.
+<span class="plabel">Especificação · colar numa página nova do Notion</span>Contexto: no EmprestaTI, emprestimo_form.php permite registrar um novo
+empréstimo para qualquer equipamento, mesmo que ele já esteja
+emprestado e ainda não tenha sido devolvido.
 
-User story: Como servidor responsável por um setor, quero registrar um
-motivo ao encerrar um protocolo, para que o histórico mostre por que
-ele foi finalizado, não só que foi.
+User story: Como responsável pelo setor de TI, quero impedir que um
+equipamento seja emprestado duas vezes ao mesmo tempo, para não
+perder o controle de quem está com cada item.
 
 Critérios de aceitação:
-Dado um protocolo com status "Aberto" ou "Em Análise"
-Quando o servidor encerra esse protocolo e informa um motivo
-Então o status muda para "Arquivado"
-E o motivo fica salvo junto ao protocolo
+Dado um equipamento com um empréstimo em aberto (sem data_devolucao)
+Quando alguém tenta registrar um novo empréstimo para esse mesmo
+  equipamento
+Então o cadastro é recusado, com uma mensagem indicando quem está
+  com o equipamento e desde quando
 
-Dado um protocolo sendo encerrado sem motivo informado
-Então o encerramento é recusado, com uma mensagem clara
+Dado um equipamento sem nenhum empréstimo em aberto
+Quando alguém registra um novo empréstimo para ele
+Então o cadastro acontece normalmente, como hoje
 
 Requisitos técnicos:
-- Adicionar a coluna motivo_encerramento (texto) à tabela protocolos.
-- encerrar.php passa a exigir o campo motivo, enviado por POST
-  (não mais GET, já que a ação altera dado).
-- Sem motivo, não encerra: volta para o formulário com um erro.
-- Mantém o comportamento atual de sucesso: redirecionar para
-  index.php?msg=encerrado.
+- Antes de inserir um novo empréstimo, verificar se já existe uma
+  linha em emprestimos para o mesmo equipamento_id com
+  data_devolucao NULL.
+- Se existir, não inserir — mostrar o erro no próprio formulário,
+  junto com o nome do servidor que está com o equipamento.
+- Não altera o comportamento de edição de um empréstimo já
+  existente, só o de criação.
 
-Fora de escopo: não alterar nenhum arquivo além de encerrar.php,
-schema.sql e o botão/link que aciona o encerramento em index.php.</div>
+Fora de escopo: não alterar nenhum arquivo além de
+emprestimo_form.php.</div>
       <p class="copy-hint">Reparem no formato: contexto, user story, critérios em Dado/Quando/Então (Gherkin, das Aulas 2 e 5) e um "fora de escopo" explícito — a mesma disciplina de especificação do resto do curso, agora como fonte que a IA vai buscar sozinha, em vez de ser colada manualmente no prompt.</p>
 
       <div class="instruction-step" style="margin-top:24px;">
         <span class="step-num">Passo 2 · conectar o Notion</span>
-        <h4>Integração, token, e a própria página</h4>
+        <h4>Servidor remoto — sem token, autorização pelo navegador</h4>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:8px;">
-          <li>Em <code class="inline">notion.so/profile/integrations</code>, criar uma integração interna nova — nome livre (ex.: "aula-9-mcp"). Copiar o token gerado (começa com <code class="inline">ntn_</code>).</li>
-          <li>Na página criada no Passo 1, abrir o menu "..." → "Connect to integration" → selecionar a integração criada. Sem esse passo, o servidor MCP não enxerga a página, mesmo com o token certo.</li>
-          <li>Instalar o servidor MCP oficial do Notion (<code class="inline">@notionhq/notion-mcp-server</code>, mantido pela própria Notion), com o token como variável de ambiente.</li>
+          <li>Rodar o comando abaixo no terminal. Ele abre o navegador para login e autorização na conta Notion — nada de criar integração ou copiar token manualmente.</li>
+          <li>Na tela de autorização, escolher o workspace e marcar a página criada no Passo 1 no seletor de páginas (ou compartilhar o workspace inteiro). Sem marcar a página aqui, o servidor MCP conecta mas não a enxerga.</li>
+          <li>Confirmar que a conexão ficou de pé.</li>
         </ol>
       </div>
 
       <div class="code-box"><span class="comment"># Claude Code</span>
-claude mcp add notion --env NOTION_TOKEN=ntn_seu_token_aqui -- npx -y @notionhq/notion-mcp-server
+claude mcp add notion --transport http https://mcp.notion.com/mcp
 
 <span class="comment"># Conferir que conectou</span>
 claude mcp list</div>
-      <p class="copy-hint">Se o Claude Code não pegar o token pela flag <code class="inline">--env</code> (falha conhecida em algumas versões), a alternativa é editar diretamente o arquivo de configuração do MCP do projeto e colar o token no bloco <code class="inline">env</code> — mesmo formato do JSON do Copilot, logo abaixo.</p>
+      <p class="copy-hint">Se a janela do navegador fechar sem concluir a autorização, <code class="inline">claude mcp list</code> mostra o servidor como desconectado — basta rodar o <code class="inline">claude mcp add</code> de novo.</p>
 
       <div class="code-box"><span class="comment"># GitHub Copilot (VS Code) — .vscode/mcp.json</span>
 {
   "servers": {
-    "notionApi": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@notionhq/notion-mcp-server"],
-      "env": {
-        "NOTION_TOKEN": "ntn_seu_token_aqui"
-      }
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
     }
   }
 }</div>
-      <p class="copy-hint">Mesmo caminho já usado com o Context7 na Etapa 4: salvar o arquivo, "MCP: List Servers" na Command Palette (ou o botão "Start" que aparece no próprio JSON), e usar o modo "Agent" do Chat — tools de MCP não aparecem no modo "Ask".</p>
+      <p class="copy-hint">Mesmo caminho já usado com o Context7 na Etapa 4: salvar o arquivo, autorizar no navegador quando pedido, "MCP: List Servers" na Command Palette (ou o botão "Start" que aparece no próprio JSON), e usar o modo "Agent" do Chat — tools de MCP não aparecem no modo "Ask".</p>
 
       <div class="instruction-step" style="margin-top:24px;">
         <span class="step-num">Passo 3 · pedir a implementação</span>
         <h4>O prompt final</h4>
       </div>
       <div class="promptbox" style="margin-top:10px;">
-<span class="plabel">Prompt · buscar a especificação no Notion e implementar</span>Busque, no Notion, a página com a especificação de encerramento de
-protocolo com motivo. Implemente exatamente o que ela descreve em
-aula-9/codigo/encerrar.php e aula-9/codigo/schema.sql — sem alterar
-mais nada além do que a própria especificação permite.</div>
+<span class="plabel">Prompt · buscar a especificação no Notion e implementar</span>Busque, no Notion, a página com a especificação sobre impedir
+empréstimo duplicado de equipamento. Implemente exatamente o que ela
+descreve em aula-9/codigo/emprestimo_form.php — sem alterar mais
+nada além do que a própria especificação permite.</div>
       <p class="copy-hint">Vale pedir, antes de aceitar qualquer mudança de código, que a IA resuma o que encontrou na página — é a forma mais simples de confirmar que a busca via MCP funcionou, antes dela tocar em qualquer arquivo.</p>
 
       <ul class="checklist" style="margin-top:16px;">
-        <li><span class="xicn">&#10003;</span>A coluna <code class="inline">motivo_encerramento</code> existe na tabela <code class="inline">protocolos</code> depois de rodar o <code class="inline">schema.sql</code> atualizado.</li>
-        <li><span class="xicn">&#10003;</span>Tentar encerrar sem preencher o motivo é recusado, com mensagem — não falha silenciosamente.</li>
-        <li><span class="xicn">&#10003;</span>Encerrar com motivo salva o texto e redireciona para <code class="inline">index.php?msg=encerrado</code>, como antes.</li>
-        <li><span class="xicn">&#10003;</span>Nenhum outro arquivo do SISPROT foi alterado além dos três citados na especificação.</li>
+        <li><span class="xicn">&#10003;</span>Tentar cadastrar um empréstimo para um equipamento já emprestado (sem devolução) é recusado, com o nome de quem está com ele.</li>
+        <li><span class="xicn">&#10003;</span>Cadastrar um empréstimo para um equipamento livre continua funcionando normalmente.</li>
+        <li><span class="xicn">&#10003;</span>Nenhum outro arquivo do EmprestaTI foi alterado além de <code class="inline">emprestimo_form.php</code>.</li>
       </ul>
 
       <div class="tech-grid" style="margin-top:20px;">
         <div class="tech-card">
           <h3 style="display:block;">Dificuldades comuns</h3>
           <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
-            <li>Esquecer o passo "Connect to integration" na própria página — sem ele, a integração existe e o token funciona, mas a busca não encontra nada.</li>
-            <li>A IA implementar mais do que a especificação pede (ex.: criar uma tabela de histórico) — o "fora de escopo" da especificação existe exatamente para evitar isso; vale cobrar se acontecer.</li>
+            <li>Na tela de autorização, esquecer de marcar a página criada no Passo 1 (ou o workspace) no seletor — a conexão fica de pé, mas a busca não encontra nada.</li>
+            <li>A IA implementar mais do que a especificação pede (ex.: criar uma tela de histórico de conflitos) — o "fora de escopo" da especificação existe exatamente para evitar isso; vale cobrar se acontecer.</li>
           </ul>
         </div>
         <div class="tech-card">
           <h3 style="display:block;">Dicas</h3>
           <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
-            <li>Se sobrar tempo, edite a página no Notion (ex.: mude o nome do campo) e peça para a IA implementar de novo — sem tocar em nada além da página, para sentir a mesma "conexão viva" que a Etapa 3 descreveu.</li>
+            <li>Se sobrar tempo, edite a página no Notion (ex.: mude a mensagem de erro pedida) e peça para a IA implementar de novo — sem tocar em nada além da página, para sentir a mesma "conexão viva" que a Etapa 3 descreveu.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 4 · individual · 20 min · MCP #2</span>
+          <h3>GitHub Issues — relatar e corrigir</h3>
+        </div>
+        <span class="block-badge badge-teal">20 min</span>
+      </div>
+      <p style="color:var(--text-muted);">Mesmo padrão do Exercício 3, com outra ferramenta: em vez de uma especificação no Notion, um <strong>bug relatado como issue do GitHub</strong> — o formato mais comum de "pedido de mudança" em qualquer projeto real. O bug é real, não fabricado: <code class="inline">emprestimo_form.php</code> valida que as duas datas existem e têm formato válido, mas nunca confere se a devolução prevista vem <em>depois</em> da retirada.</p>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 1 · a issue</span>
+        <h4>Abra um repositório de teste no GitHub e crie esta issue</h4>
+      </div>
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Issue · título e corpo, para colar num repositório de teste</span>Título: Sistema aceita devolução prevista antes da data de retirada
+
+Corpo:
+Ao cadastrar um novo empréstimo em emprestimo_form.php, é possível
+escolher uma "Devolução prevista" anterior à "Data de retirada" —
+por exemplo, retirada em 20/03/2026 e devolução prevista em
+15/03/2026 é aceito sem nenhum erro.
+
+Comportamento esperado: o cadastro deveria ser recusado, com uma
+mensagem clara, sempre que a devolução prevista vier antes (ou no
+mesmo dia, se quiser ser mais rígido) da data de retirada.
+
+Arquivo afetado: aula-9/codigo/emprestimo_form.php</div>
+      <p class="copy-hint">Pode ser um repositório pessoal vazio, criado só para o exercício — o conteúdo da issue é fictício, mas a validação que falta é real, a mesma coisa que aconteceria numa auditoria de código de verdade.</p>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Passo 2 · conectar o GitHub</span>
+        <h4>Token e o servidor oficial (versão remota, sem Docker)</h4>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:8px;">
+          <li>Gerar um Personal Access Token em <code class="inline">github.com/settings/personal-access-tokens/new</code> — escopo de leitura de issues já basta para este exercício.</li>
+          <li>O servidor MCP oficial do GitHub (<code class="inline">github/github-mcp-server</code>) tem uma versão remota, hospedada pela própria GitHub — não precisa instalar nada localmente, nem Docker.</li>
+        </ol>
+      </div>
+
+      <div class="code-box"><span class="comment"># Claude Code — versão remota, sem Docker</span>
+claude mcp add-json github '{"type":"http","url":"https://api.githubcopilot.com/mcp","headers":{"Authorization":"Bearer SEU_TOKEN_AQUI"}}'
+
+<span class="comment"># Conferir que conectou</span>
+claude mcp list</div>
+      <p class="copy-hint">Existe também uma versão local via Docker, com login OAuth pelo navegador em vez de token colado à mão — mais segura para uso contínuo, mas exige Docker instalado; para o exercício de hoje, a versão remota com token é suficiente.</p>
+
+      <div class="code-box"><span class="comment"># GitHub Copilot (VS Code) — .vscode/mcp.json</span>
+{
+  "servers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "headers": {
+        "Authorization": "Bearer SEU_TOKEN_AQUI"
+      }
+    }
+  }
+}</div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Passo 3 · pedir a correção</span>
+        <h4>O prompt final</h4>
+      </div>
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Prompt · buscar a issue no GitHub e corrigir</span>Busque, no meu repositório, a issue sobre devolução prevista antes da
+retirada. Corrija exatamente o que ela descreve em
+aula-9/codigo/emprestimo_form.php — validando que a devolução
+prevista vem depois da data de retirada, com uma mensagem de erro
+clara caso não venha.</div>
+      <p class="copy-hint">Diferente do Notion, aqui a IA está lendo um formato bem mais estruturado (título, corpo, rótulos) — bom contraste para notar que "especificação" pode vir em formatos bem diferentes, e o MCP se adapta a cada um sem mudar o jeito de pedir.</p>
+
+      <ul class="checklist" style="margin-top:16px;">
+        <li><span class="xicn">&#10003;</span>Tentar salvar um empréstimo com devolução prevista antes da retirada é recusado, com mensagem clara.</li>
+        <li><span class="xicn">&#10003;</span>Datas em ordem normal continuam sendo aceitas, sem regressão.</li>
+        <li><span class="xicn">&#10003;</span>A IA citou a issue (número/título) ao explicar o que fez — sinal de que a busca via MCP funcionou.</li>
+      </ul>
+
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Token sem permissão de leitura de issues, ou colado com espaço/quebra de linha a mais — a mensagem de erro do <code class="inline">claude mcp list</code> geralmente aponta isso.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Se sobrar tempo, peça para a IA comentar na própria issue, resumindo a correção feita — fechando o ciclo "relatado → corrigido → documentado" que qualquer projeto real usa.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 5 · individual · 20 min · MCP #3</span>
+          <h3>Google Sheets — importar em lote</h3>
+        </div>
+        <span class="block-badge badge-teal">20 min</span>
+      </div>
+      <p style="color:var(--text-muted);">O terceiro exemplo, com dado estruturado em vez de texto: uma planilha do Google Sheets com uma lista de equipamentos novos, que a IA vai ler via MCP e transformar em cadastro. É, de propósito, a conexão mais trabalhosa de configurar das três — um bom lembrete de que "conectar via MCP" nem sempre é um comando só, e vale levar isso em conta na hora de escolher uma ferramenta.</p>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 1 · a planilha</span>
+        <h4>Crie uma planilha nova no Google Sheets com estas colunas</h4>
+      </div>
+      <div class="value-table-wrapper">
+        <table class="value-table">
+          <thead><tr><th>nome</th><th>patrimonio</th><th>tipo</th></tr></thead>
+          <tbody>
+            <tr><td>Notebook Dell 5420</td><td>PAT-2031</td><td>Notebook</td></tr>
+            <tr><td>Projetor Epson X400</td><td>PAT-2032</td><td>Projetor</td></tr>
+            <tr><td>Webcam Logitech C920</td><td>PAT-2033</td><td>Webcam</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="copy-hint">Três linhas já bastam para o exercício — o objetivo é ver a importação em lote acontecendo, não testar volume.</p>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Passo 2 · conectar o Google Sheets</span>
+        <h4>Service account — mais etapas que Notion ou GitHub</h4>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:8px;">
+          <li>No <a href="https://console.cloud.google.com" target="_blank" rel="noopener">Google Cloud Console</a>, criar (ou reaproveitar) um projeto, e ativar a "Google Sheets API" em "APIs & Services" → "Library".</li>
+          <li>Em "APIs & Services" → "Credentials" → "Create Credentials" → "Service Account", criar uma conta de serviço; depois, nos três pontos dela → "Manage keys" → "Add key" → "Create new key" → JSON, baixando o arquivo.</li>
+          <li>Abrir o JSON baixado e copiar o campo <code class="inline">client_email</code> — na planilha do Passo 1, clicar em "Share" e adicionar esse e-mail como Editor.</li>
+        </ol>
+      </div>
+
+      <div class="code-box"><span class="comment"># Claude Code — servidor comunitário mcp-gsheets, mantido ativamente</span>
+claude mcp add sheets --env GOOGLE_PROJECT_ID=seu-projeto-id --env GOOGLE_APPLICATION_CREDENTIALS=/caminho/absoluto/para/service-account-key.json -- npx -y mcp-gsheets@latest
+
+<span class="comment"># Conferir que conectou</span>
+claude mcp list</div>
+      <p class="copy-hint">Diferente do Notion e do GitHub, o Google Sheets não tem um servidor MCP oficial da própria Google com o mesmo nível de simplicidade — o <code class="inline">mcp-gsheets</code> é comunitário, mas ativamente mantido; é a mesma checagem de confiança da Etapa 5 (quem mantém, quantas issues em aberto, quando foi a última atualização) antes de instalar qualquer servidor de terceiros.</p>
+
+      <div class="code-box"><span class="comment"># GitHub Copilot (VS Code) — .vscode/mcp.json</span>
+{
+  "servers": {
+    "sheets": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mcp-gsheets@latest"],
+      "env": {
+        "GOOGLE_PROJECT_ID": "seu-projeto-id",
+        "GOOGLE_APPLICATION_CREDENTIALS": "/caminho/absoluto/para/service-account-key.json"
+      }
+    }
+  }
+}</div>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Passo 3 · pedir a importação</span>
+        <h4>O prompt final</h4>
+      </div>
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Prompt · ler a planilha e gerar o cadastro</span>Leia a planilha [nome/URL da sua planilha] via Google Sheets e gere os
+comandos SQL de INSERT para cadastrar cada linha na tabela
+equipamentos do EmprestaTI (colunas: nome, patrimonio, tipo). Não
+execute nada — só mostre os comandos gerados, para eu conferir antes
+de rodar.</div>
+      <p class="copy-hint">Pedir para <em>gerar</em> o SQL em vez de já rodar direto no banco é de propósito — é a mesma cautela da Etapa 5 desta aula com tools que alteram dado: revisar antes de deixar a IA agir, principalmente numa conexão nova, ainda não testada.</p>
+
+      <ul class="checklist" style="margin-top:16px;">
+        <li><span class="xicn">&#10003;</span>A IA leu as três linhas certas da planilha, sem inventar nem pular nenhuma.</li>
+        <li><span class="xicn">&#10003;</span>Os comandos SQL gerados batem com os dados exatos da planilha (nome, patrimônio, tipo).</li>
+        <li><span class="xicn">&#10003;</span>Nada foi executado no banco sem revisão — só o SQL foi gerado, como pedido.</li>
+      </ul>
+
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Esquecer de compartilhar a planilha com o e-mail da service account — o erro mais comum aqui, equivalente a esquecer de marcar a página certa na autorização do Notion.</li>
+            <li><code class="inline">GOOGLE_APPLICATION_CREDENTIALS</code> com caminho relativo em vez de absoluto — use sempre o caminho completo do arquivo JSON baixado.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Se este exercício ficar de fora por falta de tempo, os Exercícios 3 e 4 já cobrem os dois lados mais comuns de MCP (texto livre e formato estruturado tipo issue) — Sheets é o "terceiro degrau", não o essencial.</li>
           </ul>
         </div>
       </div>
@@ -1221,8 +1456,8 @@ mais nada além do que a própria especificação permite.</div>
         </div>
         <span class="block-badge badge-gold">25 min</span>
       </div>
-      <p style="color:var(--text-muted); margin-bottom:20px;">Juntar performance, medição e documentação — o SISPROT ganha um registro formal de uma otimização real.</p>
-      <p style="color:var(--text-muted);">Escolheremos uma parte do SISPROT (pode ser o próprio <code class="inline">index.php</code>, o <code class="inline">relatorio.php</code> com outra métrica, ou algo criado por conta própria) e aplicaremos o ciclo completo: medir, otimizar, medir de novo, documentar a diferença com números reais — não com "ficou mais rápido".</p>
+      <p style="color:var(--text-muted); margin-bottom:20px;">Juntar performance, medição e documentação — o EmprestaTI ganha um registro formal de uma otimização real.</p>
+      <p style="color:var(--text-muted);">Escolheremos uma parte do EmprestaTI (pode ser o próprio <code class="inline">index.php</code>, o <code class="inline">relatorio.php</code> com outra métrica, ou algo criado por conta própria) e aplicaremos o ciclo completo: medir, otimizar, medir de novo, documentar a diferença com números reais — não com "ficou mais rápido".</p>
 
       <div class="instruction-step" style="margin-top:0;">
         <span class="step-num">Regras</span>
@@ -1246,12 +1481,12 @@ mais nada além do que a própria especificação permite.</div>
     <div class="block-card">
       <div class="block-header">
         <div class="block-title-area">
-          <span class="eyebrow">Demonstração final · depois do tempo de execução · SISPROT ao vivo</span>
+          <span class="eyebrow">Demonstração final · depois do tempo de execução · EmprestaTI ao vivo</span>
           <h3>Otimizando com a turma, ao vivo</h3>
         </div>
         <span class="block-badge badge-gold">IA paga</span>
       </div>
-      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos esta aula aplicando o ciclo completo — medir, otimizar, medir de novo — sobre um trecho do SISPROT escolhido na hora pela turma, com o Claude Code.</p>
+      <p style="color:var(--text-muted);">Depois que o tempo de execução do desafio terminar, fecharemos esta aula aplicando o ciclo completo — medir, otimizar, medir de novo — sobre um trecho do EmprestaTI escolhido na hora pela turma, com o Claude Code.</p>
 
       <div class="instruction-step">
         <span class="step-num">Pré-requisitos</span>
@@ -1266,7 +1501,7 @@ mais nada além do que a própria especificação permite.</div>
         <h4>A turma escolhe o alvo</h4>
       </div>
       <div class="promptbox" style="margin-top:16px;">
-<span class="plabel">Prompt · pedido em duas etapas, ao vivo</span>[Escolhido com a turma, ex.: "o index.php busca todos os protocolos
+<span class="plabel">Prompt · pedido em duas etapas, ao vivo</span>[Escolhido com a turma, ex.: "o index.php busca todos os empréstimos
 mesmo quando a lista fica grande — meça o tempo e o tamanho do
 resultado antes de propor qualquer mudança."]</div>
       <p class="copy-hint">Vale nomear, ao vivo, cada uma das duas rodadas de prompt: primeiro pedir só a medição, depois pedir a otimização — a mesma disciplina da Etapa 1, agora sem roteiro pronto.</p>
