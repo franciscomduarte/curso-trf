@@ -349,7 +349,7 @@
 
     <div class="callout" style="margin-top:32px;">
       <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-      <p><strong>Regra de ouro do curso (continua valendo):</strong> os exemplos de hoje usam dado fictício do SISPROT, como sempre. A novidade é que, na Etapa 4, vamos conectar uma IA a uma fonte de documentação real via MCP, e na "Mão na massa" vamos conectar de verdade um servidor MCP a um sistema de arquivos, o do computador de cada um — nenhum dos dois exige instalar banco de dados nem serviço extra, só o Node.js já usado no restante do curso — mais um motivo para o cuidado de sempre com o que se expõe a uma ferramenta externa.</p>
+      <p><strong>Regra de ouro do curso (continua valendo):</strong> os exemplos de hoje usam dado fictício do SISPROT, como sempre. A novidade é que, na Etapa 4, vamos conectar uma IA a uma fonte de documentação real via MCP, e na "Mão na massa" vamos conectar de verdade um servidor MCP a um sistema de arquivos (Exercício 2) e a uma conta real do Notion (Exercício 3) — nenhum dos três exige instalar banco de dados nem serviço extra, só o Node.js já usado no restante do curso. A regra vale também para o conteúdo colado no Notion: só a especificação fictícia do exercício, nunca dado real de protocolo ou de cidadão.</p>
     </div>
   </div>
 </section>
@@ -535,6 +535,38 @@ foreach ($stmt as $linha) {
       </table>
     </div>
     <p class="copy-hint">As duas linhas <code class="inline">---</code> delimitam o cabeçalho YAML — tudo entre elas é configuração; tudo depois da segunda é o prompt de sistema, em texto livre.</p>
+
+    <div class="concept-box" style="margin-top:20px;">
+      <h4>Aprofundando: o campo <code class="inline">tools</code>, no Claude Code</h4>
+      <p>No cabeçalho de um subagente do Claude Code, <code class="inline">tools</code> é uma <em>allowlist</em> — as ferramentas listadas, separadas por vírgula, são as únicas que aquele subagente pode usar (o exemplo <code class="inline">revisor-seguranca</code> acima usa <code class="inline">tools: Read, Grep</code>, por isso ele só lê e busca, nunca edita). <strong>Se o campo for omitido</strong>, o subagente herda todas as ferramentas disponíveis na sessão — a allowlist só existe para restringir, nunca é obrigatória.</p>
+
+      <div class="value-table-wrapper" style="margin-top:14px;">
+        <table class="value-table">
+          <thead><tr><th>Ferramenta</th><th>Para que serve</th></tr></thead>
+          <tbody>
+            <tr><td><code class="inline">Read</code></td><td>Ler arquivos</td></tr>
+            <tr><td><code class="inline">Grep</code></td><td>Buscar texto/padrões</td></tr>
+            <tr><td><code class="inline">Glob</code></td><td>Buscar arquivos por padrão de nome</td></tr>
+            <tr><td><code class="inline">Bash</code> / <code class="inline">PowerShell</code></td><td>Executar comandos</td></tr>
+            <tr><td><code class="inline">Edit</code></td><td>Editar arquivos existentes</td></tr>
+            <tr><td><code class="inline">Write</code></td><td>Criar/sobrescrever arquivos</td></tr>
+            <tr><td><code class="inline">NotebookEdit</code></td><td>Editar notebooks Jupyter</td></tr>
+            <tr><td><code class="inline">WebFetch</code> / <code class="inline">WebSearch</code></td><td>Buscar na web</td></tr>
+            <tr><td><code class="inline">TodoWrite</code></td><td>Gerenciar lista de tarefas</td></tr>
+            <tr><td><code class="inline">Skill</code></td><td>Invocar skills</td></tr>
+            <tr><td><code class="inline">ToolSearch</code></td><td>Buscar ferramentas disponíveis</td></tr>
+            <tr><td><code class="inline">Agent</code></td><td>Permitir que o subagente invoque outros subagentes — dá para restringir a quais, com <code class="inline">Agent(nome1, nome2)</code></td></tr>
+            <tr><td><code class="inline">Monitor</code>, <code class="inline">EnterWorktree</code>, <code class="inline">ExitWorktree</code>, <code class="inline">TaskStop</code>, <code class="inline">SendMessage</code>, <code class="inline">Artifact</code></td><td>Usadas em cenários mais específicos — worktrees, mensagens entre agents, etc.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="copy-hint" style="margin-top:10px;">Ferramentas de MCP também entram na lista: <code class="inline">mcp__&lt;servidor&gt;</code> libera todas as ferramentas daquele servidor MCP; <code class="inline">mcp__&lt;servidor&gt;__&lt;ferramenta&gt;</code> libera só uma específica.</p>
+
+      <div class="callout" style="margin-top:16px;">
+        <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+        <p><strong>Algumas ferramentas nunca ficam disponíveis a um subagente, mesmo se listadas em <code class="inline">tools</code>:</strong> <code class="inline">AskUserQuestion</code>, <code class="inline">EnterPlanMode</code>, <code class="inline">ExitPlanMode</code> (a menos que o subagente rode com <code class="inline">permissionMode: plan</code>), <code class="inline">EndConversation</code>, <code class="inline">ScheduleWakeup</code>, <code class="inline">TaskOutput</code>, <code class="inline">WaitForMcpServers</code>, <code class="inline">Workflow</code>, e <code class="inline">Agent</code> quando já no limite de profundidade de aninhamento (um subagente chamando outro que chamaria outro, indefinidamente). Faz sentido: são ferramentas que dependem de interação direta com quem está na conversa principal, ou que só fazem sentido uma vez por sessão.</p>
+      </div>
+    </div>
 
     <div class="code-box"><span class="comment"># Claude Code — .claude/agents/revisor-seguranca.md</span>
 ---
@@ -1061,6 +1093,116 @@ com o parâmetro posicional que já estava lá?</div>
           <h3 style="display:block;">Dicas</h3>
           <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
             <li>Vale perguntar diretamente à IA, depois de conectar: "que ferramentas você ganhou com esse servidor MCP?" — a resposta mostra os tools/resources descobertos automaticamente.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Exercício 3 · individual · 25 min</span>
+          <h3>Encerrando com uma especificação real</h3>
+        </div>
+        <span class="block-badge badge-teal">25 min</span>
+      </div>
+      <p style="color:var(--text-muted);">O exercício de fechamento da aula — e do curso: uma especificação de verdade, escrita no Notion, que uma IA vai ler via MCP e implementar. O alvo é, de propósito, a função <code class="inline">encerrar.php</code> do SISPROT: hoje ela só muda o status para "Arquivado", sem registrar o motivo. Encerrar um protocolo com justificativa, no último exercício do curso — o mesmo verbo fechando as duas coisas.</p>
+
+      <div class="instruction-step">
+        <span class="step-num">Passo 1 · a especificação</span>
+        <h4>Cole isto numa página nova do Notion</h4>
+      </div>
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Especificação · colar numa página nova do Notion</span>Contexto: no SISPROT, encerrar.php muda o status de um protocolo para
+"Arquivado", sem registrar por quê.
+
+User story: Como servidor responsável por um setor, quero registrar um
+motivo ao encerrar um protocolo, para que o histórico mostre por que
+ele foi finalizado, não só que foi.
+
+Critérios de aceitação:
+Dado um protocolo com status "Aberto" ou "Em Análise"
+Quando o servidor encerra esse protocolo e informa um motivo
+Então o status muda para "Arquivado"
+E o motivo fica salvo junto ao protocolo
+
+Dado um protocolo sendo encerrado sem motivo informado
+Então o encerramento é recusado, com uma mensagem clara
+
+Requisitos técnicos:
+- Adicionar a coluna motivo_encerramento (texto) à tabela protocolos.
+- encerrar.php passa a exigir o campo motivo, enviado por POST
+  (não mais GET, já que a ação altera dado).
+- Sem motivo, não encerra: volta para o formulário com um erro.
+- Mantém o comportamento atual de sucesso: redirecionar para
+  index.php?msg=encerrado.
+
+Fora de escopo: não alterar nenhum arquivo além de encerrar.php,
+schema.sql e o botão/link que aciona o encerramento em index.php.</div>
+      <p class="copy-hint">Reparem no formato: contexto, user story, critérios em Dado/Quando/Então (Gherkin, das Aulas 2 e 5) e um "fora de escopo" explícito — a mesma disciplina de especificação do resto do curso, agora como fonte que a IA vai buscar sozinha, em vez de ser colada manualmente no prompt.</p>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Passo 2 · conectar o Notion</span>
+        <h4>Integração, token, e a própria página</h4>
+        <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:8px;">
+          <li>Em <code class="inline">notion.so/profile/integrations</code>, criar uma integração interna nova — nome livre (ex.: "aula-9-mcp"). Copiar o token gerado (começa com <code class="inline">ntn_</code>).</li>
+          <li>Na página criada no Passo 1, abrir o menu "..." → "Connect to integration" → selecionar a integração criada. Sem esse passo, o servidor MCP não enxerga a página, mesmo com o token certo.</li>
+          <li>Instalar o servidor MCP oficial do Notion (<code class="inline">@notionhq/notion-mcp-server</code>, mantido pela própria Notion), com o token como variável de ambiente.</li>
+        </ol>
+      </div>
+
+      <div class="code-box"><span class="comment"># Claude Code</span>
+claude mcp add notion --env NOTION_TOKEN=ntn_seu_token_aqui -- npx -y @notionhq/notion-mcp-server
+
+<span class="comment"># Conferir que conectou</span>
+claude mcp list</div>
+      <p class="copy-hint">Se o Claude Code não pegar o token pela flag <code class="inline">--env</code> (falha conhecida em algumas versões), a alternativa é editar diretamente o arquivo de configuração do MCP do projeto e colar o token no bloco <code class="inline">env</code> — mesmo formato do JSON do Copilot, logo abaixo.</p>
+
+      <div class="code-box"><span class="comment"># GitHub Copilot (VS Code) — .vscode/mcp.json</span>
+{
+  "servers": {
+    "notionApi": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "NOTION_TOKEN": "ntn_seu_token_aqui"
+      }
+    }
+  }
+}</div>
+      <p class="copy-hint">Mesmo caminho já usado com o Context7 na Etapa 4: salvar o arquivo, "MCP: List Servers" na Command Palette (ou o botão "Start" que aparece no próprio JSON), e usar o modo "Agent" do Chat — tools de MCP não aparecem no modo "Ask".</p>
+
+      <div class="instruction-step" style="margin-top:24px;">
+        <span class="step-num">Passo 3 · pedir a implementação</span>
+        <h4>O prompt final</h4>
+      </div>
+      <div class="promptbox" style="margin-top:10px;">
+<span class="plabel">Prompt · buscar a especificação no Notion e implementar</span>Busque, no Notion, a página com a especificação de encerramento de
+protocolo com motivo. Implemente exatamente o que ela descreve em
+aula-9/codigo/encerrar.php e aula-9/codigo/schema.sql — sem alterar
+mais nada além do que a própria especificação permite.</div>
+      <p class="copy-hint">Vale pedir, antes de aceitar qualquer mudança de código, que a IA resuma o que encontrou na página — é a forma mais simples de confirmar que a busca via MCP funcionou, antes dela tocar em qualquer arquivo.</p>
+
+      <ul class="checklist" style="margin-top:16px;">
+        <li><span class="xicn">&#10003;</span>A coluna <code class="inline">motivo_encerramento</code> existe na tabela <code class="inline">protocolos</code> depois de rodar o <code class="inline">schema.sql</code> atualizado.</li>
+        <li><span class="xicn">&#10003;</span>Tentar encerrar sem preencher o motivo é recusado, com mensagem — não falha silenciosamente.</li>
+        <li><span class="xicn">&#10003;</span>Encerrar com motivo salva o texto e redireciona para <code class="inline">index.php?msg=encerrado</code>, como antes.</li>
+        <li><span class="xicn">&#10003;</span>Nenhum outro arquivo do SISPROT foi alterado além dos três citados na especificação.</li>
+      </ul>
+
+      <div class="tech-grid" style="margin-top:20px;">
+        <div class="tech-card">
+          <h3 style="display:block;">Dificuldades comuns</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Esquecer o passo "Connect to integration" na própria página — sem ele, a integração existe e o token funciona, mas a busca não encontra nada.</li>
+            <li>A IA implementar mais do que a especificação pede (ex.: criar uma tabela de histórico) — o "fora de escopo" da especificação existe exatamente para evitar isso; vale cobrar se acontecer.</li>
+          </ul>
+        </div>
+        <div class="tech-card">
+          <h3 style="display:block;">Dicas</h3>
+          <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+            <li>Se sobrar tempo, edite a página no Notion (ex.: mude o nome do campo) e peça para a IA implementar de novo — sem tocar em nada além da página, para sentir a mesma "conexão viva" que a Etapa 3 descreveu.</li>
           </ul>
         </div>
       </div>
