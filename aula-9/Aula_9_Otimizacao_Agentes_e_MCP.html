@@ -874,12 +874,13 @@ proponha a correção com prepare()/execute() e parâmetro vinculado.</div>
       <p>Context7 roda via <code class="inline">npx</code>, o mesmo comando já usado no exercício de sistema de arquivos da "Mão na massa" — sem banco, sem servidor, sem conta obrigatória (uma chave de API é opcional, só para aumentar o limite de uso). Se o Node.js já está instalado (pré-requisito do curso desde as primeiras aulas), não falta mais nada.</p>
     </div>
 
-    <div class="code-box"><span class="comment"># Já citado acima como o exemplo oficial de instalação — repetido aqui como o exemplo prático desta etapa</span>
-claude mcp add context7 -- npx -y @upstash/context7-mcp
+    <div class="code-box"><span class="comment"># No Windows (PowerShell), use add-json — veja o porquê logo abaixo</span>
+claude mcp add-json context7 '{"type":"stdio","command":"npx","args":["-y","@upstash/context7-mcp"]}'
 
 <span class="comment"># Conferir que conectou</span>
 claude mcp list</div>
-    <p class="copy-hint">Depois de rodar <code class="inline">claude mcp add</code>, o Claude Code costuma avisar que é preciso reiniciar a sessão para as ferramentas do servidor ficarem disponíveis — o cliente MCP só é montado quando o processo inicia, então adicionar um servidor no meio de uma sessão não é suficiente. O procedimento: (1) sair da sessão atual (<code class="inline">/exit</code>, ou <code class="inline">Ctrl+D</code>); (2) abrir de novo, na mesma pasta do projeto (<code class="inline">claude</code>); (3) confirmar com <code class="inline">claude mcp list</code>, ou perguntando direto "quais ferramentas você tem disponíveis agora?". Não precisa fechar o terminal nem reiniciar o VS Code — só encerrar e reabrir o processo do <code class="inline">claude</code>.</p>
+    <p class="copy-hint">A sintaxe do concept-box acima (<code class="inline">claude mcp add context7 -- npx -y @upstash/context7-mcp</code>) é a oficial, e funciona sem problema em bash, CMD ou Mac. No PowerShell do Windows, porém, qualquer flag depois do <code class="inline">--</code> (aqui, o <code class="inline">-y</code> do <code class="inline">npx</code>) é interpretada como opção do próprio <code class="inline">claude</code>, e o comando falha com <code class="inline">error: unknown option '-y'</code> — um bug conhecido do Claude Code no PowerShell, ainda sem correção oficial. <code class="inline">claude mcp add-json</code> evita o problema por completo: tudo vai dentro de uma única string JSON, sem nenhum <code class="inline">--</code> para o PowerShell atrapalhar — por isso é o formato usado no código acima, e em todo comando parecido pelo resto do curso.</p>
+    <p class="copy-hint">Depois de rodar <code class="inline">claude mcp add</code> (ou <code class="inline">add-json</code>), o Claude Code costuma avisar que é preciso reiniciar a sessão para as ferramentas do servidor ficarem disponíveis — o cliente MCP só é montado quando o processo inicia, então adicionar um servidor no meio de uma sessão não é suficiente. O procedimento: (1) sair da sessão atual (<code class="inline">/exit</code>, ou <code class="inline">Ctrl+D</code>); (2) abrir de novo, na mesma pasta do projeto (<code class="inline">claude</code>); (3) confirmar com <code class="inline">claude mcp list</code>, ou perguntando direto "quais ferramentas você tem disponíveis agora?". Não precisa fechar o terminal nem reiniciar o VS Code — só encerrar e reabrir o processo do <code class="inline">claude</code>.</p>
 
     <div class="concept-box">
       <h4>O mesmo servidor funciona no GitHub Copilot</h4>
@@ -1108,11 +1109,11 @@ para eu comparar com os números de antes.</div>
       </div>
 
       <div class="code-box" style="margin-top:16px;"><span class="comment"># Claude Code — servidor de arquivos de referência (oficial, mantido pela Anthropic)</span>
-claude mcp add fs -- npx -y @modelcontextprotocol/server-filesystem /caminho/absoluto/para/aula-9/codigo
+claude mcp add-json fs '{"type":"stdio","command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","/caminho/absoluto/para/aula-9/codigo"]}'
 
 <span class="comment"># Conferir que conectou</span>
 claude mcp list</div>
-      <p class="copy-hint">O argumento depois do nome do pacote é a pasta que o servidor pode enxergar — use o caminho absoluto até <code class="inline">aula-9/codigo</code> na sua máquina (no Windows, algo como <code class="inline">C:\trf1\curso\aula-9\codigo</code>).</p>
+      <p class="copy-hint">Formato <code class="inline">add-json</code>, não <code class="inline">claude mcp add fs -- npx -y ...</code> — o bug do PowerShell com flags depois do <code class="inline">--</code>, já explicado na Etapa 4. O último item do array <code class="inline">args</code> é a pasta que o servidor pode enxergar — use o caminho absoluto até <code class="inline">aula-9/codigo</code> na sua máquina (no Windows, algo como <code class="inline">C:\\trf1\\curso\\aula-9\\codigo</code> — barras duplas, porque é uma string JSON).</p>
 
       <div class="code-box"><span class="comment"># GitHub Copilot (VS Code) — .vscode/mcp.json</span>
 {
@@ -1387,11 +1388,11 @@ clara caso não venha.</div>
       </div>
 
       <div class="code-box"><span class="comment"># Claude Code — servidor comunitário mcp-gsheets, mantido ativamente</span>
-claude mcp add sheets --env GOOGLE_PROJECT_ID=seu-projeto-id --env GOOGLE_APPLICATION_CREDENTIALS=/caminho/absoluto/para/service-account-key.json -- npx -y mcp-gsheets@latest
+claude mcp add-json sheets '{"type":"stdio","command":"npx","args":["-y","mcp-gsheets@latest"],"env":{"GOOGLE_PROJECT_ID":"seu-projeto-id","GOOGLE_APPLICATION_CREDENTIALS":"/caminho/absoluto/para/service-account-key.json"}}'
 
 <span class="comment"># Conferir que conectou</span>
 claude mcp list</div>
-      <p class="copy-hint">Diferente do Notion e do GitHub, o Google Sheets não tem um servidor MCP oficial da própria Google com o mesmo nível de simplicidade — o <code class="inline">mcp-gsheets</code> é comunitário, mas ativamente mantido; é a mesma checagem de confiança da Etapa 5 (quem mantém, quantas issues em aberto, quando foi a última atualização) antes de instalar qualquer servidor de terceiros.</p>
+      <p class="copy-hint">Formato <code class="inline">add-json</code> pelo mesmo motivo da Etapa 4 e do Exercício 2 desta seção: evita o bug do PowerShell com flags depois do <code class="inline">--</code>. Diferente do Notion e do GitHub, o Google Sheets não tem um servidor MCP oficial da própria Google com o mesmo nível de simplicidade — o <code class="inline">mcp-gsheets</code> é comunitário, mas ativamente mantido; é a mesma checagem de confiança da Etapa 5 (quem mantém, quantas issues em aberto, quando foi a última atualização) antes de instalar qualquer servidor de terceiros.</p>
 
       <div class="code-box"><span class="comment"># GitHub Copilot (VS Code) — .vscode/mcp.json</span>
 {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -318,11 +318,11 @@
 <header class="hero">
   <div class="wrap">
     <span class="eyebrow">Curso · IA aplicada ao desenvolvimento de software · Aula 10 (última)</span>
-    <h1>Depois do Agente que Funciona: Seis Evoluções</h1>
-    <p class="lede">A Aula 9 ensinou o que é um agente e como conectar ferramentas via MCP. Esta última aula olha para o que separa um agente de curso de um agente de produção: memória entre sessões, MCP no lugar de código escrito à mão, coordenação real entre vários agentes, conexão com um banco de verdade, observabilidade, e uma forma de avaliar se o agente está bom sem um humano conferindo cada resposta. A única parte prática é conectar ferramentas reais via MCP — Notion, GitHub e um banco de dados — com a mesma disciplina de verificação de todo o curso.</p>
+    <h1>Depois do Agente que Funciona: Cinco Evoluções</h1>
+    <p class="lede">A Aula 9 ensinou o que é um agente e como conectar ferramentas via MCP. Esta última aula olha para o que separa um agente de curso de um agente de produção: MCP no lugar de código escrito à mão, coordenação real entre vários agentes, observabilidade, uma forma de avaliar se o agente está bom sem um humano conferindo cada resposta, e memória entre sessões. A única parte prática é conectar ferramentas reais via MCP — o banco MySQL do SISPROT, um servidor de gráficos e o Notion — com a mesma disciplina de verificação de todo o curso.</p>
     <div class="meta-row">
       <div><strong>10</strong>de 10 aulas</div>
-      <div><strong>6</strong>evoluções, uma por etapa</div>
+      <div><strong>5</strong>evoluções, uma por etapa</div>
       <div><strong>3</strong>conexões MCP reais na prática</div>
       <div><strong>SISPROT</strong>· fechando o curso</div>
     </div>
@@ -335,22 +335,21 @@
     <div class="sec-head">
       <span class="eyebrow">Sobre esta aula</span>
       <h2>Do agente que roda numa aula ao agente que roda de verdade</h2>
-      <p class="sub">Um agente de curso — como os que este material já mostrou — resolve uma tarefa e esquece tudo quando termina. Um agente de produção precisa lembrar entre sessões, se conectar a sistemas reais sem que alguém escreva uma função para cada um, dividir trabalho entre vários agentes com segurança, e alguém (ou alguma coisa) precisa conseguir dizer se ele está funcionando bem — sem reler cada resposta manualmente. Esta aula não constrói mais um agente do zero; olha para essas seis lacunas, uma de cada vez.</p>
+      <p class="sub">Um agente de curso — como os que este material já mostrou — resolve uma tarefa e esquece tudo quando termina. Um agente de produção precisa lembrar entre sessões, se conectar a sistemas reais sem que alguém escreva uma função para cada um, dividir trabalho entre vários agentes com segurança, e alguém (ou alguma coisa) precisa conseguir dizer se ele está funcionando bem — sem reler cada resposta manualmente. Esta aula não constrói mais um agente do zero; olha para essas cinco lacunas, uma de cada vez.</p>
     </div>
     <div class="agenda-list">
-      <div class="agenda-row"><div class="dotm">01</div><p>Memória entre sessões</p></div>
-      <div class="agenda-row"><div class="dotm">02</div><p>MCP no lugar de tools escritas à mão</p></div>
-      <div class="agenda-row"><div class="dotm">03</div><p>Multiagentes de verdade</p></div>
-      <div class="agenda-row"><div class="dotm">04</div><p>Banco de dados real, via MCP</p></div>
-      <div class="agenda-row"><div class="dotm">05</div><p>Observabilidade</p></div>
-      <div class="agenda-row"><div class="dotm">06</div><p>Avaliação automática</p></div>
-      <div class="agenda-row"><div class="dotm">07</div><p>Mão na massa: conectando ferramentas reais via MCP</p></div>
-      <div class="agenda-row"><div class="dotm">08</div><p>Desafio final e fechamento do curso</p></div>
+      <div class="agenda-row"><div class="dotm">01</div><p>MCP no lugar de tools escritas à mão</p></div>
+      <div class="agenda-row"><div class="dotm">02</div><p>Multiagentes de verdade</p></div>
+      <div class="agenda-row"><div class="dotm">03</div><p>Observabilidade</p></div>
+      <div class="agenda-row"><div class="dotm">04</div><p>Avaliação automática</p></div>
+      <div class="agenda-row"><div class="dotm">05</div><p>Memória entre sessões</p></div>
+      <div class="agenda-row"><div class="dotm">06</div><p>Mão na massa: conectando ferramentas reais via MCP</p></div>
+      <div class="agenda-row"><div class="dotm">07</div><p>Desafio final e fechamento do curso</p></div>
     </div>
 
     <div class="callout" style="margin-top:32px;">
       <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-      <p><strong>Diferente das aulas anteriores:</strong> aqui não há um projeto Python novo para rodar. As Etapas 1, 3, 5 e 6 são conceituais — o objetivo é reconhecer essas seis peças quando aparecerem num projeto real. A única parte com "mãos no teclado" é conectar ferramentas de verdade via MCP (Etapa 7), com a mesma regra de ouro de sempre: nenhum dado real e sensível entra em nenhuma conexão feita em aula.</p>
+      <p><strong>Diferente das aulas anteriores:</strong> aqui não há um projeto Python novo para rodar. As Etapas 2, 3, 4 e 5 são conceituais — o objetivo é reconhecer essas cinco peças quando aparecerem num projeto real. A única parte com "mãos no teclado" é conectar ferramentas de verdade via MCP (mais adiante, em "Mão na massa"), com a mesma regra de ouro de sempre: nenhum dado real e sensível entra em nenhuma conexão feita em aula.</p>
     </div>
   </div>
 </section>
@@ -359,11 +358,651 @@
 <section class="module-divider reveal" id="etapa1">
   <div class="wrap">
     <div class="divider-head">
-      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="7" height="7" rx="1.5"/><rect x="14" y="9" width="7" height="7" rx="1.5"/><path d="M10 12.5h4"/></svg>
       <span class="modnum">Etapa 1</span>
     </div>
+    <h2>MCP no lugar de tools escritas à mão</h2>
+    <p class="modsub">A Aula 9 já explicou o que é MCP. Esta etapa mostra a diferença que isso faz na prática, no mesmo projeto do curso.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Retomando a Aula 9: MCP é um conector padrão, não um conceito novo</h4>
+      <p>MCP (Model Context Protocol) é o protocolo aberto que conecta uma IA a fontes de dados e ferramentas externas — host, cliente, servidor, com tools/resources/prompts do lado do servidor. Se essa frase não soar familiar, vale revisitar a Etapa 3 da Aula 9 antes de seguir. Aqui, o ponto não é redefinir MCP — é mostrar a mudança de mentalidade que ele representa, comparado ao que o curso construiu até agora.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exemplo real · criando e povoando um banco, inteiramente via MCP</span>
+      <h4>Desta vez, "criar" não é uma página — é o próprio schema</h4>
+      <p style="color:var(--text-muted);">Em vez de conectar a um banco que já existe, aqui a IA cria as tabelas e carrega os dados do zero, através da mesma conexão MCP — nenhum <code class="inline">CREATE TABLE</code> ou <code class="inline">INSERT</code> digitado à mão, nenhum script rodado fora da conversa.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Passo 1 · um usuário dedicado, antes de conectar</span>
+      <h4>Mesmo aqui, onde a IA vai escrever, nunca o usuário administrador</h4>
+      <p style="color:var(--text-muted);">Rodar isto uma vez, manualmente, no phpMyAdmin (aba SQL) ou no cliente de linha de comando do MySQL — não faz parte do que a IA vai executar depois.</p>
+    </div>
+    <div class="code-box"><span class="comment">-- Rodar uma vez, manualmente — nunca via MCP</span>
+CREATE DATABASE IF NOT EXISTS sisprot_mcp;
+
+CREATE USER IF NOT EXISTS 'mcp_sisprot'@'localhost' IDENTIFIED BY 'trf123456';
+GRANT ALL PRIVILEGES ON sisprot_mcp.* TO 'mcp_sisprot'@'localhost';
+FLUSH PRIVILEGES;</div>
+    <p class="copy-hint">O <code class="inline">GRANT</code> é só em <code class="inline">sisprot_mcp.*</code>, nunca em <code class="inline">*.*</code> — mesmo precisando criar tabelas e inserir dados aqui, o usuário <code class="inline">mcp_sisprot</code> não enxerga nenhum outro banco do mesmo servidor. Defesa em camadas, ao contrário do que uma trava só de leitura faria: em vez de restringir a operação, restringe-se o alcance (um único banco).</p>
+
+    <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Passo 2 · conectar o MySQL via MCP</span>
+      <h4>Editar <code class="inline">.mcp.json</code> direto no projeto</h4>
+      <p style="color:var(--text-muted);">O arquivo de configuração pode ser criado manualmente, na raiz do projeto, sem passar por nenhum comando <code class="inline">claude mcp add</code>.</p>
+    </div>
+    <div class="code-box"><span class="comment">// .mcp.json, na raiz do projeto (criar se não existir)</span>
+{
+  "mcpServers": {
+    "mysql-sisprot": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@benborla29/mcp-server-mysql"],
+      "env": {
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "mcp_sisprot",
+        "MYSQL_PASS": "trf123456",
+        "MYSQL_DB": "sisprot_mcp",
+        "ALLOW_INSERT_OPERATION": "true",
+        "ALLOW_DDL_OPERATION": "true"
+      }
+    }
+  }
+}</div>
+    <p class="copy-hint">Mesmo formato já usado com o Copilot, no <code class="inline">.vscode/mcp.json</code>, ao longo do curso — só o nome do arquivo e o campo <code class="inline">mcpServers</code> por fora mudam. Depois de salvar: sair da sessão (<code class="inline">/exit</code>) e abrir de novo (<code class="inline">claude</code>) na mesma pasta — servidores de projeto (<code class="inline">.mcp.json</code>) só são detectados na inicialização, e a primeira vez pedirá aprovação explícita antes de conectar. Confirmar com <code class="inline">claude mcp list</code>.</p>
+    <p class="copy-hint"><code class="inline">ALLOW_DDL_OPERATION=true</code> libera <code class="inline">CREATE</code>/<code class="inline">DROP</code>/<code class="inline">ALTER</code>; <code class="inline">ALLOW_INSERT_OPERATION=true</code> libera <code class="inline">INSERT</code> — as únicas duas permissões que este exemplo precisa. <code class="inline">ALLOW_UPDATE_OPERATION</code> e <code class="inline">ALLOW_DELETE_OPERATION</code> ficam no padrão (<code class="inline">false</code>) de propósito: nada aqui precisa alterar ou apagar uma linha já existente.</p>
+    <p class="copy-hint">Alternativa por linha de comando: <code class="inline">claude mcp add-json mysql-sisprot '{"type":"stdio","command":"npx","args":["-y","@benborla29/mcp-server-mysql"],"env":{"MYSQL_HOST":"127.0.0.1","MYSQL_PORT":"3306","MYSQL_USER":"mcp_sisprot","MYSQL_PASS":"trf123456","MYSQL_DB":"sisprot_mcp","ALLOW_INSERT_OPERATION":"true","ALLOW_DDL_OPERATION":"true"}}'</code>.</p>
+    <p class="copy-hint"><code class="inline">.mcp.json</code> fica na raiz do projeto e pode ser versionado — mas não este, com uma senha em texto puro dentro. Adicionar <code class="inline">.mcp.json</code> ao <code class="inline">.gitignore</code> antes de qualquer commit, ou trocar a senha por uma variável de ambiente do sistema operacional depois que o exercício terminar.</p>
+    <p class="copy-hint">Fonte: pacote <code class="inline">@benborla29/mcp-server-mysql</code>, mantido pela comunidade — não é um produto oficial da Oracle/MySQL (<a href="https://github.com/benborla/mcp-server-mysql" target="_blank" rel="noopener">github.com/benborla/mcp-server-mysql</a>). Escrita (<code class="inline">INSERT</code>/<code class="inline">UPDATE</code>/<code class="inline">DELETE</code>/DDL) vem desligada por padrão — precisa ser liberada explicitamente pelas variáveis <code class="inline">ALLOW_*</code>, como feito acima.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Mesmo exemplo, no GitHub Copilot</span>
+      <h4>Mesmo servidor MCP, arquivo de workspace em vez de <code class="inline">.mcp.json</code></h4>
+      <p style="color:var(--text-muted);">O agent mode do Copilot, no VS Code, conecta ao mesmo servidor <code class="inline">@benborla29/mcp-server-mysql</code> — muda só o arquivo (<code class="inline">.vscode/mcp.json</code>, não <code class="inline">.mcp.json</code> na raiz) e o nome do campo por fora (<code class="inline">servers</code>, não <code class="inline">mcpServers</code>), mesmo padrão já visto com o Context7 na Aula 9.</p>
+    </div>
+    <div class="code-box"><span class="comment">// .vscode/mcp.json (criar a pasta .vscode, se não existir)</span>
+{
+  "servers": {
+    "mysql-sisprot": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@benborla29/mcp-server-mysql"],
+      "env": {
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "mcp_sisprot",
+        "MYSQL_PASS": "trf123456",
+        "MYSQL_DB": "sisprot_mcp",
+        "ALLOW_INSERT_OPERATION": "true",
+        "ALLOW_DDL_OPERATION": "true"
+      }
+    }
+  }
+}</div>
+    <div class="instruction-step" style="margin-top:12px;">
+      <span class="step-num">Passo a passo, no VS Code</span>
+      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Criar a pasta <code class="inline">.vscode</code> na raiz do workspace (se ainda não existir), e dentro dela o arquivo <code class="inline">mcp.json</code> com o conteúdo acima.</li>
+        <li>Com o arquivo aberto no editor, clicar no link <strong>Start</strong> que aparece acima da entrada <code class="inline">mysql-sisprot</code>. (Alternativa: Command Palette → <strong>MCP: List Servers</strong> → selecionar <code class="inline">mysql-sisprot</code> → iniciar.)</li>
+        <li>Confirmar que conectou: rodar de novo <strong>MCP: List Servers</strong> na Command Palette — o servidor aparece ativo, com as tools de leitura/escrita que ele expõe.</li>
+        <li>Abrir o Chat (<code class="inline">Ctrl+Alt+I</code>) e trocar o modo de <strong>Ask</strong> para <strong>Agent</strong> — sem isso, as tools do servidor MCP não ficam disponíveis. <strong>Configure Tools</strong>, na caixa de chat, mostra e permite ligar/desligar cada tool antes de perguntar.</li>
+      </ol>
+    </div>
+    <p class="copy-hint"><code class="inline">.vscode/mcp.json</code> merece o mesmo cuidado do <code class="inline">.mcp.json</code>: entra no <code class="inline">.gitignore</code> antes de qualquer commit, por causa da senha em texto puro dentro do arquivo.</p>
+
+    <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Passo 3 · pedir a criação do schema e a carga de dados</span>
+      <h4>O DDL e os dados abaixo, só para conferência — quem roda é a IA, via MCP</h4>
+    </div>
+    <div class="code-box"><span class="comment">-- DDL — duas tabelas, fictícias, no mesmo domínio do SISPROT</span>
+CREATE TABLE setores (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE protocolos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  numero VARCHAR(20) NOT NULL UNIQUE,
+  assunto VARCHAR(150) NOT NULL,
+  setor_id INT NOT NULL,
+  status ENUM('Em Análise','Deferido','Indeferido','Arquivado') NOT NULL DEFAULT 'Em Análise',
+  data_abertura DATE NOT NULL,
+  data_fechamento DATE NULL,
+  FOREIGN KEY (setor_id) REFERENCES setores(id)
+);</div>
+
+    <div class="code-box"><span class="comment">-- Carga de dados — fictícia, mesma regra de ouro do curso inteiro</span>
+INSERT INTO setores (nome) VALUES
+  ('Protocolo Geral'), ('Jurídico'), ('Financeiro'), ('TI');
+
+INSERT INTO protocolos (numero, assunto, setor_id, status, data_abertura, data_fechamento) VALUES
+  ('2026.001', 'Solicitação de férias', 1, 'Deferido', '2026-01-12', '2026-01-20'),
+  ('2026.002', 'Pedido de reconsideração', 2, 'Em Análise', '2026-01-15', NULL),
+  ('2026.003', 'Reembolso de diárias', 3, 'Deferido', '2026-01-20', '2026-01-25'),
+  ('2026.004', 'Solicitação de acesso a sistema', 4, 'Em Análise', '2026-02-02', NULL),
+  ('2026.005', 'Recurso administrativo', 2, 'Indeferido', '2026-02-05', '2026-02-12'),
+  ('2026.006', 'Pedido de certidão', 1, 'Deferido', '2026-02-10', '2026-02-16'),
+  ('2026.007', 'Solicitação de equipamento', 4, 'Arquivado', '2025-11-30', '2025-12-10'),
+  ('2026.008', 'Análise de contrato', 2, 'Em Análise', '2026-02-14', NULL),
+  ('2026.009', 'Pedido de diária extra', 3, 'Indeferido', '2026-02-16', '2026-02-20'),
+  ('2026.010', 'Renovação de licença de software', 4, 'Deferido', '2026-02-18', '2026-02-25');</div>
+
+    <div class="promptbox">
+<span class="plabel">Prompt · criar o schema e carregar os dados, tudo via MCP</span>Usando a conexão MySQL conectada (mysql-sisprot), crie as duas
+tabelas e carregue os dados exatamente como no DDL e no script de
+inserção que colei acima. Não altere nenhum tipo de coluna nem
+adicione nada além do que está aqui. Se qualquer uma das duas
+tabelas já existir, pare e me avise em vez de sobrescrever.</div>
+    <p class="copy-hint">Exemplo ilustrativo do formato real de pedido — não executado neste ambiente de preparação (não há um MySQL conectado aqui). O cuidado de pedir para <em>parar</em> em vez de sobrescrever, antes de qualquer <code class="inline">CREATE</code> ou <code class="inline">INSERT</code> rodar de verdade, vale para qualquer conexão nova — não só esta.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Perguntas para experimentar, depois que os dados existirem</span>
+      <h4>Cada uma pode ser respondida de dois jeitos — a IA decide o caminho, ou você escolhe</h4>
+      <p style="color:var(--text-muted);">Pedir a resposta direto deixa a IA gerar e rodar o SQL sozinha, via MCP; pedir só o SQL (sem executar) é o mesmo cuidado já visto no Exercício 5 da Aula 9 — útil antes de confiar numa conexão nova.</p>
+      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:8px;">
+        <li>Quantos protocolos existem em cada status?</li>
+        <li>Quais protocolos do setor Jurídico ainda estão "Em Análise"?</li>
+        <li>Qual setor tem mais protocolos indeferidos?</li>
+        <li>Quantos dias, em média, um protocolo levou entre a abertura e o fechamento, considerando só os que já têm <code class="inline">data_fechamento</code>?</li>
+      </ol>
+    </div>
+    <div class="promptbox">
+<span class="plabel">Prompt · só o SQL, sem executar — o mesmo cuidado do Exercício 5 da Aula 9</span>Gere, sem executar, o SQL que lista os protocolos "Em Análise" com
+mais de 30 dias desde a abertura, considerando a data de hoje. Só
+mostre o comando, para eu conferir antes de rodar.</div>
+    <p class="copy-hint">Essa última pergunta tem, de propósito, uma resposta desconfortável com os dados fictícios acima: os protocolos "Em Análise" deste exemplo já estão abertos há vários meses — o mesmo tipo de sinal que uma consulta real revelaria, dado parado há tempo demais, sem ninguém olhando.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Passo 4 · um segundo servidor MCP, para buscar um script antes de rodar</span>
+      <h4>Notion guarda o script; MySQL executa — dois servidores MCP na mesma conversa</h4>
+      <p style="color:var(--text-muted);">Cenário comum: o script de uma terceira tabela, combinado com outra área, documentado numa página do Notion — não no repositório de código. Antes de pedir para criar essa tabela, uma página de teste no Notion recebe o script mais abaixo. A IA busca esse conteúdo via MCP do Notion, e só depois executa via MCP do MySQL — dois servidores conectados na mesma sessão, cada um resolvendo sua própria parte, sem nenhuma tool escrita à mão.</p>
+    </div>
+    <div class="code-box"><span class="comment">// .mcp.json — Notion ao lado do mysql-sisprot já conectado no Passo 2</span>
+{
+  "mcpServers": {
+    "mysql-sisprot": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@benborla29/mcp-server-mysql"],
+      "env": {
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "mcp_sisprot",
+        "MYSQL_PASS": "trf123456",
+        "MYSQL_DB": "sisprot_mcp",
+        "ALLOW_INSERT_OPERATION": "true",
+        "ALLOW_DDL_OPERATION": "true"
+      }
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    }
+  }
+}</div>
+    <p class="copy-hint">Diferente do <code class="inline">mysql-sisprot</code> (<em>stdio</em>, local), o Notion é um servidor remoto (HTTP) com OAuth — a primeira conexão pede autorização no navegador, dentro da própria sessão do Claude Code (rodar <code class="inline">/mcp</code> e seguir o fluxo). Alternativa por linha de comando: <code class="inline">claude mcp add --transport http notion https://mcp.notion.com/mcp</code> — o mesmo comando do Exercício 1 da "Mão na massa", mais adiante; usar um workspace de teste, nunca um com dado real do órgão.</p>
+    <p class="copy-hint">Fonte: documentação oficial da Notion sobre MCP (<a href="https://developers.notion.com/guides/mcp/get-started-with-mcp" target="_blank" rel="noopener">developers.notion.com/guides/mcp/get-started-with-mcp</a>) — o servidor remoto usado acima é o caminho que a própria Notion recomenda hoje; existe também uma versão local, de código aberto (<a href="https://github.com/makenotion/notion-mcp-server" target="_blank" rel="noopener">github.com/makenotion/notion-mcp-server</a>).</p>
+
+    <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Antes de pedir à IA · colar isto numa página de teste do Notion</span>
+      <h4>O script da terceira tabela, guardado fora do repositório de código</h4>
+    </div>
+    <div class="code-box"><span class="comment">-- Colar como texto/código numa página do Notion, ex.: "Script SISPROT — tabela movimentacoes"</span>
+CREATE TABLE movimentacoes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  protocolo_id INT NOT NULL,
+  status_anterior ENUM('Em Análise','Deferido','Indeferido','Arquivado') NULL,
+  status_novo ENUM('Em Análise','Deferido','Indeferido','Arquivado') NOT NULL,
+  data_movimentacao DATE NOT NULL,
+  observacao VARCHAR(200) NULL,
+  FOREIGN KEY (protocolo_id) REFERENCES protocolos(id)
+);
+
+INSERT INTO movimentacoes (protocolo_id, status_anterior, status_novo, data_movimentacao, observacao) VALUES
+  (1, NULL, 'Em Análise', '2026-01-12', 'Protocolo aberto'),
+  (1, 'Em Análise', 'Deferido', '2026-01-20', 'Aprovado pelo setor de Protocolo Geral'),
+  (5, NULL, 'Em Análise', '2026-02-05', 'Protocolo aberto'),
+  (5, 'Em Análise', 'Indeferido', '2026-02-12', 'Recurso negado'),
+  (7, NULL, 'Em Análise', '2025-11-30', 'Protocolo aberto'),
+  (7, 'Em Análise', 'Arquivado', '2025-12-10', 'Arquivado por falta de manifestação');</div>
+    <p class="copy-hint"><code class="inline">movimentacoes</code> referencia protocolos já existentes pelo <code class="inline">id</code> (1, 5 e 7 — os mesmos protocolos "Deferido", "Indeferido" e "Arquivado" carregados no Passo 3) — por isso só pode ser criada depois das duas tabelas anteriores, nunca antes.</p>
+
+    <div class="promptbox">
+<span class="plabel">Prompt · buscar no Notion, executar no MySQL — os dois MCP na mesma instrução</span>Busque, na página de teste do Notion chamada "Script SISPROT —
+tabela movimentacoes", o script SQL que colei lá. Depois, usando a
+conexão MySQL (mysql-sisprot), execute esse script exatamente como
+está — crie a tabela e carregue os dados. Se a tabela movimentacoes
+já existir, pare e me avise antes de qualquer alteração.</div>
+    <p class="copy-hint">Mesmo cuidado de sempre — "pare e me avise" antes de qualquer <code class="inline">CREATE</code> — mas agora testando também a ponte entre os dois servidores: a IA precisa buscar corretamente o texto de um (Notion) antes de agir com o outro (MySQL), sem misturar conteúdo de um servidor com o comando do outro.</p>
+
+    <div class="promptbox">
+<span class="plabel">Prompt · conferir o resultado, cruzando as duas tabelas</span>Quais protocolos tiveram uma movimentação de "Em Análise" para
+"Indeferido"? Traga o número do protocolo, o assunto e a data da
+movimentação.</div>
+    <p class="copy-hint">Resposta esperada com os dados de exemplo: só o protocolo <code class="inline">2026.005</code> ("Recurso administrativo"), em <code class="inline">2026-02-12</code> — o único, entre os três eventos carregados em <code class="inline">movimentacoes</code>, com esse status final.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Não é "MCP sempre substitui tool manual"</span>
+      <p>Para uma regra de negócio muito específica do próprio órgão (ex.: a lógica exata de quando um protocolo pode ser arquivado no SISPROT), escrever a tool à mão continua fazendo sentido — não existe (nem faria sentido existir) um servidor MCP genérico para uma regra interna específica. MCP compensa quando a capacidade já é um problema resolvido por alguém de fora (ler um banco, mexer no Notion, abrir uma issue no GitHub) — não quando é a lógica que só o próprio órgão sabe.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Passo 5 · um terceiro servidor MCP, para virar gráfico o que a consulta devolveu</span>
+      <h4>MySQL responde a pergunta; um servidor de gráficos desenha o resultado — sem escrever uma linha de código de visualização</h4>
+      <p style="color:var(--text-muted);">Mesma lógica dos Passos 2 e 4: em vez de pedir para a IA escrever código de gráfico (matplotlib, Chart.js, o que for), conecta-se um servidor MCP que já sabe desenhar — a IA só decide qual tipo de gráfico faz sentido para a pergunta e monta a chamada com os dados que o <code class="inline">mysql-sisprot</code> acabou de devolver.</p>
+    </div>
+    <div class="code-box"><span class="comment">// .mcp.json — mcp-server-chart ao lado do mysql-sisprot e do notion já conectados</span>
+{
+  "mcpServers": {
+    "mysql-sisprot": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@benborla29/mcp-server-mysql"],
+      "env": {
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "mcp_sisprot",
+        "MYSQL_PASS": "trf123456",
+        "MYSQL_DB": "sisprot_mcp",
+        "ALLOW_INSERT_OPERATION": "true",
+        "ALLOW_DDL_OPERATION": "true"
+      }
+    },
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp"
+    },
+    "mcp-server-chart": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@antv/mcp-server-chart"]
+    }
+  }
+}</div>
+    <p class="copy-hint">Alternativa por linha de comando: <code class="inline">claude mcp add-json mcp-server-chart '{"type":"stdio","command":"npx","args":["-y","@antv/mcp-server-chart"]}'</code>. Nenhuma chave de API é necessária — só o Node/<code class="inline">npx</code> já usado pelos outros servidores stdio deste exercício.</p>
+    <p class="copy-hint">Fonte: pacote <code class="inline">@antv/mcp-server-chart</code>, projeto oficial da AntV (<a href="https://github.com/antvis/mcp-server-chart" target="_blank" rel="noopener">github.com/antvis/mcp-server-chart</a>) — diferente do MySQL da comunidade, este é mantido pelo próprio time que criou a biblioteca de gráficos.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Mesmo exemplo, no GitHub Copilot</span>
+      <h4>Mesmo servidor de gráficos, no arquivo de workspace</h4>
+      <p style="color:var(--text-muted);">Igual aos Passos 2 e 4: muda só o arquivo (<code class="inline">.vscode/mcp.json</code>, não <code class="inline">.mcp.json</code>) e o nome do campo por fora (<code class="inline">servers</code>, não <code class="inline">mcpServers</code>).</p>
+    </div>
+    <div class="code-box"><span class="comment">// .vscode/mcp.json</span>
+{
+  "servers": {
+    "mysql-sisprot": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@benborla29/mcp-server-mysql"],
+      "env": {
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "mcp_sisprot",
+        "MYSQL_PASS": "trf123456",
+        "MYSQL_DB": "sisprot_mcp",
+        "ALLOW_INSERT_OPERATION": "true",
+        "ALLOW_DDL_OPERATION": "true"
+      }
+    },
+    "mcp-server-chart": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@antv/mcp-server-chart"]
+    }
+  }
+}</div>
+
+    <div class="callout" style="margin-top:20px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Por padrão, os dados do gráfico saem da sua máquina.</strong> Sem configuração extra, o <code class="inline">mcp-server-chart</code> envia a especificação do gráfico — incluindo os valores — para um serviço hospedado pela AntV (<code class="inline">antv-studio.alipay.com</code>), que desenha a imagem e devolve o link. Para o dado fictício deste exercício, tudo bem; com dado real e sensível do órgão, isso violaria a regra de ouro do curso. Alternativa: apontar a variável de ambiente <code class="inline">VIS_REQUEST_SERVER</code> para uma instância própria do renderizador (projeto <code class="inline">GPT-Vis-SSR</code>, da própria AntV), hospedada dentro do órgão.</p>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Prompt · consulta e gráfico, encadeando dois servidores MCP na mesma instrução</span>Usando a conexão MySQL (mysql-sisprot), consulte quantos protocolos
+existem em cada status. Depois, usando o servidor de gráficos
+(mcp-server-chart), gere um gráfico de barras com esse resultado —
+um status por barra, ordenado do maior para o menor total.</div>
+    <p class="copy-hint">O servidor expõe uma tool por tipo de gráfico — <code class="inline">generate_bar_chart</code>, <code class="inline">generate_pie_chart</code>, <code class="inline">generate_line_chart</code>, entre outras 26 no total — a IA escolhe a tool certa a partir do pedido, sem precisar que ninguém decida isso por ela.</p>
+    <p class="copy-hint">Com isso, a Etapa 1 fecha o ciclo completo: um servidor MCP para ler/gravar dado estruturado (<code class="inline">mysql-sisprot</code>), um para buscar conteúdo fora do repositório (<code class="inline">notion</code>) e um para transformar resultado em imagem (<code class="inline">mcp-server-chart</code>) — três capacidades prontas, encadeadas na mesma conversa, sem uma linha de tool escrita à mão.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Pratique · individual · 10 perguntas</span>
+      <h4>Encadeando os servidores da Etapa 1, na base já montada</h4>
+      <p style="color:var(--text-muted);">Para cada pergunta, peça a resposta usando a conexão MySQL (<code class="inline">mysql-sisprot</code>) e decida se também vale a pena pedir um gráfico, encadeando o <code class="inline">mcp-server-chart</code> como no Passo 5 — nem toda pergunta pede um gráfico, mas várias abaixo se prestam bem a um.</p>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Quantos protocolos existem em cada status? (boa candidata a gráfico de barras)</li>
+        <li>Quantos protocolos cada setor tem, ao todo? (boa candidata a gráfico de barras ou pizza)</li>
+        <li>Quais protocolos do setor Jurídico ainda estão "Em Análise"?</li>
+        <li>Qual setor tem mais protocolos indeferidos?</li>
+        <li>Quantos dias, em média, um protocolo levou entre a abertura e o fechamento, considerando só os que já têm <code class="inline">data_fechamento</code>?</li>
+        <li>Quantos protocolos foram abertos em cada mês de 2026? (boa candidata a gráfico de linha)</li>
+        <li>Qual é o protocolo "Em Análise" há mais tempo, contando a partir da <code class="inline">data_abertura</code>?</li>
+        <li>Quantas movimentações cada protocolo registrado em <code class="inline">movimentacoes</code> teve, do mais para o menos movimentado?</li>
+        <li>Quais protocolos mudaram de "Em Análise" direto para "Indeferido", e quantos dias essa mudança levou?</li>
+        <li>Qual a proporção de protocolos "Deferido" em cada setor? (boa candidata a um gráfico de pizza por setor)</li>
+      </ol>
+      <p class="copy-hint">Nenhuma dessas dez precisa de uma tool nova — os dois servidores já conectados nesta etapa (<code class="inline">mysql-sisprot</code> e <code class="inline">mcp-server-chart</code>) bastam para todas, inclusive a 8ª e a 9ª, que cruzam <code class="inline">protocolos</code> com <code class="inline">movimentacoes</code>.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Tool escrita à mão, ou servidor MCP pronto? — usando o exemplo setores/protocolos da Etapa 1</h4>
+      <p style="color:var(--text-muted);">Para cada capacidade abaixo, decida se faz mais sentido escrever uma tool própria (<strong>T</strong>) ou conectar um servidor MCP já existente (<strong>M</strong>) — todas ligadas ao mesmo banco <code class="inline">sisprot_mcp</code> conectado via <code class="inline">mysql-sisprot</code> na Etapa 1. A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>T</strong> = tool escrita à mão &nbsp;·&nbsp; <strong>M</strong> = servidor MCP pronto</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Consultar quantos protocolos existem em cada status, direto no banco <code class="inline">sisprot_mcp</code>.</li>
+        <li>Criar as tabelas <code class="inline">setores</code> e <code class="inline">protocolos</code>, e carregar a base inicial de dados.</li>
+        <li>Descobrir as colunas e os tipos de cada tabela do banco antes de montar uma consulta nova.</li>
+        <li>A regra específica de quando um protocolo do SISPROT pode mudar de "Em Análise" para "Deferido".</li>
+        <li>Calcular, com a fórmula exata usada só neste órgão, o prazo final de um processo administrativo.</li>
+        <li>Montar e enviar, no modelo de e-mail específico deste tribunal, a cobrança ao responsável por um protocolo parado há mais de 30 dias.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaEV2" class="quiz-input" placeholder="ex.: MMMTTT" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaEV2','MMMTTT','gabaritoEV2','msgEV2')">Verificar sequência</button>
+      </div>
+      <p id="msgEV2" class="quiz-msg"></p>
+      <div id="gabaritoEV2" class="quiz-gabarito">
+        <p class="copy-hint">1, 2 e 3 são capacidades genéricas de acesso a um banco MySQL — ler dados, criar schema e carregar registros, inspecionar colunas — já resolvidas pelo servidor <code class="inline">mysql-sisprot</code> conectado na Etapa 1; não faz sentido reescrever isso à mão. 4, 5 e 6 são regras e formatos específicos deste órgão, que nenhum servidor de terceiro poderia conhecer — continuam sendo tool escrita à mão, do mesmo jeito que em <code class="inline">agentes/tools.py</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="module-divider reveal" id="etapa2">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M6 9v2a4 4 0 0 0 4 4M18 9v2a4 4 0 0 0-4 4"/></svg>
+      <span class="modnum">Etapa 2</span>
+    </div>
+    <h2>Multiagentes de verdade</h2>
+    <p class="modsub">A aula anterior desenhou o diagrama de um orquestrador, mas nunca implementou. Esta etapa detalha as opções reais, reaproveitando os servidores MCP já conectados na Etapa 1.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Três formas diferentes de "mais de um agente", não uma só</h4>
+      <p>"Multiagente" é um termo guarda-chuva — na prática, existem pelo menos três padrões distintos, cada um resolvendo um problema diferente. A Aula 9 (Etapa 2) já apresentou o primeiro; aqui os três, lado a lado.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Padrão</th><th>Como funciona</th><th>Quando usar</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Subagente</strong></td><td>Dentro da mesma sessão — a conversa principal delega, espera o resultado, e continua.</td><td>Uma tarefa geraria muito conteúdo descartável (logs, buscas) que não deveria poluir o histórico principal.</td></tr>
+          <tr><td><strong>Agent teams</strong></td><td>Várias sessões paralelas, uma coordenando as outras, cada uma com contexto próprio — recurso ainda experimental no Claude Code.</td><td>Trabalho divisível em partes independentes, revisadas depois por quem coordena.</td></tr>
+          <tr><td><strong>Multiagentes especializados e independentes</strong></td><td>Agentes completos e separados (como o de migração e o de análise deste curso), cada um com seu próprio papel, coordenados por um terceiro — o orquestrador.</td><td>Domínios diferentes o bastante para merecerem instruções, ferramentas e restrições completamente separadas.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="diagram-frame">
+      <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .lblO{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#1A2233;}
+          .boxO{fill:#F3F5F9; stroke:#DEE2EA; stroke-width:1.5;}
+          .boxOink{fill:#0F1C36; stroke:#0F1C36;}
+          .lblO-inv{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#fff;}
+          .arrowO{stroke:#B8892B; stroke-width:2; fill:none; marker-end:url(#arrowOhead);}
+        </style>
+        <defs>
+          <marker id="arrowOhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0L10 5L0 10z" fill="#B8892B"/>
+          </marker>
+        </defs>
+        <rect class="boxOink" x="215" y="10" width="170" height="50" rx="8"/>
+        <text class="lblO-inv" x="300" y="40" text-anchor="middle">ORQUESTRADOR</text>
+        <path class="arrowO" d="M270 60 L140 105"/>
+        <path class="arrowO" d="M330 60 L460 105"/>
+        <rect class="boxO" x="60" y="110" width="160" height="50" rx="8"/>
+        <text class="lblO" x="140" y="140" text-anchor="middle">AGENTE DE MIGRAÇÃO</text>
+        <rect class="boxO" x="380" y="110" width="160" height="50" rx="8"/>
+        <text class="lblO" x="460" y="140" text-anchor="middle">AGENTE DE ANÁLISE</text>
+        <path class="arrowO" d="M140 160 L140 195"/>
+        <path class="arrowO" d="M460 160 L460 195"/>
+        <rect class="boxO" x="65" y="200" width="150" height="35" rx="6"/>
+        <text class="lblO" x="140" y="222" text-anchor="middle" style="font-size:11px;">Banco origem</text>
+        <rect class="boxO" x="385" y="200" width="150" height="35" rx="6"/>
+        <text class="lblO" x="460" y="222" text-anchor="middle" style="font-size:11px;">Banco destino</text>
+      </svg>
+      <p class="diagram-caption">O mesmo diagrama já esboçado na aula anterior — aqui, o "ORQUESTRADOR" é o terceiro padrão da tabela acima: um agente (ou uma peça de código simples) que decide "essa tarefa é de migração" ou "essa tarefa é de análise", e encaminha para o especialista certo.</p>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">O orquestrador nem sempre precisa ser um agente de IA</span>
+      <p>Uma armadilha comum: assumir que decidir "qual agente chamar" também precisa de um modelo de IA. Às vezes um roteamento simples (palavra-chave no pedido, um menu de opções, uma regra de negócio) resolve com mais previsibilidade e menos custo do que colocar mais uma chamada de IA só para decidir para onde mandar a tarefa. Vale perguntar, antes de automatizar a decisão com IA: essa escolha é ambígua o bastante para precisar de julgamento, ou é sempre óbvia a partir do pedido?</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exemplo real · dois agentes, duas conexões MCP já conectadas na Etapa 1</span>
+      <h4>Multiagente com MCP não é só teoria — é a forma natural de dividir permissão</h4>
+      <p style="color:var(--text-muted);">Reaproveitando os dois servidores já conectados e testados na Etapa 1 desta aula (<code class="inline">mysql-sisprot</code> e <code class="inline">mcp-server-chart</code>): um agente especializado <strong>só consulta o banco <code class="inline">sisprot_mcp</code></strong> (nunca desenha nada), outro especializado <strong>só transforma um resultado em gráfico</strong> (nunca toca no banco), e um orquestrador encaminha a tarefa entre os dois — exatamente o terceiro padrão da tabela acima, agora sobre a mesma base de protocolos e setores já montada, não bancos fictícios novos.</p>
+    </div>
+
+    <div class="code-box"><span class="comment"># Claude Code — .claude/agents/consultor-sisprot.md</span>
+---
+name: consultor-sisprot
+description: Só consulta o banco sisprot_mcp (protocolos, setores, movimentacoes) via MCP — nunca desenha gráfico nem altera dado
+tools: mcp__mysql-sisprot
+---
+Você só lê dados do banco sisprot_mcp, através do servidor MCP
+conectado. Nunca tente gerar imagem nem alterar nenhum registro — sua
+única função é trazer o resultado da consulta pedida.
+
+<span class="comment"># Claude Code — .claude/agents/gerador-grafico.md</span>
+---
+name: gerador-grafico
+description: Só transforma um resultado já pronto em gráfico via MCP — nunca consulta banco nem qualquer outra fonte
+tools: mcp__mcp-server-chart
+---
+Você só transforma em gráfico o resultado que já chegou pronto,
+através do servidor MCP conectado. Nunca tente consultar um banco ou
+buscar dado em outro lugar — essa parte é sempre de outro agente.</div>
+    <p class="copy-hint">Mesmo formato dos subagentes da Aula 9 (Etapa 2) — cabeçalho YAML mais prompt de sistema. A diferença é o campo <code class="inline">tools</code>: em vez de <code class="inline">Read, Grep</code>, cada um recebe só o prefixo do servidor MCP que precisa (<code class="inline">mcp__mysql-sisprot</code> ou <code class="inline">mcp__mcp-server-chart</code>) — a mesma convenção "<code class="inline">mcp__&lt;servidor&gt;</code> libera todas as ferramentas daquele servidor" já explicada na Aula 9. Isso é o que garante, na prática, que o agente do gráfico nunca consiga ler o banco, e vice-versa.</p>
+
+    <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Passo a passo para montar o orquestrador</span>
+      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
+        <li>Ter os dois servidores MCP já conectados na sessão (<code class="inline">mysql-sisprot</code> e <code class="inline">mcp-server-chart</code>, Passos 2 e 5 da Etapa 1) — confirmar com <code class="inline">claude mcp list</code>.</li>
+        <li>Salvar os dois arquivos acima em <code class="inline">.claude/agents/</code>, dentro do projeto.</li>
+        <li>Não é preciso criar um terceiro arquivo "orquestrador" — a própria sessão principal do Claude Code faz esse papel: ela lê o pedido, casa cada parte com a <code class="inline">description</code> do subagente certo (o mesmo casamento automático já visto na Aula 9), e decide a ordem sozinha.</li>
+        <li>Pedir a tarefa completa, numa sessão comum do Claude Code, na pasta do projeto — o prompt abaixo.</li>
+      </ol>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Prompt dado ao orquestrador</span>Quantos protocolos existem em cada status na base sisprot_mcp? Gere
+um gráfico de barras com esse resultado, um status por barra,
+ordenado do maior para o menor total.</div>
+    <p class="copy-hint">O orquestrador decide, nessa ordem: primeiro aciona o agente com acesso ao <code class="inline">mysql-sisprot</code> (traz a contagem por status), depois passa o resultado para o agente com acesso ao <code class="inline">mcp-server-chart</code> (transforma em imagem) — cada um só com a permissão que precisa para sua parte, nunca as duas conexões no mesmo agente. Vale perguntar, depois: "qual agente você usou para cada parte?" — a mesma checagem de transparência da Aula 9. É a mesma pergunta já respondida na Etapa 1 — lá, numa única sessão sem separação; aqui, a diferença é a fronteira de permissão: nenhum agente enxerga a ferramenta que não usa.</p>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="module-divider reveal" id="etapa3">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+      <span class="modnum">Etapa 3</span>
+    </div>
+    <h2>Observabilidade</h2>
+    <p class="modsub">Os logs `[AGENTE]`/`[TOOL]`/`[RESULTADO]` da aula anterior eram para uma pessoa acompanhar ao vivo. Produção precisa de outra coisa.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: observabilidade de agente</h4>
+      <p>A capacidade de responder, depois do fato, "o que esse agente fez, quanto custou, e onde exatamente deu errado" — sem precisar ter estado olhando o terminal no momento. Os logs impressos no terminal da aula anterior são bons para uma demonstração ao vivo; não servem para um agente rodando em produção, sem ninguém olhando a tela o tempo todo.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Sinal</th><th>O que registra</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Logs</strong></td><td>Eventos discretos, com timestamp — "tool X chamada às 14:32:07, com estes argumentos".</td></tr>
+          <tr><td><strong>Métricas</strong></td><td>Números agregados ao longo do tempo — quantas tools por execução, custo médio em tokens, taxa de erro por dia.</td></tr>
+          <tr><td><strong>Traces (rastreamento)</strong></td><td>A cadeia completa de uma execução — cada chamada ao modelo e cada tool viram um "span" dentro do mesmo traço, permitindo reconstruir a sequência inteira depois.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box">
+      <span class="insight-tag">Já existe um padrão aberto para isso: OpenTelemetry GenAI</span>
+      <p>A OpenTelemetry — já um padrão estabelecido para observabilidade de sistemas em geral — formou um grupo de trabalho específico para IA generativa, com convenções semânticas cobrindo chamadas de LLM, spans de agente, chamadas de tool (incluindo tools via MCP), e eventos de conteúdo (prompt/resposta). A vantagem de um padrão aberto: instrumentação automática já existe para OpenAI, Anthropic, LangChain e LlamaIndex, e ferramentas de observabilidade (Datadog, New Relic, Dynatrace, entre outras) já leem esse formato nativamente — não é preciso inventar um formato de log próprio para cada projeto.</p>
+    </div>
+
+    <div class="code-box"><span class="comment"># O que um span de tool, no padrão OpenTelemetry GenAI, registra (conceitual) — sobre a própria consulta da Etapa 1</span>
+span: "mysql_query"
+  gen_ai.operation.name: "execute_tool"
+  gen_ai.tool.name: "mcp__mysql-sisprot__mysql_query"
+  gen_ai.tool.call.arguments: {"sql": "SELECT status, COUNT(*) AS total FROM protocolos GROUP BY status ORDER BY total DESC"}
+  gen_ai.tool.call.result: [{"status":"Deferido","total":4}, {"status":"Em Análise","total":3}, {"status":"Indeferido","total":2}, {"status":"Arquivado","total":1}]
+  duration_ms: 2
+  <span class="comment"># -- e esse span vive dentro do span maior da execução do agente inteira, ao lado do span seguinte (mcp__mcp-server-chart__generate_bar_chart)</span></div>
+    <p class="copy-hint">Não é um formato deste curso — é a convenção real que existe hoje para isso, resumida aqui de forma simplificada. Os valores acima são os mesmos que saíram da consulta real da Etapa 1, não um exemplo hipotético.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Amarra direto com a Etapa 6 da Aula 9</span>
+      <p>A Aula 9 já tratou logs visíveis como parte de segurança/auditoria — "toda tool chamada aparece no terminal, com parâmetros e resultado". Observabilidade é a versão dessa mesma ideia, pronta para um sistema que roda sem ninguém olhando: os mesmos três dados (ação, parâmetros, resultado) viram sinal estruturado, buscável, e alarmável — não texto solto num terminal que ninguém vai reler.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Log, métrica ou trace?</h4>
+      <p style="color:var(--text-muted);">A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>L</strong> = log &nbsp;·&nbsp; <strong>M</strong> = métrica &nbsp;·&nbsp; <strong>T</strong> = trace</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>"A tool <code class="inline">mysql_query</code> foi chamada às 14:32:07, com este SQL exato: <code class="inline">SELECT status, COUNT(*) FROM protocolos GROUP BY status</code>."</li>
+        <li>"Nas últimas 24 horas, o custo médio por execução foi de 1.200 tokens."</li>
+        <li>"A execução completa da tarefa 'protocolos por status': primeiro <code class="inline">mysql_query</code>, depois <code class="inline">generate_bar_chart</code>, até a conclusão, em ordem."</li>
+        <li>"A taxa de erro desta semana foi de 3%."</li>
+        <li>"Em 18/08, às 09:15:02, o agente recebeu o pedido 'quantos protocolos existem em cada status?'."</li>
+        <li>"Reconstruir, depois do fato, todos os passos da execução que gerou o gráfico de barras da Etapa 1."</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaEV4" class="quiz-input" placeholder="ex.: LMTMLT" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaEV4','LMTMLT','gabaritoEV4','msgEV4')">Verificar sequência</button>
+      </div>
+      <p id="msgEV4" class="quiz-msg"></p>
+      <div id="gabaritoEV4" class="quiz-gabarito">
+        <p class="copy-hint">1 e 5 são eventos discretos, com timestamp — logs. 2 e 4 são números agregados ao longo do tempo — métricas. 3 e 6 são a cadeia completa de uma execução, reconstruída depois — traces. Repare que "reconstruir o que aconteceu numa execução específica" é sempre trace, mesmo quando a pergunta não usa a palavra "sequência" explicitamente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 4 -->
+<section class="module-divider reveal" id="etapa4">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="modnum">Etapa 4</span>
+    </div>
+    <h2>Avaliação automática</h2>
+    <p class="modsub">Como saber se um agente está bom, sem uma pessoa relendo cada resposta.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Definição: LLM-as-a-Judge</h4>
+      <p>Usar um modelo de IA para julgar a resposta de outro modelo (ou do próprio agente) — comparando com um critério, uma resposta de referência, ou uma rubrica. Não é ficção especulativa: já é prática estabelecida, com estudos mostrando um juiz de IA concordando com avaliadores humanos cerca de 85% das vezes — uma taxa mais alta do que dois avaliadores humanos costumam concordar entre si na mesma tarefa. Pedir ao modelo-juiz para explicar o raciocínio antes de dar a nota (o mesmo princípio de "mostrar o processo" já visto no curso) melhora a confiabilidade do julgamento em 10 a 15%, segundo a mesma pesquisa.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Abordagem</th><th>O que avalia</th></tr></thead>
+        <tbody>
+          <tr><td><strong>LLM-as-a-Judge (clássico)</strong></td><td>Só a resposta final — "essa resposta responde bem à pergunta, comparada com o esperado?"</td></tr>
+          <tr><td><strong>Agent-as-a-Judge</strong></td><td>O caminho inteiro — quais tools o agente chamou, em que ordem, com quais argumentos, não só o texto final. Mais caro, mais completo.</td></tr>
+          <tr><td><strong>Avaliação multiagente (debate/colaboração)</strong></td><td>Vários juízes de IA avaliando em conjunto, depois sintetizando um veredito — reduz o viés de um único juiz.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Fonte: pesquisa e comparativos de avaliação automática de LLM/agentes, 2026.</p>
+
+    <div class="instruction-step">
+      <span class="step-num">Aplicado ao nosso exemplo</span>
+      <h4>Como isso avaliaria a tarefa "protocolos por status" da Etapa 1</h4>
+      <p style="color:var(--text-muted);">Um "Agent-as-a-Judge" para aquela tarefa não perguntaria só "o gráfico final ficou bom?" — perguntaria também: o agente consultou de verdade o banco <code class="inline">sisprot_mcp</code> via <code class="inline">mysql-sisprot</code>, ou os números vieram inventados? A contagem bate com um <code class="inline">SELECT status, COUNT(*)</code> rodado à parte, como referência? A tool de gráfico escolhida foi <code class="inline">generate_bar_chart</code>, como pedido, e não outra? Essas perguntas viram uma rubrica automatizável, rodada logo depois da execução — sem ninguém reabrindo o histórico da conversa manualmente toda vez.</p>
+    </div>
+
+    <div class="promptbox">
+<span class="plabel">Prompt · pedindo a um segundo agente para julgar a execução da Etapa 1</span>Você é um avaliador. Abaixo está a pergunta original, as tools que
+o agente chamou (com parâmetros e resultado de cada uma) e o gráfico
+que ele gerou. Compare com este resultado de referência, rodado à
+parte: SELECT status, COUNT(*) FROM protocolos GROUP BY status ORDER
+BY COUNT(*) DESC.
+
+Dê nota de 1 a 5 para cada critério, com justificativa:
+1. A contagem por status bate com o resultado de referência?
+2. O agente consultou o mysql-sisprot de verdade, ou os números
+   parecem inventados?
+3. A tool de gráfico usada foi generate_bar_chart, e não outro tipo?
+4. O gráfico saiu ordenado do maior para o menor, como pedido?</div>
+    <div class="code-box"><span class="comment">// Exemplo de veredito devolvido pelo juiz — rodado sobre a execução real da Etapa 1</span>
+1. Contagem: 5/5 — Deferido=4, Em Análise=3, Indeferido=2,
+   Arquivado=1, idêntico ao SELECT de referência.
+2. Consulta real: 5/5 — o histórico mostra mysql_query executado
+   antes da resposta, não um número solto no texto.
+3. Tool certa: 5/5 — generate_bar_chart foi a tool chamada, não
+   generate_pie_chart nem generate_line_chart.
+4. Ordenação: 5/5 — Deferido (4) primeiro, Arquivado (1) por último.
+Nota final: 5/5 — nenhum critério falhou.</div>
+    <p class="copy-hint">Isso não é hipotético — é o mesmo prompt que dá para rodar agora, colando o histórico real da sua própria execução da Etapa 1 no lugar de "abaixo está..." — o juiz é só mais uma chamada de IA, sem infraestrutura nova. Se a contagem ou a tool escolhida não baterem, o veredito reprova o critério específico, não a tarefa inteira — é isso que separa uma nota única de uma rubrica.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Um avaliador de IA também pode errar — e precisa da mesma desconfiança</span>
+      <p>85% de concordância com humanos é alto, não é 100%. Um "juiz" de IA carrega os mesmos riscos já ensinados no curso inteiro: pode alucinar um critério que não existe, pode ter viés sistemático a favor de respostas mais longas ou mais confiantes. Avaliação automática reduz o trabalho de revisar cada resposta manualmente — não elimina a necessidade de, de vez em quando, auditar o próprio avaliador.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Exercício rápido · individual · 5 min</span>
+      <h4>Isso é avaliação de resposta final, ou do caminho inteiro?</h4>
+      <p style="color:var(--text-muted);">A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
+      <div class="quiz-legend"><strong>R</strong> = avalia só a resposta final &nbsp;·&nbsp; <strong>C</strong> = avalia o caminho/processo inteiro</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>"A contagem de protocolos por status no gráfico final bate com o <code class="inline">SELECT ... GROUP BY status</code> de referência?"</li>
+        <li>"O agente consultou o <code class="inline">mysql-sisprot</code> de verdade, ou os números parecem inventados?"</li>
+        <li>"O gráfico gerado está ordenado do maior para o menor, como pedido?"</li>
+        <li>"Em algum momento da execução, o agente tentou um <code class="inline">INSERT</code> ou <code class="inline">UPDATE</code> na base <code class="inline">sisprot_mcp</code>, mesmo sem ter sido pedido?"</li>
+        <li>"A legenda e os rótulos do gráfico estão bem formatados e legíveis?"</li>
+        <li>"Qual tool de gráfico o agente escolheu — <code class="inline">generate_bar_chart</code> ou outra — e isso bateu com o pedido de 'gráfico de barras'?"</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaEV5" class="quiz-input" placeholder="ex.: RCRCRC" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaEV5','RCRCRC','gabaritoEV5','msgEV5')">Verificar sequência</button>
+      </div>
+      <p id="msgEV5" class="quiz-msg"></p>
+      <div id="gabaritoEV5" class="quiz-gabarito">
+        <p class="copy-hint">1, 3 e 5 avaliam só o que saiu no final, sem olhar como se chegou lá — LLM-as-a-Judge clássico. 2, 4 e 6 exigem olhar a sequência de ações tomadas (qual tool rodou, se tentou escrever, qual tool de gráfico foi escolhida), não só o resultado — é exatamente o que separa Agent-as-a-Judge de uma avaliação tradicional.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 5 -->
+<section class="module-divider reveal" id="etapa5">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      <span class="modnum">Etapa 5</span>
+    </div>
     <h2>Memória entre sessões</h2>
-    <p class="modsub">Todo agente que este curso construiu esquecia tudo assim que o processo terminava. Esta é a primeira lacuna.</p>
+    <p class="modsub">Todo agente que este curso construiu esquecia tudo assim que o processo terminava. Esta é a última lacuna.</p>
   </div>
 </section>
 
@@ -431,430 +1070,6 @@
   </div>
 </section>
 
-<!-- ETAPA 2 -->
-<section class="module-divider reveal" id="etapa2">
-  <div class="wrap">
-    <div class="divider-head">
-      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="7" height="7" rx="1.5"/><rect x="14" y="9" width="7" height="7" rx="1.5"/><path d="M10 12.5h4"/></svg>
-      <span class="modnum">Etapa 2</span>
-    </div>
-    <h2>MCP no lugar de tools escritas à mão</h2>
-    <p class="modsub">A Aula 9 já explicou o que é MCP. Esta etapa mostra a diferença que isso faz na prática, no mesmo projeto do curso.</p>
-  </div>
-</section>
-
-<section class="reveal">
-  <div class="wrap">
-    <div class="concept-box">
-      <h4>Retomando a Aula 9: MCP é um conector padrão, não um conceito novo</h4>
-      <p>MCP (Model Context Protocol) é o protocolo aberto que conecta uma IA a fontes de dados e ferramentas externas — host, cliente, servidor, com tools/resources/prompts do lado do servidor. Se essa frase não soar familiar, vale revisitar a Etapa 3 da Aula 9 antes de seguir. Aqui, o ponto não é redefinir MCP — é mostrar a mudança de mentalidade que ele representa, comparado ao que o curso construiu até agora.</p>
-    </div>
-
-    <div class="value-table-wrapper">
-      <table class="value-table">
-        <thead><tr><th>Antes (tools escritas à mão)</th><th>Depois (conectando um servidor MCP)</th></tr></thead>
-        <tbody>
-          <tr><td>Alguém escreve <code class="inline">consultar_sql()</code>, <code class="inline">listar_tabelas()</code> — código próprio, testado à mão</td><td>O agente ganha essas capacidades conectando a um servidor MCP já pronto — nenhuma linha de código nova</td></tr>
-          <tr><td>Quem escreveu sabe exatamente o que a função faz — leu, testou, controla</td><td>Depende de confiar no servidor de terceiro — muitas vezes não é possível ler o código dele</td></tr>
-          <tr><td>Adicionar uma capacidade nova = escrever, testar, revisar código</td><td>Adicionar uma capacidade nova = um comando (<code class="inline">claude mcp add</code>) e confiar na descrição das tools que o servidor anuncia</td></tr>
-          <tr><td>Escala mal — cada sistema novo (Notion, GitHub, um banco) é uma função nova para escrever e manter</td><td>Escala bem — um ecossistema inteiro de servidores já prontos para os sistemas mais comuns</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="code-box"><span class="comment"># Antes — trecho real de agentes/tools.py, na entrega anterior deste curso</span>
-def consultar_sql(caminho_db, sql):
-    sql_limpo = sql.strip().rstrip(";")
-    if not sql_limpo.upper().startswith("SELECT"):
-        return {"erro": "Esta ferramenta só executa SELECT."}
-    con = sqlite3.connect(caminho_db)
-    ...
-
-<span class="comment"># Depois — nenhum código, só configuração</span>
-claude mcp add --transport http notion https://mcp.notion.com/mcp
-<span class="comment"># o agente ganha as tools que o servidor da Notion decidir expor</span></div>
-    <p class="copy-hint">A troca é real: menos código para manter, mais superfície de confiança para avaliar. É por isso que a Aula 9 (Etapa 5) já tratou risco de MCP como tema sério, não rodapé — "menos código escrito por você" também significa "menos controle direto sobre o que está rodando".</p>
-
-    <div class="instruction-step" style="margin-top:28px;">
-      <span class="step-num">Exemplo real · lendo e criando no Notion, via MCP</span>
-      <h4>O mesmo servidor conectado, em dois sentidos</h4>
-      <p style="color:var(--text-muted);">Depois de <code class="inline">claude mcp add --transport http notion https://mcp.notion.com/mcp</code> e da autorização OAuth, o mesmo servidor atende dois tipos de pedido — um que <strong>traz</strong> o que já existe no workspace para dentro da conversa, outro que <strong>cria</strong> algo novo lá, partindo do Claude.</p>
-    </div>
-    <div class="promptbox">
-<span class="plabel">Trazendo o que está na ferramenta</span>Liste as páginas que você consegue ver neste workspace do Notion,
-com o título de cada uma.</div>
-    <div class="promptbox">
-<span class="plabel">Criando na ferramenta, a partir do Claude</span>Crie uma página nova chamada "Notas — Aula 10", com um resumo de
-três linhas sobre o que é MCP.</div>
-    <p class="copy-hint">Exemplo ilustrativo do formato real de pedido — não executado neste ambiente de preparação (não há um workspace Notion conectado aqui). O Exercício 1 da seção "Mão na massa", mais adiante, é onde isso roda de verdade, com seu próprio workspace de teste.</p>
-
-    <div class="insight-box">
-      <span class="insight-tag">Não é "MCP sempre substitui tool manual"</span>
-      <p>Para uma regra de negócio muito específica do próprio órgão (ex.: a lógica exata de quando um protocolo pode ser arquivado no SISPROT), escrever a tool à mão continua fazendo sentido — não existe (nem faria sentido existir) um servidor MCP genérico para uma regra interna específica. MCP compensa quando a capacidade já é um problema resolvido por alguém de fora (ler um banco, mexer no Notion, abrir uma issue no GitHub) — não quando é a lógica que só o próprio órgão sabe.</p>
-    </div>
-
-    <div class="instruction-step" style="margin-top:28px;">
-      <span class="step-num">Exercício rápido · individual · 5 min</span>
-      <h4>Tool escrita à mão, ou servidor MCP pronto?</h4>
-      <p style="color:var(--text-muted);">Para cada capacidade abaixo, decida se faz mais sentido escrever uma tool própria (<strong>T</strong>) ou conectar um servidor MCP já existente (<strong>M</strong>). A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
-      <div class="quiz-legend"><strong>T</strong> = tool escrita à mão &nbsp;·&nbsp; <strong>M</strong> = servidor MCP pronto</div>
-      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
-        <li>Ler e escrever páginas num workspace do Notion.</li>
-        <li>A regra específica de quando um protocolo do SISPROT pode mudar de "Em Análise" para "Deferido".</li>
-        <li>Abrir e comentar issues num repositório do GitHub.</li>
-        <li>Calcular, com a fórmula exata usada só neste órgão, o prazo final de um processo administrativo.</li>
-        <li>Consultar o schema e rodar leitura num banco Postgres.</li>
-        <li>Validar um CPF fictício no formato específico usado nos exemplos do curso.</li>
-      </ol>
-      <div class="quiz-row">
-        <input type="text" id="respostaEV2" class="quiz-input" placeholder="ex.: MTMTMT" maxlength="10">
-        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaEV2','MTMTMT','gabaritoEV2','msgEV2')">Verificar sequência</button>
-      </div>
-      <p id="msgEV2" class="quiz-msg"></p>
-      <div id="gabaritoEV2" class="quiz-gabarito">
-        <p class="copy-hint">1, 3 e 5 são capacidades genéricas, já resolvidas por servidores MCP oficiais (Notion, GitHub, Postgres) — não faz sentido reescrever isso. 2, 4 e 6 são regras específicas deste órgão ou deste curso, que nenhum servidor de terceiro poderia conhecer — continuam sendo tool escrita à mão, do mesmo jeito que em <code class="inline">agentes/tools.py</code>.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ETAPA 3 -->
-<section class="module-divider reveal" id="etapa3">
-  <div class="wrap">
-    <div class="divider-head">
-      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><path d="M6 9v2a4 4 0 0 0 4 4M18 9v2a4 4 0 0 0-4 4"/></svg>
-      <span class="modnum">Etapa 3</span>
-    </div>
-    <h2>Multiagentes de verdade</h2>
-    <p class="modsub">A aula anterior desenhou o diagrama de um orquestrador, mas nunca implementou. Esta etapa detalha as opções reais.</p>
-  </div>
-</section>
-
-<section class="reveal">
-  <div class="wrap">
-    <div class="concept-box">
-      <h4>Três formas diferentes de "mais de um agente", não uma só</h4>
-      <p>"Multiagente" é um termo guarda-chuva — na prática, existem pelo menos três padrões distintos, cada um resolvendo um problema diferente. A Aula 9 (Etapa 2) já apresentou o primeiro; aqui os três, lado a lado.</p>
-    </div>
-
-    <div class="value-table-wrapper">
-      <table class="value-table">
-        <thead><tr><th>Padrão</th><th>Como funciona</th><th>Quando usar</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Subagente</strong></td><td>Dentro da mesma sessão — a conversa principal delega, espera o resultado, e continua.</td><td>Uma tarefa geraria muito conteúdo descartável (logs, buscas) que não deveria poluir o histórico principal.</td></tr>
-          <tr><td><strong>Agent teams</strong></td><td>Várias sessões paralelas, uma coordenando as outras, cada uma com contexto próprio — recurso ainda experimental no Claude Code.</td><td>Trabalho divisível em partes independentes, revisadas depois por quem coordena.</td></tr>
-          <tr><td><strong>Multiagentes especializados e independentes</strong></td><td>Agentes completos e separados (como o de migração e o de análise deste curso), cada um com seu próprio papel, coordenados por um terceiro — o orquestrador.</td><td>Domínios diferentes o bastante para merecerem instruções, ferramentas e restrições completamente separadas.</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="diagram-frame">
-      <svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg">
-        <style>
-          .lblO{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#1A2233;}
-          .boxO{fill:#F3F5F9; stroke:#DEE2EA; stroke-width:1.5;}
-          .boxOink{fill:#0F1C36; stroke:#0F1C36;}
-          .lblO-inv{font-family:'JetBrains Mono',monospace; font-size:12px; fill:#fff;}
-          .arrowO{stroke:#B8892B; stroke-width:2; fill:none; marker-end:url(#arrowOhead);}
-        </style>
-        <defs>
-          <marker id="arrowOhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M0 0L10 5L0 10z" fill="#B8892B"/>
-          </marker>
-        </defs>
-        <rect class="boxOink" x="215" y="10" width="170" height="50" rx="8"/>
-        <text class="lblO-inv" x="300" y="40" text-anchor="middle">ORQUESTRADOR</text>
-        <path class="arrowO" d="M270 60 L140 105"/>
-        <path class="arrowO" d="M330 60 L460 105"/>
-        <rect class="boxO" x="60" y="110" width="160" height="50" rx="8"/>
-        <text class="lblO" x="140" y="140" text-anchor="middle">AGENTE DE MIGRAÇÃO</text>
-        <rect class="boxO" x="380" y="110" width="160" height="50" rx="8"/>
-        <text class="lblO" x="460" y="140" text-anchor="middle">AGENTE DE ANÁLISE</text>
-        <path class="arrowO" d="M140 160 L140 195"/>
-        <path class="arrowO" d="M460 160 L460 195"/>
-        <rect class="boxO" x="65" y="200" width="150" height="35" rx="6"/>
-        <text class="lblO" x="140" y="222" text-anchor="middle" style="font-size:11px;">Banco origem</text>
-        <rect class="boxO" x="385" y="200" width="150" height="35" rx="6"/>
-        <text class="lblO" x="460" y="222" text-anchor="middle" style="font-size:11px;">Banco destino</text>
-      </svg>
-      <p class="diagram-caption">O mesmo diagrama já esboçado na aula anterior — aqui, o "ORQUESTRADOR" é o terceiro padrão da tabela acima: um agente (ou uma peça de código simples) que decide "essa tarefa é de migração" ou "essa tarefa é de análise", e encaminha para o especialista certo.</p>
-    </div>
-
-    <div class="insight-box">
-      <span class="insight-tag">O orquestrador nem sempre precisa ser um agente de IA</span>
-      <p>Uma armadilha comum: assumir que decidir "qual agente chamar" também precisa de um modelo de IA. Às vezes um roteamento simples (palavra-chave no pedido, um menu de opções, uma regra de negócio) resolve com mais previsibilidade e menos custo do que colocar mais uma chamada de IA só para decidir para onde mandar a tarefa. Vale perguntar, antes de automatizar a decisão com IA: essa escolha é ambígua o bastante para precisar de julgamento, ou é sempre óbvia a partir do pedido?</p>
-    </div>
-
-    <div class="instruction-step" style="margin-top:28px;">
-      <span class="step-num">Exemplo real · dois agentes, duas conexões MCP diferentes</span>
-      <h4>Multiagente com MCP não é só teoria — é a forma natural de dividir permissão</h4>
-      <p style="color:var(--text-muted);">Reaproveitando as duas ferramentas já conectadas na Etapa 2 e no Exercício 2 da "Mão na massa": um agente especializado <strong>só lê do GitHub</strong> (nunca precisou de acesso ao Notion), outro especializado <strong>só cria no Notion</strong> (nunca precisou de acesso ao GitHub), e um orquestrador encaminha a tarefa entre os dois — exatamente o terceiro padrão da tabela acima, agora com ferramentas de verdade, não bancos fictícios.</p>
-    </div>
-
-    <div class="code-box"><span class="comment"># Claude Code — .claude/agents/leitor-github.md</span>
----
-name: leitor-github
-description: Só lê informações do GitHub (commits, issues, PRs) via MCP — nunca escreve em nenhum lugar
-tools: mcp__github
----
-Você só lê dados do GitHub, através do servidor MCP conectado. Nunca
-tente escrever, comentar ou criar nada, em nenhum sistema — sua
-única função é trazer a informação pedida.
-
-<span class="comment"># Claude Code — .claude/agents/criador-notion.md</span>
----
-name: criador-notion
-description: Só cria ou atualiza páginas no Notion via MCP — nunca lê nem escreve em nenhum outro sistema
-tools: mcp__notion
----
-Você só cria ou atualiza conteúdo no Notion, através do servidor MCP
-conectado. Receba o conteúdo já pronto para registrar — nunca tente
-buscá-lo em outro sistema, essa parte é sempre de outro agente.</div>
-    <p class="copy-hint">Mesmo formato dos subagentes da Aula 9 (Etapa 2) — cabeçalho YAML mais prompt de sistema. A diferença é o campo <code class="inline">tools</code>: em vez de <code class="inline">Read, Grep</code>, cada um recebe só o prefixo do servidor MCP que precisa (<code class="inline">mcp__github</code> ou <code class="inline">mcp__notion</code>) — a mesma convenção "<code class="inline">mcp__&lt;servidor&gt;</code> libera todas as ferramentas daquele servidor" já explicada na Aula 9. Isso é o que garante, na prática, que o agente do GitHub nunca consiga escrever no Notion, e vice-versa.</p>
-
-    <div class="instruction-step" style="margin-top:20px;">
-      <span class="step-num">Passo a passo para montar o orquestrador</span>
-      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
-        <li>Ter os dois servidores MCP já conectados na sessão (Notion na Etapa 2, GitHub no Exercício 2 da "Mão na massa", mais adiante) — confirmar com <code class="inline">claude mcp list</code>.</li>
-        <li>Salvar os dois arquivos acima em <code class="inline">.claude/agents/</code>, dentro do projeto.</li>
-        <li>Não é preciso criar um terceiro arquivo "orquestrador" — a própria sessão principal do Claude Code faz esse papel: ela lê o pedido, casa cada parte com a <code class="inline">description</code> do subagente certo (o mesmo casamento automático já visto na Aula 9), e decide a ordem sozinha.</li>
-        <li>Pedir a tarefa completa, numa sessão comum do Claude Code, na pasta do projeto — o prompt abaixo.</li>
-      </ol>
-    </div>
-
-    <div class="promptbox">
-<span class="plabel">Prompt dado ao orquestrador</span>Resuma os últimos 5 commits do repositório de teste conectado, e
-registre esse resumo como uma página nova no workspace do Notion
-conectado.</div>
-    <p class="copy-hint">O orquestrador decide, nessa ordem: primeiro aciona o agente com acesso ao GitHub (traz o que está na ferramenta), depois passa o resultado para o agente com acesso ao Notion (cria na ferramenta) — cada um só com a permissão que precisa para sua parte, nunca as duas conexões no mesmo agente. Vale perguntar, depois: "qual agente você usou para cada parte?" — a mesma checagem de transparência da Aula 9. Isso é revisitado ao vivo, com as duas ferramentas realmente conectadas, na Demonstração final desta aula.</p>
-  </div>
-</section>
-
-<!-- ETAPA 4 -->
-<section class="module-divider reveal" id="etapa4">
-  <div class="wrap">
-    <div class="divider-head">
-      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
-      <span class="modnum">Etapa 4</span>
-    </div>
-    <h2>Banco de dados real, via MCP</h2>
-    <p class="modsub">O SQLite fictício do curso vira, aqui, um banco de verdade — e um achado de segurança real no caminho.</p>
-  </div>
-</section>
-
-<section class="reveal">
-  <div class="wrap">
-    <div class="concept-box">
-      <h4>A mesma ideia da Etapa 2, aplicada ao banco de dados</h4>
-      <p>O agente de migração deste curso conversava com SQLite através de <code class="inline">tools.py</code>, escrito à mão. Um agente conectado a um banco real (Postgres, MySQL) via MCP ganha a mesma capacidade — listar tabelas, descrever schema, consultar — sem que ninguém escreva a função de conexão. A pergunta que muda de figura é: quem garante que o agente só lê, quando o banco é de verdade e não um arquivo descartável?</p>
-    </div>
-
-    <div class="insight-box">
-      <span class="insight-tag">Um achado de segurança real, verificado agora — não hipotético</span>
-      <p>O servidor de referência oficial mais citado para Postgres (<code class="inline">@modelcontextprotocol/server-postgres</code>) está <strong>arquivado</strong> e tem uma <strong>vulnerabilidade real de SQL injection</strong> documentada, que consegue contornar a própria proteção de "somente leitura" do servidor — apesar disso, o pacote ainda tinha mais de 20 mil downloads semanais quando essa checagem foi feita. É o mesmo tipo de verificação que a Aula 9 já ensinou a fazer antes de instalar uma skill ou conectar um servidor MCP qualquer: o rótulo "oficial" ou "somente leitura" não é garantia — vale checar o status de manutenção antes de confiar.</p>
-    </div>
-
-    <div class="value-table-wrapper">
-      <table class="value-table">
-        <thead><tr><th>Opção</th><th>Situação</th></tr></thead>
-        <tbody>
-          <tr><td><code class="inline">@modelcontextprotocol/server-postgres</code></td><td>Arquivado, com vulnerabilidade de SQL injection conhecida — evitar, mesmo sendo o mais fácil de achar numa busca rápida.</td></tr>
-          <tr><td><code class="inline">crystaldba/postgres-mcp</code> ("Postgres MCP Pro")</td><td>Mantido ativamente, acesso leitura/escrita configurável, com opção de restringir a somente leitura — recomendação para esta aula.</td></tr>
-          <tr><td>Servidor oficial do próprio provedor (ex.: Supabase, para bancos gerenciados na Supabase)</td><td>Quando o banco já está numa plataforma gerenciada, o servidor MCP dela costuma ser a opção mais bem mantida.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="copy-hint">Fontes: relatos de segurança e comparativos de servidores MCP para Postgres, verificados agora — não citados de memória de treinamento.</p>
-
-    <div class="code-box"><span class="comment"># Instalar (uma vez) e conectar com Postgres MCP Pro, em modo somente leitura</span>
-pipx install postgres-mcp
-
-claude mcp add postgres-sisprot \
-  -e DATABASE_URI="postgresql://usuario_leitura:senha@host:5432/sisprot" \
-  -- postgres-mcp --access-mode=restricted</div>
-    <p class="copy-hint">A string de conexão vai numa variável de ambiente (<code class="inline">DATABASE_URI</code>), não como argumento solto — e <code class="inline">usuario_leitura</code>, aqui, precisa já existir como um usuário real do Postgres com permissão só de <code class="inline">SELECT</code> (a segunda camada de defesa desta etapa, não uma sugestão de nome).</p>
-
-    <div class="instruction-step" style="margin-top:28px;">
-      <span class="step-num">Exemplo real · só trazendo, nunca criando</span>
-      <h4>Por que não existe aqui um exemplo de "criar", como na Etapa 2</h4>
-      <p style="color:var(--text-muted);">Nas Etapas 2 e 3, o exemplo mostrou um par — ler e criar. Aqui, de propósito, só o de leitura: <code class="inline">--access-mode=restricted</code> e o usuário dedicado só de <code class="inline">SELECT</code> existem exatamente para que nenhum pedido, nem por engano, escreva no banco. Um exemplo de "criar" nesta etapa contradiria a própria lição da defesa em camadas, logo abaixo.</p>
-    </div>
-    <div class="promptbox">
-<span class="plabel">Trazendo o que está no banco, via MCP</span>Quantos servidores existem em cada departamento, no banco conectado?</div>
-    <p class="copy-hint">Exemplo ilustrativo do formato real de pedido — o mesmo princípio já testado com SQLite em <code class="inline">agentes/tools.py</code> (contar registros agrupando por coluna), agora atravessando uma conexão MCP até um Postgres de verdade, sem nenhuma linha de código nova para isso.</p>
-
-    <div class="concept-box">
-      <h4>Defesa em camadas: a trava não deveria morar num lugar só</h4>
-      <p>O agente de migração deste curso já ensinou a travar escrita em código Python (<code class="inline">somente_leitura=True</code>). Com um banco real, a mesma disciplina se aplica em <em>duas</em> camadas independentes: (1) o modo somente leitura do próprio servidor MCP, e (2) um usuário de banco de dados dedicado, criado só com permissão de <code class="inline">SELECT</code> nas tabelas necessárias — nunca o usuário administrador do banco. Mesmo que a camada 1 falhe (como o servidor arquivado provou ser possível), a camada 2 continua bloqueando qualquer escrita, porque a permissão nem existe no nível do banco.</p>
-    </div>
-
-    <div class="instruction-step" style="margin-top:28px;">
-      <span class="step-num">Exercício rápido · individual · 5 min</span>
-      <h4>Isso é uma prática segura, ao conectar um banco real via MCP?</h4>
-      <p style="color:var(--text-muted);">A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
-      <div class="quiz-legend"><strong>V</strong> = verdadeiro &nbsp;·&nbsp; <strong>F</strong> = falso</div>
-      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
-        <li>Usar o servidor MCP mais popular do Postgres é, por si só, garantia de segurança.</li>
-        <li>Criar um usuário de banco só com permissão de leitura, específico para o agente, é uma boa prática.</li>
-        <li>Se o servidor MCP promete "somente leitura", não é preciso mais nenhuma proteção no banco em si.</li>
-        <li>Verificar se um servidor MCP está ativamente mantido (não arquivado) faz parte de conectá-lo com responsabilidade.</li>
-        <li>O usuário administrador do banco é uma escolha segura de credencial para o agente, desde que o servidor seja confiável.</li>
-        <li>Duas camadas de proteção independentes (servidor + usuário de banco) são mais seguras que confiar numa só.</li>
-      </ol>
-      <div class="quiz-row">
-        <input type="text" id="respostaEV3" class="quiz-input" placeholder="ex.: FVFVFV" maxlength="10">
-        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaEV3','FVFVFV','gabaritoEV3','msgEV3')">Verificar sequência</button>
-      </div>
-      <p id="msgEV3" class="quiz-msg"></p>
-      <div id="gabaritoEV3" class="quiz-gabarito">
-        <p class="copy-hint">1 é falso — o servidor arquivado desta etapa era, até pouco tempo, um dos mais citados, e tinha uma falha real. 2 é verdadeiro. 3 é falso — é exatamente o oposto do princípio de defesa em camadas. 4 é verdadeiro. 5 é falso — nunca usar credencial de administrador para um agente, confiável ou não. 6 é verdadeiro — é o argumento central desta etapa.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ETAPA 5 -->
-<section class="module-divider reveal" id="etapa5">
-  <div class="wrap">
-    <div class="divider-head">
-      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-      <span class="modnum">Etapa 5</span>
-    </div>
-    <h2>Observabilidade</h2>
-    <p class="modsub">Os logs `[AGENTE]`/`[TOOL]`/`[RESULTADO]` da aula anterior eram para uma pessoa acompanhar ao vivo. Produção precisa de outra coisa.</p>
-  </div>
-</section>
-
-<section class="reveal">
-  <div class="wrap">
-    <div class="concept-box">
-      <h4>Definição: observabilidade de agente</h4>
-      <p>A capacidade de responder, depois do fato, "o que esse agente fez, quanto custou, e onde exatamente deu errado" — sem precisar ter estado olhando o terminal no momento. Os logs impressos no terminal da aula anterior são bons para uma demonstração ao vivo; não servem para um agente rodando em produção, sem ninguém olhando a tela o tempo todo.</p>
-    </div>
-
-    <div class="value-table-wrapper">
-      <table class="value-table">
-        <thead><tr><th>Sinal</th><th>O que registra</th></tr></thead>
-        <tbody>
-          <tr><td><strong>Logs</strong></td><td>Eventos discretos, com timestamp — "tool X chamada às 14:32:07, com estes argumentos".</td></tr>
-          <tr><td><strong>Métricas</strong></td><td>Números agregados ao longo do tempo — quantas tools por execução, custo médio em tokens, taxa de erro por dia.</td></tr>
-          <tr><td><strong>Traces (rastreamento)</strong></td><td>A cadeia completa de uma execução — cada chamada ao modelo e cada tool viram um "span" dentro do mesmo traço, permitindo reconstruir a sequência inteira depois.</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="insight-box">
-      <span class="insight-tag">Já existe um padrão aberto para isso: OpenTelemetry GenAI</span>
-      <p>A OpenTelemetry — já um padrão estabelecido para observabilidade de sistemas em geral — formou um grupo de trabalho específico para IA generativa, com convenções semânticas cobrindo chamadas de LLM, spans de agente, chamadas de tool (incluindo tools via MCP), e eventos de conteúdo (prompt/resposta). A vantagem de um padrão aberto: instrumentação automática já existe para OpenAI, Anthropic, LangChain e LlamaIndex, e ferramentas de observabilidade (Datadog, New Relic, Dynatrace, entre outras) já leem esse formato nativamente — não é preciso inventar um formato de log próprio para cada projeto.</p>
-    </div>
-
-    <div class="code-box"><span class="comment"># O que um span de tool, no padrão OpenTelemetry GenAI, registra (conceitual)</span>
-span: "consultar_sql"
-  gen_ai.operation.name: "execute_tool"
-  gen_ai.tool.name: "consultar_sql"
-  gen_ai.tool.call.arguments: {"sql": "SELECT COUNT(*) FROM servidores"}
-  gen_ai.tool.call.result: {"total": 23}
-  duration_ms: 4
-  <span class="comment"># -- e esse span vive dentro do span maior da execução do agente inteira</span></div>
-    <p class="copy-hint">Não é um formato deste curso — é a convenção real que existe hoje para isso, resumida aqui de forma simplificada.</p>
-
-    <div class="insight-box">
-      <span class="insight-tag">Amarra direto com a Etapa 6 da Aula 9</span>
-      <p>A Aula 9 já tratou logs visíveis como parte de segurança/auditoria — "toda tool chamada aparece no terminal, com parâmetros e resultado". Observabilidade é a versão dessa mesma ideia, pronta para um sistema que roda sem ninguém olhando: os mesmos três dados (ação, parâmetros, resultado) viram sinal estruturado, buscável, e alarmável — não texto solto num terminal que ninguém vai reler.</p>
-    </div>
-
-    <div class="instruction-step" style="margin-top:28px;">
-      <span class="step-num">Exercício rápido · individual · 5 min</span>
-      <h4>Log, métrica ou trace?</h4>
-      <p style="color:var(--text-muted);">A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
-      <div class="quiz-legend"><strong>L</strong> = log &nbsp;·&nbsp; <strong>M</strong> = métrica &nbsp;·&nbsp; <strong>T</strong> = trace</div>
-      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
-        <li>"A tool <code class="inline">consultar_sql</code> foi chamada às 14:32:07, com este SQL exato."</li>
-        <li>"Nas últimas 24 horas, o custo médio por execução foi de 1.200 tokens."</li>
-        <li>"A execução #4471 inteira: qual foi a primeira chamada, a segunda, até a conclusão, em ordem."</li>
-        <li>"A taxa de erro desta semana foi de 3%."</li>
-        <li>"Em 08/08, às 09:15:02, o agente recebeu o objetivo 'analise o banco legado'."</li>
-        <li>"Reconstruir, depois do fato, todos os passos de uma execução específica que falhou."</li>
-      </ol>
-      <div class="quiz-row">
-        <input type="text" id="respostaEV4" class="quiz-input" placeholder="ex.: LMTMLT" maxlength="10">
-        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaEV4','LMTMLT','gabaritoEV4','msgEV4')">Verificar sequência</button>
-      </div>
-      <p id="msgEV4" class="quiz-msg"></p>
-      <div id="gabaritoEV4" class="quiz-gabarito">
-        <p class="copy-hint">1 e 5 são eventos discretos, com timestamp — logs. 2 e 4 são números agregados ao longo do tempo — métricas. 3 e 6 são a cadeia completa de uma execução, reconstruída depois — traces. Repare que "reconstruir o que aconteceu numa execução específica" é sempre trace, mesmo quando a pergunta não usa a palavra "sequência" explicitamente.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ETAPA 6 -->
-<section class="module-divider reveal" id="etapa6">
-  <div class="wrap">
-    <div class="divider-head">
-      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      <span class="modnum">Etapa 6</span>
-    </div>
-    <h2>Avaliação automática</h2>
-    <p class="modsub">Como saber se um agente está bom, sem uma pessoa relendo cada resposta.</p>
-  </div>
-</section>
-
-<section class="reveal">
-  <div class="wrap">
-    <div class="concept-box">
-      <h4>Definição: LLM-as-a-Judge</h4>
-      <p>Usar um modelo de IA para julgar a resposta de outro modelo (ou do próprio agente) — comparando com um critério, uma resposta de referência, ou uma rubrica. Não é ficção especulativa: já é prática estabelecida, com estudos mostrando um juiz de IA concordando com avaliadores humanos cerca de 85% das vezes — uma taxa mais alta do que dois avaliadores humanos costumam concordar entre si na mesma tarefa. Pedir ao modelo-juiz para explicar o raciocínio antes de dar a nota (o mesmo princípio de "mostrar o processo" já visto no curso) melhora a confiabilidade do julgamento em 10 a 15%, segundo a mesma pesquisa.</p>
-    </div>
-
-    <div class="value-table-wrapper">
-      <table class="value-table">
-        <thead><tr><th>Abordagem</th><th>O que avalia</th></tr></thead>
-        <tbody>
-          <tr><td><strong>LLM-as-a-Judge (clássico)</strong></td><td>Só a resposta final — "essa resposta responde bem à pergunta, comparada com o esperado?"</td></tr>
-          <tr><td><strong>Agent-as-a-Judge</strong></td><td>O caminho inteiro — quais tools o agente chamou, em que ordem, com quais argumentos, não só o texto final. Mais caro, mais completo.</td></tr>
-          <tr><td><strong>Avaliação multiagente (debate/colaboração)</strong></td><td>Vários juízes de IA avaliando em conjunto, depois sintetizando um veredito — reduz o viés de um único juiz.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="copy-hint">Fonte: pesquisa e comparativos de avaliação automática de LLM/agentes, 2026.</p>
-
-    <div class="instruction-step">
-      <span class="step-num">Aplicado ao curso</span>
-      <h4>Como isso avaliaria o Agente de Migração da aula anterior</h4>
-      <p style="color:var(--text-muted);">Um "Agent-as-a-Judge" para o agente de migração não perguntaria só "o relatório final ficou bom?" — perguntaria também: ele consultou o schema antes de propor o mapeamento? Encontrou os 6 problemas plantados no banco, ou só alguns? Pediu aprovação antes de qualquer <code class="inline">INSERT</code>? Essas perguntas viram uma checklist automatizável, rodada depois de cada execução, sem um humano reabrindo o log manualmente toda vez.</p>
-    </div>
-
-    <div class="insight-box">
-      <span class="insight-tag">Um avaliador de IA também pode errar — e precisa da mesma desconfiança</span>
-      <p>85% de concordância com humanos é alto, não é 100%. Um "juiz" de IA carrega os mesmos riscos já ensinados no curso inteiro: pode alucinar um critério que não existe, pode ter viés sistemático a favor de respostas mais longas ou mais confiantes. Avaliação automática reduz o trabalho de revisar cada resposta manualmente — não elimina a necessidade de, de vez em quando, auditar o próprio avaliador.</p>
-    </div>
-
-    <div class="instruction-step" style="margin-top:28px;">
-      <span class="step-num">Exercício rápido · individual · 5 min</span>
-      <h4>Isso é avaliação de resposta final, ou do caminho inteiro?</h4>
-      <p style="color:var(--text-muted);">A sequência correta das 6 respostas é a senha que libera o gabarito.</p>
-      <div class="quiz-legend"><strong>R</strong> = avalia só a resposta final &nbsp;·&nbsp; <strong>C</strong> = avalia o caminho/processo inteiro</div>
-      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
-        <li>"O relatório final tem todos os 6 problemas do banco, comparado com o esperado?"</li>
-        <li>"O agente consultou o schema antes de propor o mapeamento, ou pulou direto para a proposta?"</li>
-        <li>"A resposta sobre a média salarial está correta?"</li>
-        <li>"O agente pediu aprovação antes do primeiro <code class="inline">INSERT</code>, em algum momento da execução?"</li>
-        <li>"O texto do relatório está bem escrito e claro?"</li>
-        <li>"Em que ordem exata as tools foram chamadas, e isso bateu com o fluxo Análise → Planejamento → Aprovação?"</li>
-      </ol>
-      <div class="quiz-row">
-        <input type="text" id="respostaEV5" class="quiz-input" placeholder="ex.: RCRCRC" maxlength="10">
-        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaEV5','RCRCRC','gabaritoEV5','msgEV5')">Verificar sequência</button>
-      </div>
-      <p id="msgEV5" class="quiz-msg"></p>
-      <div id="gabaritoEV5" class="quiz-gabarito">
-        <p class="copy-hint">1, 3 e 5 avaliam só o que saiu no final, sem olhar como se chegou lá — LLM-as-a-Judge clássico. 2, 4 e 6 exigem olhar a sequência de ações tomadas, não só o resultado — é exatamente o que separa Agent-as-a-Judge de uma avaliação tradicional.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- PRÁTICA -->
 <section class="reveal" id="pratica" style="background:var(--surface);">
   <div class="wrap">
@@ -865,7 +1080,7 @@ span: "consultar_sql"
 
     <div class="callout" style="margin-bottom:24px;">
       <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
-      <p><strong>A única parte prática desta aula.</strong> Precisa de uma conta no serviço que for conectar (Notion e GitHub têm plano gratuito) e do Claude Code (ou outra ferramenta com suporte a MCP) já instalado. Regra de ouro de sempre: use um workspace/repositório de teste, nunca um com dado real e sensível do seu órgão.</p>
+      <p><strong>A única parte prática desta aula.</strong> Precisa de uma conta no serviço que pede OAuth (Notion tem plano gratuito) e do Claude Code (ou outra ferramenta com suporte a MCP) já instalado — o servidor de gráficos do Exercício 2 não pede conta nenhuma. Regra de ouro de sempre: use um workspace/banco de teste, nunca um com dado real e sensível do seu órgão.</p>
     </div>
 
     <div class="block-card">
@@ -876,14 +1091,14 @@ span: "consultar_sql"
         </div>
         <span class="block-badge badge-teal">15 min</span>
       </div>
-      <p style="color:var(--text-muted);">O servidor remoto, oficial, com autenticação OAuth — o caminho que a própria Notion recomenda hoje. Mesmo par de exemplos (trazer/criar) já visto na Etapa 2 — agora com um workspace de teste de verdade, não um exemplo ilustrativo.</p>
+      <p style="color:var(--text-muted);">O servidor remoto, oficial, com autenticação OAuth — o caminho que a própria Notion recomenda hoje. Mesma conexão do Passo 4 da Etapa 1 (se ainda não estiver ativa) — agora com você mesmo pedindo, sobre a mesma base SISPROT.</p>
       <div class="instruction-step">
         <span class="step-num">Enunciado</span>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
-          <li>Rodaremos <code class="inline">claude mcp add --transport http notion https://mcp.notion.com/mcp</code>.</li>
+          <li>Rodaremos <code class="inline">claude mcp add --transport http notion https://mcp.notion.com/mcp</code> (pular se já estiver conectado da Etapa 1).</li>
           <li>Dentro do Claude Code, rodaremos <code class="inline">/mcp</code> e completaremos a autorização OAuth no navegador (um workspace de teste, não um de produção do órgão).</li>
-          <li>Repetiremos o pedido de leitura da Etapa 2 ("liste as páginas que você consegue ver neste workspace"), agora recebendo uma resposta real, não ilustrativa.</li>
-          <li>Repetiremos o pedido de criação da Etapa 2 (uma página nova de teste) e conferiremos, abrindo o Notion manualmente, se ela realmente apareceu.</li>
+          <li>Pediremos para trazer o que já existe: "liste as páginas que você consegue ver neste workspace" — conferindo se a página "Script SISPROT — tabela movimentacoes", colada na Etapa 1, aparece na lista.</li>
+          <li>Pediremos para criar algo novo: uma página "Resultado — protocolos por status", documentando a contagem que saiu do <code class="inline">mysql-sisprot</code> na Etapa 1 (Deferido=4, Em Análise=3, Indeferido=2, Arquivado=1) — e conferiremos, abrindo o Notion manualmente, se ela realmente apareceu.</li>
         </ol>
       </div>
       <div class="tech-grid" style="margin-top:20px;">
@@ -906,30 +1121,30 @@ span: "consultar_sql"
       <div class="block-header">
         <div class="block-title-area">
           <span class="eyebrow">Exercício 2 · individual · 15 min</span>
-          <h3>Conectar o GitHub MCP</h3>
+          <h3>Conectar o mcp-server-chart e gerar um novo gráfico</h3>
         </div>
         <span class="block-badge badge-teal">15 min</span>
       </div>
-      <p style="color:var(--text-muted);">O servidor remoto oficial do GitHub — mesmo padrão de OAuth, ferramenta diferente. É a metade "ler do GitHub" do exemplo multiagente já visto na Etapa 3 — aqui conectada de verdade, fora do orquestrador.</p>
+      <p style="color:var(--text-muted);">O mesmo servidor de gráficos já mostrado no Passo 5 da Etapa 1 — aqui, você mesmo conecta e pede um gráfico novo, sem roteiro pronto. Diferente do Notion do Exercício 1 (OAuth, conta na nuvem), este é <em>stdio</em> local — nenhuma conta, mesma disciplina de conectar com cuidado.</p>
       <div class="instruction-step">
         <span class="step-num">Enunciado</span>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:6px; font-size:0.95rem;">
-          <li>Rodaremos <code class="inline">claude mcp add github</code> e completaremos a autorização OAuth.</li>
-          <li>Pediremos: "Quais são os últimos 5 commits deste repositório?", num repositório de teste — o mesmo pedido de leitura que, na Etapa 3, era a primeira metade do fluxo do orquestrador.</li>
-          <li>Compararemos com o Exercício 1 desta seção — mesmo padrão de comando (<code class="inline">claude mcp add</code>), serviço completamente diferente.</li>
+          <li>Rodaremos <code class="inline">claude mcp add-json mcp-server-chart '{"type":"stdio","command":"npx","args":["-y","@antv/mcp-server-chart"]}'</code> (pular se já estiver conectado da Etapa 1).</li>
+          <li>Com o <code class="inline">mysql-sisprot</code> também conectado, pediremos: "Quantos protocolos cada setor tem, ao todo? Gere um gráfico de pizza com esse resultado." — uma pergunta diferente da usada na Etapa 1, para confirmar que a conexão funciona de verdade, não só repete o exemplo.</li>
+          <li>Compararemos com o Exercício 1 desta seção — mesma disciplina de conectar, dois padrões de autenticação diferentes (OAuth remoto vs. <em>stdio</em> local sem conta).</li>
         </ol>
       </div>
       <div class="tech-grid" style="margin-top:20px;">
         <div class="tech-card">
           <h3 style="display:block;">Dificuldades comuns</h3>
           <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
-            <li>Conectar num repositório privado de trabalho antes de entender que permissões o servidor está pedindo — leia a tela de autorização OAuth antes de aceitar.</li>
+            <li>Esquecer que, por padrão, os dados do gráfico saem da sua máquina para o serviço hospedado pela AntV — mesmo aviso já dado no Passo 5 da Etapa 1. Tudo bem para o dado fictício do SISPROT; nunca para dado real e sensível do órgão.</li>
           </ul>
         </div>
         <div class="tech-card">
           <h3 style="display:block;">Dicas</h3>
           <ul style="margin:0; padding-left:18px; color:var(--text-muted); font-size:0.88rem; line-height:1.6; display:flex; flex-direction:column; gap:8px;">
-            <li><code class="inline">claude mcp list</code> mostra todos os servidores conectados até agora nesta sessão — útil para conferir Notion e GitHub ao mesmo tempo.</li>
+            <li><code class="inline">claude mcp list</code> mostra todos os servidores conectados até agora nesta sessão — útil para conferir Notion e mcp-server-chart ao mesmo tempo.</li>
           </ul>
         </div>
       </div>
@@ -949,12 +1164,12 @@ span: "consultar_sql"
         <span class="block-badge badge-gold">25 min</span>
       </div>
       <p style="color:var(--text-muted); margin-bottom:20px;">Repetir o padrão dos dois exercícios anteriores, mas sem passo a passo — com um servidor à escolha.</p>
-      <p style="color:var(--text-muted);">Escolheremos um terceiro servidor MCP — pode ser o de banco de dados da Etapa 4 (com um banco de teste próprio), ou outro à escolha (Google Drive, Slack, um servidor de sistema de arquivos local) — e repetiremos o ciclo: conectar, autorizar, testar uma pergunta real, documentar.</p>
+      <p style="color:var(--text-muted);">Escolheremos um terceiro servidor MCP à escolha — GitHub, Google Drive, Slack, um servidor de sistema de arquivos local, ou qualquer outro que o Claude Code suporte — e repetiremos o ciclo: conectar, autorizar, testar uma pergunta real, documentar.</p>
 
       <div class="instruction-step" style="margin-top:0;">
         <span class="step-num">Regras</span>
         <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
-          <li>Antes de conectar, verificar se o servidor escolhido está ativamente mantido — o mesmo cuidado da Etapa 4 com o Postgres arquivado.</li>
+          <li>Antes de conectar, verificar se o servidor escolhido está ativamente mantido — o mesmo cuidado já ensinado na Aula 9, ao instalar uma skill ou conectar um servidor MCP qualquer.</li>
           <li>Documentar, em texto curto: qual servidor, quais tools ele expôs (peça à IA para listar), e uma pergunta real que só funcionou depois da conexão.</li>
           <li>Nenhum dado real e sensível do órgão em nenhuma conexão — usar conta, workspace, repositório ou banco de teste.</li>
         </ol>
@@ -985,14 +1200,15 @@ span: "consultar_sql"
         <h4>Uma tarefa, todas as camadas</h4>
       </div>
       <div class="promptbox" style="margin-top:16px;">
-<span class="plabel">Prompt · conduzido ao vivo, com Notion e/ou GitHub conectados</span>Consulte o repositório de teste conectado, resuma as últimas mudanças,
-e crie uma página no Notion de teste documentando esse resumo — cite
-de onde veio cada informação.</div>
-      <p class="copy-hint">Nomear, em voz alta, cada camada que aparece: um objetivo (Aula 9/10), decisão de qual tool usar entre duas fontes diferentes (Etapa 2/3 desta aula), MCP como o conector real (Aula 9, Etapa 3-4), e — se sobrar tempo — perguntar "como eu saberia se essa resposta foi boa?" para amarrar com a Etapa 6.</p>
+<span class="plabel">Prompt · conduzido ao vivo, com mysql-sisprot, mcp-server-chart e Notion conectados</span>Consulte quantos protocolos cada setor tem, no banco sisprot_mcp
+conectado. Gere um gráfico com esse resultado. Depois, crie uma
+página no workspace do Notion documentando o que você encontrou —
+cite de onde veio cada número e qual tipo de gráfico foi usado.</div>
+      <p class="copy-hint">Nomear, em voz alta, cada camada que aparece: um objetivo (Aula 9/10), decisão de qual tool usar entre duas fontes diferentes (Etapa 1/2 desta aula), MCP como o conector real (Aula 9, Etapa 3-4), e — se sobrar tempo — perguntar "como eu saberia se essa resposta foi boa?" para amarrar com a Etapa 4.</p>
 
       <div class="insight-box">
         <span class="insight-tag">Fechando o curso</span>
-        <p>Da Aula 0 — um prompt bem escrito, sem IA agindo sozinha — até aqui — uma IA que decide, age através de ferramentas reais, e (com as seis peças desta aula) pode lembrar, ser observada e ser avaliada sem alguém checando cada resposta — a pergunta central nunca mudou: como confiar no que a IA produz, sem deixar de decidir por conta própria. As ferramentas específicas vão continuar mudando depois deste curso; essa pergunta, não.</p>
+        <p>Da Aula 0 — um prompt bem escrito, sem IA agindo sozinha — até aqui — uma IA que decide, age através de ferramentas reais, e (com as cinco peças desta aula) pode lembrar, ser observada e ser avaliada sem alguém checando cada resposta — a pergunta central nunca mudou: como confiar no que a IA produz, sem deixar de decidir por conta própria. As ferramentas específicas vão continuar mudando depois deste curso; essa pergunta, não.</p>
       </div>
     </div>
   </div>
