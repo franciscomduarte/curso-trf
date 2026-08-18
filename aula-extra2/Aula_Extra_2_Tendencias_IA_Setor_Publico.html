@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula Extra 2 · Tendências de IA no Setor Público · SISPROT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#0F1C36">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F1C36;
+    --ink-2:#16274a;
+    --paper:#FFFFFF;
+    --surface:#F3F5F9;
+    --surface-2:#EAEDF3;
+    --line:#DEE2EA;
+    --text:#1A2233;
+    --text-muted:#5B6478;
+    --gold:#B8892B;
+    --gold-soft:#E9D9B4;
+    --teal:#0E7C7B;
+    --teal-soft:#D6ECEB;
+    --radius:14px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; color-scheme:light only; background:#FFFFFF;}
+  body{
+    margin:0;
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    margin:0;
+    line-height:1.08;
+    letter-spacing:-0.01em;
+  }
+  p{margin:0;line-height:1.6;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 32px;}
+  section{padding:96px 0;}
+  @media (max-width:640px){ section{padding:64px 0;} .wrap{padding:0 20px;} }
+
+  .topbar{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 32px;
+    background:rgba(15,28,54,0.88);
+    backdrop-filter:blur(8px);
+    color:#fff;
+    font-family:'JetBrains Mono',monospace;
+    font-size:0.72rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .topbar .brand{display:flex; align-items:center; gap:10px; font-weight:600;}
+  .topbar .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);}
+  .topbar .step{color:#9fb0d1;}
+  @media (max-width:640px){
+    .topbar{padding:12px 20px;}
+    .topbar .step{display:none;}
+  }
+  #progress{
+    position:fixed; top:0; left:0; height:2px; background:var(--gold); z-index:60; width:0%;
+    transition:width .1s linear;
+  }
+
+  .hero{
+    background:radial-gradient(120% 140% at 78% -10%, #1c3568 0%, var(--ink) 55%, #0a1428 100%);
+    color:#fff;
+    padding:180px 0 120px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; right:-180px; top:-120px;
+    width:640px; height:640px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.08);
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-60px; top:60px;
+    width:420px; height:420px;
+    border-radius:50%;
+    border:1px solid rgba(184,137,43,0.22);
+  }
+  .hero .wrap{position:relative; z-index:2;}
+  .hero .eyebrow{color:var(--gold-soft); margin-bottom:22px; display:block;}
+  .hero h1{font-size:clamp(2.1rem, 4.6vw, 3.6rem); font-weight:600; max-width:760px;}
+  .hero .lede{
+    margin-top:26px; font-size:1.15rem; color:#c7d2ea; max-width:640px; line-height:1.65;
+  }
+  .hero .meta-row{
+    margin-top:52px; display:flex; gap:36px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:#8fa0c4;
+  }
+  .hero .meta-row strong{color:#fff; display:block; font-family:'Fraunces',serif; font-size:1.3rem; font-weight:600; margin-bottom:2px;}
+
+  .sec-head{max-width:680px; margin-bottom:52px;}
+  .sec-head .eyebrow{display:block; margin-bottom:14px;}
+  .sec-head h2{font-size:clamp(1.6rem,3vw,2.3rem); font-weight:600; color:var(--ink);}
+  .sec-head .sub{margin-top:14px; color:var(--text-muted); font-size:1.03rem;}
+
+  .why{background:var(--surface);}
+
+  .callout{
+    background:var(--surface); border-radius:var(--radius); padding:26px 28px;
+    display:flex; gap:18px; align-items:flex-start;
+  }
+  .callout .icn{flex:none; width:26px; height:26px; color:var(--gold); margin-top:2px;}
+  .callout p{color:var(--text); font-size:0.97rem; line-height:1.65;}
+
+  .pullquote{padding:100px 0; text-align:center;}
+  .pullquote blockquote{
+    max-width:760px; margin:0 auto; font-family:'Fraunces',serif; font-size:clamp(1.3rem,2.6vw,1.9rem);
+    font-weight:500; color:var(--ink); line-height:1.5;
+  }
+  .pullquote .rule{width:44px; height:2px; background:var(--gold); margin:0 auto 30px;}
+  footer{background:var(--ink); color:#8fa0c4; padding:44px 0; font-size:0.82rem; font-family:'JetBrains Mono',monospace;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; row-gap:14px;}
+
+  .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease;}
+  .reveal.in{opacity:1; transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
+
+  .agenda-list{position:relative; margin-top:12px;}
+  .agenda-list::before{content:""; position:absolute; left:15px; top:6px; bottom:6px; width:1px; background:var(--line);}
+  .agenda-row{display:flex; gap:16px; padding:8px 0; align-items:flex-start;}
+  .agenda-row .dotm{flex:none; width:30px;height:30px; border-radius:50%; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:0.68rem; color:var(--ink); position:relative; z-index:1;}
+  .agenda-row p{font-size:0.94rem; color:var(--text); padding-top:5px;}
+
+  .module-divider{
+    background:linear-gradient(120deg, var(--ink) 0%, #1c3568 100%); color:#fff;
+    padding:72px 0 56px; position:relative; overflow:hidden;
+  }
+  .module-divider::before{content:""; position:absolute; right:-140px; top:-100px; width:420px; height:420px; border-radius:50%; border:1px solid rgba(255,255,255,0.08);}
+  .module-divider .modnum{font-family:'JetBrains Mono',monospace; color:var(--gold-soft); font-size:0.78rem; letter-spacing:0.14em; text-transform:uppercase; display:block; margin-bottom:16px;}
+  .module-divider h2{font-size:clamp(1.6rem,3.4vw,2.5rem); font-weight:600; max-width:760px; color:#fff;}
+  .module-divider .modsub{margin-top:14px; color:#c7d2ea; font-size:1.02rem; max-width:640px; line-height:1.6;}
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .checklist li{
+    display:flex; gap:14px; align-items:flex-start; background:var(--surface); border:1px solid var(--line);
+    border-radius:10px; padding:16px 18px; font-size:0.94rem; color:var(--text); line-height:1.55;
+  }
+  .checklist li .xicn{flex:none; width:20px;height:20px; color:var(--teal); margin-top:1px;}
+
+  .callout-alert{ background:var(--ink); color:#fff; border-radius:var(--radius); padding:28px 26px; margin-top:24px; }
+  .callout-alert .eyebrow{color:var(--gold-soft); display:block; margin-bottom:10px;}
+  .callout-alert p{color:#dce3f2; font-size:0.95rem; line-height:1.68;}
+</style>
+<style>
+  /* complementos desta aula (padrão reaproveitado das aulas do projeto) */
+  a{color:var(--teal); text-decoration:underline; text-underline-offset:2px; font-weight:600;}
+  a:hover{color:var(--ink);}
+  .copy-hint{margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text-muted);}
+  code.inline{font-family:'JetBrains Mono',monospace; font-size:0.85em; background:var(--surface-2); padding:2px 6px; border-radius:5px; color:var(--ink);}
+
+  .block-card{background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:36px; margin-bottom:40px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);}
+  .block-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; border-bottom:1px solid var(--line); padding-bottom:18px; flex-wrap:wrap; gap:12px;}
+  .block-title-area h3{font-size:1.4rem; color:var(--ink); font-weight:600;}
+  .block-badge{font-family:'JetBrains Mono',monospace; font-size:0.75rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 14px; border-radius:20px; font-weight:600;}
+  .badge-teal{background:var(--teal-soft); color:var(--teal);}
+  .badge-gold{background:var(--gold-soft); color:var(--ink);}
+
+  .concept-box{background:var(--surface); border-left:4px solid var(--ink); border-radius:0 8px 8px 0; padding:20px; margin:20px 0;}
+  .concept-box h4{font-size:1.05rem; color:var(--ink); margin-bottom:8px;}
+  .concept-box p{color:var(--text); font-size:0.95rem; line-height:1.6;}
+
+  .insight-box{background:var(--teal-soft); border:1px solid var(--teal); border-radius:8px; padding:20px; margin:20px 0; color:var(--ink);}
+  .insight-box .insight-tag{font-family:'JetBrains Mono',monospace; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); font-weight:600; display:block; margin-bottom:6px;}
+  .insight-box p{font-size:0.93rem; line-height:1.55;}
+
+  .instruction-step{margin:28px 0;}
+  .instruction-step .step-num{font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:600; color:var(--gold); display:block; margin-bottom:4px;}
+  .instruction-step h4{font-size:1.1rem; color:var(--ink); margin-bottom:8px;}
+
+  .value-table-wrapper{margin-top:28px; overflow-x:auto; border:1px solid var(--line); border-radius:10px;}
+  .value-table{width:100%; border-collapse:collapse; font-size:0.9rem; text-align:left;}
+  .value-table th{background:var(--ink); color:#fff; font-family:'JetBrains Mono',monospace; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; padding:14px 16px;}
+  .value-table td{padding:14px 16px; border-bottom:1px solid var(--line); color:var(--text); line-height:1.5; vertical-align:top;}
+  .value-table tr:last-child td{border-bottom:none;}
+  .value-table tr:nth-child(even){background:var(--surface);}
+  .value-table strong{color:var(--ink);}
+
+  .divider-head{display:flex; align-items:center; gap:14px; margin-bottom:16px;}
+  .divider-head .modnum{margin-bottom:0;}
+  .divider-icon{flex:none; width:34px; height:34px; color:var(--gold-soft);}
+
+  .quiz-legend{font-family:'JetBrains Mono',monospace; font-size:0.85rem; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin:14px 0;}
+  .quiz-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:16px;}
+  .quiz-input{font-family:'JetBrains Mono',monospace; font-size:0.9rem; padding:10px 14px; border:1px solid var(--line); border-radius:8px; width:220px; letter-spacing:0.1em; text-transform:uppercase;}
+  .quiz-btn{font-family:'JetBrains Mono',monospace; font-size:0.82rem; font-weight:600; padding:10px 18px; border-radius:8px; border:none; background:var(--ink); color:#fff; cursor:pointer;}
+  .quiz-btn:hover{background:var(--ink-2);}
+  .quiz-msg{margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; min-height:1.2em;}
+  .quiz-gabarito{display:none; margin-top:16px;}
+
+  .ref-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .ref-list li{background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:16px 18px; font-size:0.9rem; line-height:1.55;}
+  .ref-list .ref-tag{font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:6px;}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> SISPROT · Aula Extra 2</div>
+  <div class="step">Tendências de IA no Setor Público</div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Curso · IA aplicada ao desenvolvimento de software · Aula Extra 2</span>
+    <h1>Tendências de IA no Setor Público</h1>
+    <p class="lede">O curso inteiro construiu o SISPROT dentro de um projeto de treinamento. Esta aula extra olha para fora dessa bolha: o que está mudando, agora, no uso real de IA pelo Estado brasileiro — do plano nacional de investimento ao Judiciário, chegando até o TRF1. Sem exercício de código; o objetivo é reconhecer, em notícia e em norma, as mesmas peças que o curso já ensinou (governança, supervisão humana, risco, auditabilidade).</p>
+    <div class="meta-row">
+      <div><strong>R$ 23 bi</strong>investidos pelo PBIA até 2028</div>
+      <div><strong>615/2025</strong>resolução do CNJ sobre IA</div>
+      <div><strong>150</strong>modelos na Plataforma Sinapses</div>
+      <div><strong>TRF1</strong>Sinergia, Nota Técnica e Alei</div>
+    </div>
+  </div>
+</header>
+
+<!-- AGENDA -->
+<section class="why reveal" id="agenda">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Sobre esta aula</span>
+      <h2>Do projeto de treinamento para o que está acontecendo de verdade</h2>
+      <p class="sub">Cada peça que apareceu no curso — engenharia de prompt, Spec-Driven Development, segurança, dados sensíveis e governança, RAG, agentes e MCP — também está aparecendo, ao mesmo tempo, em norma federal e em projeto real de tribunal. Esta aula percorre quatro camadas, da mais ampla (o mundo) até a mais próxima (o TRF1), e fecha com o que isso muda para quem desenvolve software no setor público.</p>
+    </div>
+    <div class="agenda-list">
+      <div class="agenda-row"><div class="dotm">01</div><p>Panorama global — o que Gartner e Deloitte apontam para 2026</p></div>
+      <div class="agenda-row"><div class="dotm">02</div><p>Brasil — o Plano Brasileiro de IA e o Marco Legal da IA</p></div>
+      <div class="agenda-row"><div class="dotm">03</div><p>O Judiciário — CNJ, Resolução 615/2025 e a Plataforma Sinapses</p></div>
+      <div class="agenda-row"><div class="dotm">04</div><p>O TRF1 na prática — Projeto Sinergia, Nota Técnica 02/2025 e o Projeto Alei</p></div>
+      <div class="agenda-row"><div class="dotm">05</div><p>Fechando: o que muda para quem constrói software no setor público</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <svg class="icn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+      <p><strong>Aula de leitura, não de teclado:</strong> não há projeto Python nem exercício prático aqui — o material é sobre normas, planos e projetos reais, com data de publicação e fonte citada em cada seção. Regulação de IA muda rápido: os números e prazos abaixo valem para agosto de 2026 e podem já ter sido atualizados quando esta aula for lida de novo — a Resolução CNJ 615/2025, por exemplo, já recebeu uma alteração pela Resolução CNJ 674/2026, um mês antes desta revisão.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 1 -->
+<section class="module-divider reveal" id="etapa1">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 4 6 4 9s-1.5 6.4-4 9c-2.5-2.6-4-6-4-9s1.5-6.4 4-9z"/></svg>
+      <span class="modnum">Etapa 1</span>
+    </div>
+    <h2>Panorama global: o que Gartner e Deloitte apontam para 2026</h2>
+    <p class="modsub">Antes de olhar para o Brasil, vale ver com que direção o resto do mundo está remando — os dois nomes mais citados em planejamento de tecnologia no setor público concordam em pelo menos quatro pontos.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>De "agente" (Aula 9/10) para "IA agêntica" como categoria de investimento de governo</h4>
+      <p>O curso definiu agente como uma IA que decide, age através de ferramentas e se conecta a dados reais via MCP (Aulas 9 e 10). No relatório de março de 2026 da Gartner, essa mesma ideia aparece como previsão de adoção em massa: <strong>pelo menos 80% dos governos vão implantar agentes de IA para automatizar decisões rotineiras até 2028</strong>. A tecnologia é a mesma que este curso ensinou a construir em miniatura — a diferença é a escala e o que está em jogo quando a decisão automatizada afeta um cidadão, não um dado fictício de exercício.</p>
+    </div>
+
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Tendência</th><th>O que diz</th><th>Onde já apareceu no curso</th></tr></thead>
+        <tbody>
+          <tr><td><strong>IA agêntica em operação de governo</strong></td><td>Gartner projeta que 80% dos governos terão agentes de IA automatizando decisões rotineiras até 2028.</td><td>Aula 9 (agentes) e Aula 10 (MCP, multiagentes)</td></tr>
+          <tr><td><strong>Explicabilidade e humano no circuito</strong></td><td>Gartner projeta que, até 2029, 70% dos órgãos públicos vão exigir IA explicável (XAI) e supervisão humana obrigatória (HITL) para toda decisão automatizada que afete atendimento ao cidadão.</td><td>Aula 7 (governança) — a mesma exigência que a Etapa 3 desta aula mostra já valendo no Judiciário brasileiro, hoje</td></tr>
+          <tr><td><strong>IA soberana</strong></td><td>Governos buscam cada vez mais controlar dados e infraestrutura de computação dentro das próprias fronteiras, em vez de depender só de nuvens estrangeiras.</td><td>Aula 7 (LLMs locais) — a mesma lógica de "processar sem expor", em escala de país</td></tr>
+          <tr><td><strong>Redesenhar o processo, não só automatizar</strong></td><td>Deloitte aponta que o maior ganho de produtividade não vem de automatizar o processo antigo como ele é, e sim de redesenhar o próprio trabalho ao redor da IA.</td><td>Aula 5 (Spec-Driven Development) — repensar o requisito, não só codificar mais rápido</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Fontes: <a href="https://www.gartner.com/en/newsroom/press-releases/2026-03-17-gartner-predicts-at-least-80-percent-of-governments-will-deploy-ai-agents-to-automate-routine-decision-making-by-2028" target="_blank" rel="noopener">Gartner, "Gartner Predicts at Least 80% of Governments Will Deploy AI Agents..." (mar. 2026)</a> e <a href="https://www.deloitte.com/us/en/insights/industry/government-public-sector-services/government-trends.html" target="_blank" rel="noopener">Deloitte, "Government Trends 2026"</a>.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Governança deixou de ser complemento</span>
+      <p>O ponto mais repetido nas duas fontes não é uma nova técnica — é que governança, ética e segurança pararam de ser "parte complementar" do projeto de IA e viraram o centro da estratégia de adoção. É exatamente o que as Etapas 2 e 3 desta aula mostram acontecendo no Brasil: plano de investimento e regulação andando juntos, não em sequência.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 2 -->
+<section class="module-divider reveal" id="etapa2">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>
+      <span class="modnum">Etapa 2</span>
+    </div>
+    <h2>Brasil: o Plano Brasileiro de IA e o Marco Legal da IA</h2>
+    <p class="modsub">Dois movimentos paralelos e complementares: um plano de investimento (o "quanto" e "em quê") e um projeto de lei (o "com que regra").</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="instruction-step">
+      <span class="step-num">O plano de investimento</span>
+      <h4>PBIA — Plano Brasileiro de Inteligência Artificial</h4>
+      <p style="color:var(--text-muted);">O PBIA prevê <strong>R$ 23,03 bilhões</strong> em investimentos entre 2024 e 2028, organizados em cinco eixos estratégicos e 54 ações concretas. O setor público é um dos cinco eixos — não o maior em recursos, mas o que mais se conecta com o que este curso ensinou.</p>
+    </div>
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Eixo</th><th>Investimento previsto</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Inovação e empreendedorismo</strong></td><td>R$ 13,79 bi</td></tr>
+          <tr><td><strong>Infraestrutura computacional</strong> (inclui o supercomputador Santos Dumont)</td><td>R$ 5,79 bi</td></tr>
+          <tr><td><strong>Capital humano</strong> — formação e requalificação</td><td>R$ 5,79 bi</td></tr>
+          <tr><td><strong>Governança e segurança de dados</strong> — inclui a "Nuvem Soberana"</td><td>R$ 1,76 bi</td></tr>
+          <tr><td><strong>Setor público</strong> — tornar o Estado mais eficiente com IA</td><td>R$ 1,15 bi</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">Fonte: <a href="https://www.gov.br/mcti/pt-br/acompanhe-o-mcti/transformacaodigital/plano-brasileiro-de-inteligencia-artificial" target="_blank" rel="noopener">Ministério da Ciência, Tecnologia e Inovação (MCTI) — Plano Brasileiro de Inteligência Artificial</a>.</p>
+
+    <div class="insight-box">
+      <span class="insight-tag">Onde a "Nuvem Soberana" encontra a Aula 7</span>
+      <p>O eixo de governança financia uma nuvem soberana apoiada no supercomputador Santos Dumont — infraestrutura pública para processar dado sensível sem depender de provedor estrangeiro. É a mesma lógica dos LLMs locais discutidos na Aula 7, só que na escala de política pública: em vez de cada órgão decidir sozinho quando um modelo local resolve o problema, o país está construindo a infraestrutura para que essa opção exista de verdade.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">O projeto de lei</span>
+      <h4>Marco Legal da IA — PL 2338/2023</h4>
+      <p style="color:var(--text-muted);">Enquanto o PBIA financia, o PL 2338/2023 regula. Aprovado por unanimidade no Senado em dezembro de 2024, seguiu para a Câmara dos Deputados em março de 2025; entre maio e setembro de 2025 a Comissão Especial promoveu doze audiências públicas, e a votação — inicialmente prevista para o fim de 2025 — foi adiada para 2026. Em dezembro de 2025, o governo federal enviou ao Congresso um projeto complementar para corrigir um vício de iniciativa identificado no texto original.</p>
+    </div>
+    <ul class="checklist">
+      <li><span class="xicn">&#10003;</span>Cria o <strong>SIA</strong> — Sistema Nacional de Regulação e Governança da Inteligência Artificial.</li>
+      <li><span class="xicn">&#10003;</span>Adota abordagem <strong>baseada em risco</strong> — quanto maior o risco da aplicação, mais rígida a exigência. É o mesmo raciocínio, em lei federal, que a Etapa 3 mostra o CNJ já aplicando ao Judiciário desde 2025.</li>
+      <li><span class="xicn">&#10003;</span>Prevê multas de até <strong>R$ 50 milhões</strong> por infração.</li>
+      <li><span class="xicn">&#10003;</span>Ainda não está em vigor — depende de deliberação da Câmara e sanção presidencial.</li>
+    </ul>
+    <p class="copy-hint">Fontes: <a href="https://www25.senado.leg.br/web/atividade/materias/-/materia/157233" target="_blank" rel="noopener">Senado Federal — tramitação do PL 2338/2023</a> e <a href="https://fpabramo.org.br/focusbrasil/2025/12/09/governo-envia-ao-congresso-pl-de-novo-sistema-de-governanca-para-inteligencia-artificial/" target="_blank" rel="noopener">Revista Focus Brasil, "Governo envia ao Congresso PL de novo sistema de governança para IA" (dez. 2025)</a>.</p>
+  </div>
+</section>
+
+<!-- ETAPA 3 -->
+<section class="module-divider reveal" id="etapa3">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>
+      <span class="modnum">Etapa 3</span>
+    </div>
+    <h2>O Judiciário: CNJ, Resolução 615/2025 e a Plataforma Sinapses</h2>
+    <p class="modsub">Enquanto o Marco Legal da IA segue em tramitação, o Judiciário brasileiro já tem sua própria norma valendo — e é a que rege diretamente o trabalho do TRF1.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="concept-box">
+      <h4>Resolução CNJ n. 615/2025 — a norma que já vale</h4>
+      <p>Aprovada pelo Plenário do CNJ em 18 de fevereiro de 2025 e publicada em 11 de março de 2025, a Resolução 615 substitui a Resolução 332/2020 (a primeira norma do CNJ sobre IA no Judiciário, de cinco anos antes) e estabelece princípios, diretrizes e requisitos de governança para o desenvolvimento, uso e auditabilidade de soluções de IA em todo o Judiciário — inclusive na Justiça Federal. Os tribunais tiveram até <strong>12 meses</strong> (ou seja, até março de 2026) para se adequar.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">A peça central</span>
+      <h4>Três categorias de risco, a mesma lógica do Marco Legal da IA</h4>
+      <p style="color:var(--text-muted);">Toda aplicação de IA no Judiciário entra em uma das três faixas abaixo — e a faixa determina o que é permitido, o que exige auditoria contínua e o que é simplesmente proibido.</p>
+    </div>
+    <div class="value-table-wrapper">
+      <table class="value-table">
+        <thead><tr><th>Categoria</th><th>Regra</th><th>Exemplos</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Risco excessivo</strong></td><td>Proibida — incompatível com direitos fundamentais.</td><td>Prever criminalidade a partir de perfil de personalidade; ranquear pessoas por comportamento; reconhecer emoções a partir de dado biométrico.</td></tr>
+          <tr><td><strong>Alto risco</strong></td><td>Permitida só com auditoria contínua e supervisão humana obrigatória.</td><td>Valoração de provas, interpretação probatória, análise conclusiva de normas jurídicas, reconhecimento facial. Ferramentas comerciais genéricas (ChatGPT, Claude, Gemini) não podem executar essas funções.</td></tr>
+          <tr><td><strong>Baixo risco</strong></td><td>Permitida como apoio, sempre com possibilidade de revisão humana.</td><td>Transcrição de atos, resumo documental, anonimização, classificação de dados, análise estatística, atos ordinatórios auxiliares.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="copy-hint">A Resolução também proíbe, de forma explícita, qualquer sistema que impeça ou dificulte a revisão humana de uma decisão automatizada — nenhum produto de IA pode decidir sozinho, sem possibilidade de o magistrado competente modificar o resultado.</p>
+    <p class="copy-hint">Fontes: <a href="https://www.cnj.jus.br/cnj-aprova-resolucao-regulamentando-o-uso-da-ia-no-poder-judiciario/" target="_blank" rel="noopener">Portal CNJ — "CNJ aprova resolução regulamentando o uso da IA no Poder Judiciário"</a>, <a href="https://atos.cnj.jus.br/atos/detalhar/6001" target="_blank" rel="noopener">texto oficial da Resolução CNJ n. 615/2025</a> e <a href="https://juridico.ai/juridico/resolucao-cnj-615-2025-ia-no-judiciario/" target="_blank" rel="noopener">Jurídico.ai, síntese das categorias de risco</a>.</p>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Quem fiscaliza</span>
+      <h4>Comitê Nacional de Inteligência Artificial</h4>
+      <p style="color:var(--text-muted);">A Resolução cria um comitê de 14 membros titulares e 13 suplentes, reunindo CNJ, tribunais, OAB, Ministério Público, Defensoria Pública e sociedade civil — papel de orientar, fiscalizar e aprimorar continuamente o uso de IA no Judiciário. Também determina divulgação pública de indicadores e relatórios sobre o uso de IA por cada tribunal.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:28px;">
+      <span class="step-num">Onde os modelos vivem</span>
+      <h4>Plataforma Sinapses — a "fábrica de modelos" do Judiciário</h4>
+      <p style="color:var(--text-muted);">Criada pela Resolução 332/2020 (a norma que a 615/2025 atualizou) e desenvolvida originalmente pelo TJRO, a Sinapses é o ecossistema nacional de armazenamento, treinamento supervisionado, versionamento, distribuição e auditoria de modelos de IA do Judiciário, mantido com apoio do PNUD via Programa Justiça 4.0. Hoje reúne <strong>150 modelos de IA ativos, produzidos por 29 tribunais e conselhos</strong> — em vez de cada tribunal treinar tudo do zero, um tribunal publica um modelo e os demais podem reaproveitar, adaptar ou auditar.</p>
+    </div>
+    <p class="copy-hint">Fontes: <a href="https://www.cnj.jus.br/sistemas/plataforma-sinapses/" target="_blank" rel="noopener">Portal CNJ — Plataforma Sinapses</a> e <a href="https://www.undp.org/pt/brazil/news/plataforma-sinapses-reune-150-modelos-de-inteligencia-artificial" target="_blank" rel="noopener">PNUD Brasil — "Plataforma Sinapses reúne 150 modelos de inteligência artificial"</a>.</p>
+
+    <div class="callout-alert">
+      <span class="eyebrow">Olhar crítico, não só institucional</span>
+      <p>Nem todo mundo considera a Resolução 615/2025 suficiente. Uma análise publicada pela ConJur em janeiro de 2026 aponta que a norma traça um "limite ético" importante, mas deixa lacunas — entre elas, mecanismos mais claros de fiscalização do cumprimento das vedações no dia a dia dos tribunais. Vale a mesma lição da Aula 7 sobre LGPD: a existência de uma norma não substitui a verificação de que ela está sendo, de fato, seguida. (Fonte: <a href="https://www.conjur.com.br/2026-jan-27/resolucao-do-cnj-traca-limite-etico-para-ia-mas-lacunas-preocupam/" target="_blank" rel="noopener" style="color:#fff;">ConJur, "Resolução do CNJ traça limite ético para IA, mas lacunas preocupam"</a>.)</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:32px;">
+      <span class="step-num">Exercício de fixação · individual · 5 min</span>
+      <h4>Classificar quatro usos de IA no Judiciário</h4>
+      <p style="color:var(--text-muted);">Sem consultar a tabela acima: para cada item, decidir se é <strong>E</strong> (risco excessivo, proibido), <strong>A</strong> (alto risco, exige auditoria contínua) ou <strong>B</strong> (baixo risco, permitido como apoio) — depois digitar a sequência das 4 letras para destravar o gabarito.</p>
+      <div class="quiz-legend"><strong>E</strong> = risco excessivo &nbsp;·&nbsp; <strong>A</strong> = alto risco &nbsp;·&nbsp; <strong>B</strong> = baixo risco</div>
+      <ol style="color:var(--text); line-height:1.8; padding-left:20px; display:grid; gap:6px; font-size:0.95rem; margin-top:6px;">
+        <li>Resumir automaticamente uma petição de 40 páginas para o gabinete conferir.</li>
+        <li>Sistema que tenta prever a probabilidade de reincidência criminal a partir do perfil de personalidade do réu.</li>
+        <li>Ferramenta que sugere minuta de decisão com base em jurisprudência consolidada, sempre revisada pelo magistrado antes de assinar.</li>
+        <li>Reconhecimento facial para identificar réu em audiência, sem revisão humana possível do resultado.</li>
+      </ol>
+      <div class="quiz-row">
+        <input type="text" id="respostaQ1" class="quiz-input" placeholder="4 letras, sem espaços" maxlength="10">
+        <button type="button" class="quiz-btn" onclick="verificarSequencia('respostaQ1','BEAA','gabaritoQ1','msgQ1')">Verificar sequência</button>
+      </div>
+      <p id="msgQ1" class="quiz-msg"></p>
+      <div id="gabaritoQ1" class="quiz-gabarito">
+        <div class="value-table-wrapper">
+          <table class="value-table">
+            <thead><tr><th>Item</th><th>Classificação</th><th>Por quê</th></tr></thead>
+            <tbody>
+              <tr><td>1. Resumir petição</td><td>B — Baixo risco</td><td>Resumo documental como apoio, item explicitamente listado como baixo risco.</td></tr>
+              <tr><td>2. Prever reincidência por personalidade</td><td>E — Risco excessivo</td><td>Exatamente o exemplo citado como proibido pela Resolução.</td></tr>
+              <tr><td>3. Sugerir minuta, com revisão do magistrado</td><td>A — Alto risco</td><td>Toca interpretação jurídica, mas permanece admissível porque há supervisão humana obrigatória e revisão possível.</td></tr>
+              <tr><td>4. Reconhecimento facial sem revisão</td><td>A — Alto risco, mas do jeito descrito é vedado</td><td>Reconhecimento facial é alto risco quando tem supervisão; "sem revisão humana possível" é exatamente a prática proibida pela Resolução, independente da categoria.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="copy-hint">O item 4 é de propósito o mais delicado: mostra que a categoria de risco não basta sozinha — a exigência de supervisão humana revisável se aplica por cima de qualquer categoria.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ETAPA 4 -->
+<section class="module-divider reveal" id="etapa4">
+  <div class="wrap">
+    <div class="divider-head">
+      <svg class="divider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg>
+      <span class="modnum">Etapa 4</span>
+    </div>
+    <h2>O TRF1 na prática: Sinergia, Nota Técnica 02/2025 e o Projeto Alei</h2>
+    <p class="modsub">A última camada, a mais próxima de quem faz este curso: como o próprio TRF1 está aplicando a Resolução 615/2025 e o que já está rodando em produção.</p>
+  </div>
+</section>
+
+<section class="reveal">
+  <div class="wrap">
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Capacitação institucional</span>
+          <h3>Projeto Sinergia</h3>
+        </div>
+        <span class="block-badge badge-teal">Formação</span>
+      </div>
+      <p style="color:var(--text-muted);">A Escola de Magistratura Federal da 1ª Região (Esmaf), em parceria com o Projeto Sinergia do TRF1, iniciou em novembro de 2025 um curso voltado a desembargadoras e desembargadores federais sobre uso ético, responsável e seguro da IA generativa no Judiciário — cinco encontros até 1º de dezembro de 2025, cobrindo conceitos de IA, engenharia de prompt aplicada à atividade judicial e os normativos que regem seu uso.</p>
+      <div class="insight-box">
+        <span class="insight-tag">O mesmo ponto do Módulo 1 desta aula</span>
+        <p>Gartner lista "capacitação diferenciada" (alfabetização básica para todos, capacidade mais profunda para muitos, expertise avançada para poucos) como tendência global de 2026. O Sinergia é essa tendência acontecendo, com nome e data, dentro do próprio TRF1.</p>
+      </div>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Orientação normativa interna</span>
+          <h3>Nota Técnica n. 02/2025 (Reint-1)</h3>
+        </div>
+        <span class="block-badge badge-gold">Governança</span>
+      </div>
+      <p style="color:var(--text-muted);">A Rede de Inteligência e Inovação da 1ª Região (Reint-1) — coordenada pelo desembargador Carlos Augusto Pires Brandão, com participação dos juízes federais Náiber Pontes de Almeida, Rodrigo Gonçalves de Souza e Rafael Lima da Costa — publicou orientações para magistrados e servidores sobre uso de IA generativa, implementando no TRF1 as diretrizes da Resolução CNJ 615/2025.</p>
+      <ul class="checklist">
+        <li><span class="xicn">&#10003;</span><strong>Capacitação</strong> — uso consciente de comandos precisos (a mesma engenharia de prompt da Aula 4).</li>
+        <li><span class="xicn">&#10003;</span><strong>Ética</strong> — escolha de ferramenta e proteção de dado (a mesma regra de ouro do curso inteiro).</li>
+        <li><span class="xicn">&#10003;</span><strong>Responsabilidade humana indispensável</strong> — IA é ferramenta de apoio, nunca substituta da decisão.</li>
+        <li><span class="xicn">&#10003;</span>Alerta explícito para <strong>desconfiar de citação legal gerada por IA</strong> e sempre verificar a fonte original — a mesma alucinação discutida na Aula 8, com um exemplo concreto de consequência jurídica.</li>
+      </ul>
+      <p style="color:var(--text-muted); margin-top:16px;">A nota também formaliza a adoção de ferramentas comerciais (ChatGPT, Google Gemini) dentro do Projeto Sinergia, com governança institucional centralizada — em vez de cada servidor escolher e usar por conta própria, sem critério comum.</p>
+    </div>
+
+    <div class="block-card">
+      <div class="block-header">
+        <div class="block-title-area">
+          <span class="eyebrow">Em produção desde 2021</span>
+          <h3>Projeto Alei — Análise Legal Inteligente</h3>
+        </div>
+        <span class="block-badge badge-teal">Aplicação real</span>
+      </div>
+      <p style="color:var(--text-muted);">Desenvolvido em parceria com a equipe do professor Nilton Silva (Engenharia, UnB), o Alei é um sistema de machine learning que identifica precedentes do TRF1 e das cortes superiores relacionados a um processo e sugere propostas de minuta com base em acórdãos já consolidados — acelerando a análise de processos de segunda instância. Implantado em 2021 e hoje já usado por gabinetes do tribunal.</p>
+      <div class="concept-box">
+        <h4>O paralelo direto com o SISPROT</h4>
+        <p>Trocando "protocolo" por "processo judicial" e "setor" por "gabinete", o Alei resolve exatamente o tipo de problema que o curso descreveu na Aula 5 (Spec-Driven Development) e na Aula 8 (RAG): buscar o precedente certo antes de sugerir uma resposta, em vez de confiar só na memória do modelo — e sempre com decisão final humana, nunca automática.</p>
+      </div>
+    </div>
+
+    <p class="copy-hint">Fontes: <a href="https://www.jusbrasil.com.br/noticias/projeto-sinergia-iniciado-o-curso-sobre-inteligencia-artificial-para-integrantes-do-trf1/5251640687" target="_blank" rel="noopener">Jusbrasil — "Projeto Sinergia: iniciado o curso sobre Inteligência Artificial para integrantes do TRF1"</a>, <a href="https://www.trf1.jus.br/trf1/noticias/rede-de-inteligencia-discute-minuta-de-nota-tecnica-que-visa-orientar-uso-de-ia-generativa-no-trf1-" target="_blank" rel="noopener">TRF1 — "Rede de Inteligência discute minuta de Nota Técnica que visa orientar uso de IA generativa no TRF1"</a> e <a href="https://portal.trf1.jus.br/portaltrf1/comunicacao-social/imprensa/noticias/institucional-reuniao-da-rede-de-inteligencia-da-1-regiao-apresenta-modelo-de-negocio-do-alei-e-nova-fase-do-projeto.htm" target="_blank" rel="noopener">TRF1 — "Reunião da Rede de Inteligência da 1ª Região apresenta modelo de negócio do Alei e nova fase do projeto"</a>.</p>
+  </div>
+</section>
+
+<!-- ETAPA 5 -->
+<section class="why reveal" id="etapa5">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Fechando</span>
+      <h2>O que muda para quem constrói software no setor público</h2>
+      <p class="sub">Nenhuma das quatro camadas acima é notícia isolada — juntas, formam o contexto real em que qualquer sistema como o SISPROT vai precisar operar a partir de agora.</p>
+    </div>
+    <ul class="checklist">
+      <li><span class="xicn">&#10003;</span><strong>Classificar o risco antes de construir, não depois.</strong> Baixo, alto ou excessivo (Etapa 3) deixou de ser exercício acadêmico — é a pergunta que decide se uma funcionalidade pode ir para produção.</li>
+      <li><span class="xicn">&#10003;</span><strong>Supervisão humana revisável é requisito, não feature opcional.</strong> Tanto o Marco Legal da IA quanto a Resolução 615/2025 tratam decisão automatizada sem revisão possível como prática vedada — projetar sem essa saída de emergência é projetar fora da norma.</li>
+      <li><span class="xicn">&#10003;</span><strong>Auditabilidade e origem da resposta importam tanto quanto a resposta em si</strong> — a mesma lição de RAG da Aula 8, agora exigida por norma: saber de onde veio cada sugestão, não só que ela "parece certa".</li>
+      <li><span class="xicn">&#10003;</span><strong>MCP e agentes (Aulas 9 e 10) não são só técnica de curso</strong> — é a mesma arquitetura que Gartner projeta como padrão de governo até 2028, e que a Plataforma Sinapses já usa para compartilhar modelo entre tribunais em vez de cada um treinar do zero.</li>
+      <li><span class="xicn">&#10003;</span><strong>Capacitação faz parte do rollout, não é extra.</strong> O Sinergia do TRF1 mostra isso na prática: uma ferramenta boa, sem quem saiba usá-la com critério, não entrega o valor prometido.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- REFERÊNCIAS -->
+<section class="reveal" id="referencias">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Para ir além</span>
+      <h2>Referências</h2>
+      <p class="sub">Todas as fontes citadas ao longo desta aula, reunidas em um só lugar — organizadas na mesma ordem das quatro camadas percorridas.</p>
+    </div>
+    <ul class="ref-list">
+      <li><span class="ref-tag">Panorama global</span><a href="https://www.gartner.com/en/newsroom/press-releases/2026-03-17-gartner-predicts-at-least-80-percent-of-governments-will-deploy-ai-agents-to-automate-routine-decision-making-by-2028" target="_blank" rel="noopener">Gartner — "Gartner Predicts at Least 80% of Governments Will Deploy AI Agents to Automate Routine Decision-Making by 2028"</a> (mar. 2026)</li>
+      <li><span class="ref-tag">Panorama global</span><a href="https://www.deloitte.com/us/en/insights/industry/government-public-sector-services/government-trends.html" target="_blank" rel="noopener">Deloitte Insights — "Government Trends 2026: The future of government is now"</a></li>
+      <li><span class="ref-tag">Panorama global</span><a href="https://www.deloitte.com/us/en/insights/industry/government-public-sector-services/government-trends/2026/agentic-ai-government-customized-service-delivery.html" target="_blank" rel="noopener">Deloitte Insights — "Agentic AI accelerates personalized public services"</a></li>
+      <li><span class="ref-tag">Brasil · investimento</span><a href="https://www.gov.br/mcti/pt-br/acompanhe-o-mcti/transformacaodigital/plano-brasileiro-de-inteligencia-artificial" target="_blank" rel="noopener">Ministério da Ciência, Tecnologia e Inovação — Plano Brasileiro de Inteligência Artificial (PBIA)</a></li>
+      <li><span class="ref-tag">Brasil · regulação</span><a href="https://www25.senado.leg.br/web/atividade/materias/-/materia/157233" target="_blank" rel="noopener">Senado Federal — tramitação do PL 2338/2023 (Marco Legal da IA)</a></li>
+      <li><span class="ref-tag">Brasil · regulação</span><a href="https://fpabramo.org.br/focusbrasil/2025/12/09/governo-envia-ao-congresso-pl-de-novo-sistema-de-governanca-para-inteligencia-artificial/" target="_blank" rel="noopener">Revista Focus Brasil — "Governo envia ao Congresso PL de novo sistema de governança para inteligência artificial"</a> (dez. 2025)</li>
+      <li><span class="ref-tag">Judiciário · norma</span><a href="https://www.cnj.jus.br/cnj-aprova-resolucao-regulamentando-o-uso-da-ia-no-poder-judiciario/" target="_blank" rel="noopener">Portal CNJ — "CNJ aprova resolução regulamentando o uso da IA no Poder Judiciário"</a></li>
+      <li><span class="ref-tag">Judiciário · norma</span><a href="https://atos.cnj.jus.br/atos/detalhar/6001" target="_blank" rel="noopener">Texto oficial — Resolução CNJ n. 615, de 11 de março de 2025</a></li>
+      <li><span class="ref-tag">Judiciário · norma</span><a href="https://juridico.ai/juridico/resolucao-cnj-615-2025-ia-no-judiciario/" target="_blank" rel="noopener">Jurídico.ai — síntese das categorias de risco da Resolução CNJ 615/2025</a></li>
+      <li><span class="ref-tag">Judiciário · crítica</span><a href="https://www.conjur.com.br/2026-jan-27/resolucao-do-cnj-traca-limite-etico-para-ia-mas-lacunas-preocupam/" target="_blank" rel="noopener">ConJur — "Resolução do CNJ traça limite ético para IA, mas lacunas preocupam"</a> (jan. 2026)</li>
+      <li><span class="ref-tag">Judiciário · plataforma</span><a href="https://www.cnj.jus.br/sistemas/plataforma-sinapses/" target="_blank" rel="noopener">Portal CNJ — Plataforma Sinapses</a></li>
+      <li><span class="ref-tag">Judiciário · plataforma</span><a href="https://www.undp.org/pt/brazil/news/plataforma-sinapses-reune-150-modelos-de-inteligencia-artificial" target="_blank" rel="noopener">PNUD Brasil — "Plataforma Sinapses reúne 150 modelos de inteligência artificial"</a></li>
+      <li><span class="ref-tag">TRF1</span><a href="https://www.jusbrasil.com.br/noticias/projeto-sinergia-iniciado-o-curso-sobre-inteligencia-artificial-para-integrantes-do-trf1/5251640687" target="_blank" rel="noopener">Jusbrasil — "Projeto Sinergia: iniciado o curso sobre Inteligência Artificial para integrantes do TRF1"</a></li>
+      <li><span class="ref-tag">TRF1</span><a href="https://www.trf1.jus.br/trf1/noticias/rede-de-inteligencia-discute-minuta-de-nota-tecnica-que-visa-orientar-uso-de-ia-generativa-no-trf1-" target="_blank" rel="noopener">TRF1 — "Rede de Inteligência discute minuta de Nota Técnica que visa orientar uso de IA generativa no TRF1"</a></li>
+      <li><span class="ref-tag">TRF1</span><a href="https://portal.trf1.jus.br/portaltrf1/comunicacao-social/imprensa/noticias/institucional-reuniao-da-rede-de-inteligencia-da-1-regiao-apresenta-modelo-de-negocio-do-alei-e-nova-fase-do-projeto.htm" target="_blank" rel="noopener">TRF1 — "Reunião da Rede de Inteligência da 1ª Região apresenta modelo de negócio do Alei e nova fase do projeto"</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- FECHAMENTO -->
+<section class="pullquote reveal">
+  <div class="wrap" style="text-align:center;">
+    <div class="rule"></div>
+    <blockquote>O SISPROT deste curso é fictício; a Resolução 615/2025, o PBIA e o Projeto Alei não são. As mesmas perguntas que guiaram cada aula — quem revisa, de onde veio a resposta, o que acontece se a IA errar — já são, hoje, texto de norma e projeto em produção no próprio TRF1.</blockquote>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-left" style="display:flex; align-items:center; gap:14px;">
+      <span>SISPROT · Aula Extra 2 · Tendências de IA no Setor Público</span>
+    </div>
+    <div class="footer-right"><span>Conteúdo complementar</span></div>
+  </div>
+</footer>
+
+<script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = scrolled + '%';
+  });
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+  items.forEach(i => io.observe(i));
+
+  function verificarSequencia(inputId, resposta, gabaritoId, msgId) {
+    const raw = document.getElementById(inputId).value;
+    const input = raw.trim().toUpperCase().replace(/[^A-Z]/g, '');
+    const msg = document.getElementById(msgId);
+    const gabarito = document.getElementById(gabaritoId);
+    if (input === resposta) {
+      gabarito.style.display = 'block';
+      msg.textContent = 'Sequência correta — gabarito liberado abaixo.';
+      msg.style.color = 'var(--teal)';
+    } else {
+      gabarito.style.display = 'none';
+      msg.textContent = 'Ainda não — confira os itens de novo (só as letras da legenda, sem espaços).';
+      msg.style.color = 'var(--gold)';
+    }
+  }
+</script>
+</body>
+</html>

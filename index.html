@@ -194,7 +194,7 @@
       </table>
     </div>
     <p class="curriculo-note">A Aula 3 é a abertura prática do Módulo 2 — a jornada pessoal que faz a ponte entre a teoria dos fundamentos e a construção do SISPROT nas aulas seguintes. A Aula 10 é o projeto aplicado do Módulo 4 e encerra o curso.</p>
-    <p class="curriculo-note">A Aula Extra e a Aula Extra 1 são conteúdo complementar (preparação de ambiente e um redesign de UX/UI do SISPROT) — não fazem parte da carga horária dos 4 módulos acima.</p>
+    <p class="curriculo-note">A Aula Extra, a Aula Extra 1 e a Aula Extra 2 são conteúdo complementar (preparação de ambiente, um redesign de UX/UI do SISPROT e um panorama de tendências de IA no setor público) — não fazem parte da carga horária dos 4 módulos acima.</p>
   </div>
 </section>
 
@@ -265,6 +265,14 @@
         { label: "Acessar Aula", href: "aula-extra1/Aula_Extra_1_Redesign_UXUI_SISPROT_Stitch.html" },
       ],
     },
+    {
+      numero: "EX2", isExtra: true,
+      titulo: "Tendências de IA no Setor Público",
+      descricao: "Do plano nacional de investimento em IA ao Judiciário e ao próprio TRF1: o Plano Brasileiro de IA, o Marco Legal da IA, a Resolução CNJ 615/2025 e projetos reais como a Plataforma Sinapses e o Alei — com referências.",
+      links: [
+        { label: "Acessar Aula", href: "aula-extra2/Aula_Extra_2_Tendencias_IA_Setor_Publico.html" },
+      ],
+    },
   ];
 
   const grid = document.getElementById('aulas-grid');
@@ -273,7 +281,7 @@
     const temLinks = aula.links.length > 0;
     const card = document.createElement('article');
     card.className = 'aula-card' + (temLinks ? '' : ' is-disabled') + (aula.isExtra ? ' is-extra' : '');
-    card.id = aula.isExtra ? `aula-${aula.numero === 'EX1' ? 'extra1' : 'extra'}` : `aula-${aula.numero}`;
+    card.id = aula.isExtra ? `aula-${aula.numero === 'EX' ? 'extra' : 'extra' + aula.numero.slice(2)}` : `aula-${aula.numero}`;
 
     const numero = aula.isExtra ? aula.numero : String(aula.numero).padStart(2, '0');
     const titulo = aula.isExtra ? `Aula Extra — ${aula.titulo}` : `Aula ${aula.numero} — ${aula.titulo}`;
