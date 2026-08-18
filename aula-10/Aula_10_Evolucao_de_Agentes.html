@@ -380,6 +380,27 @@
     </div>
 
     <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Passo 0 · antes de tudo, um MySQL rodando localmente</span>
+      <h4>Já instalou o XAMPP nas aulas anteriores? Só confirmar que o MySQL está ligado</h4>
+      <p style="color:var(--text-muted);">Quem já monta o SISPROT em PHP + MySQL desde a Aula 4 já tem um servidor MySQL rodando em <code class="inline">127.0.0.1:3306</code>, dentro do XAMPP — não precisa instalar nada de novo. Basta abrir o <strong>XAMPP Control Panel</strong> e conferir se o módulo <strong>MySQL</strong> está com o status "Running" (fundo verde); se não estiver, clicar em <strong>Start</strong> ao lado dele. Quem chegou direto nesta aula, sem XAMPP instalado, segue o passo a passo abaixo.</p>
+    </div>
+
+    <div class="instruction-step" style="margin-top:20px;">
+      <span class="step-num">Instalando do zero, no Windows</span>
+      <h4>XAMPP — o mesmo pacote (Apache + MySQL/MariaDB + phpMyAdmin) usado desde a Aula 4</h4>
+      <ol style="color:var(--text); line-height:1.7; padding-left:20px; display:grid; gap:8px; font-size:0.95rem;">
+        <li>Baixar o instalador para Windows em <a href="https://www.apachefriends.org/download.html" target="_blank" rel="noopener">apachefriends.org/download.html</a> — escolher a versão mais recente com PHP 8.x.</li>
+        <li>Executar o instalador. Avisos do Controle de Conta de Usuário (UAC) ou do antivírus sobre o instalador não ser assinado são esperados — o XAMPP é um pacote de código aberto sem assinatura paga; seguir mesmo assim.</li>
+        <li>Na tela de seleção de componentes, manter pelo menos <strong>Apache</strong>, <strong>MySQL</strong> e <strong>phpMyAdmin</strong> marcados — os três já usados desde a Aula 4.</li>
+        <li>Instalar na pasta padrão sugerida (ex.: <code class="inline">C:\xampp</code>) — evitar pastas com espaço no nome ou dentro de <code class="inline">Arquivos de Programas</code>, fonte comum de erro de permissão no MySQL.</li>
+        <li>Ao concluir, abrir o <strong>XAMPP Control Panel</strong> e clicar em <strong>Start</strong> nas linhas <strong>Apache</strong> e <strong>MySQL</strong> — as duas devem ficar com fundo verde e mostrar um número de porta (MySQL, por padrão, <code class="inline">3306</code>).</li>
+      </ol>
+    </div>
+    <p class="copy-hint">Confirmar que subiu: abrir <a href="http://localhost/phpmyadmin" target="_blank" rel="noopener">localhost/phpmyadmin</a> no navegador — a tela do phpMyAdmin abrindo sem erro de conexão é a confirmação de que o MySQL está no ar.</p>
+    <p class="copy-hint">A senha do usuário <code class="inline">root</code> do XAMPP vem em branco por padrão — suficiente para os exercícios deste curso, mas não é o usuário que a IA vai usar em nenhum momento: o Passo 1, a seguir, cria um usuário dedicado (<code class="inline">mcp_sisprot</code>) só para essa finalidade.</p>
+    <p class="copy-hint">Fonte: <a href="https://www.apachefriends.org/download.html" target="_blank" rel="noopener">apachefriends.org — página oficial de download do XAMPP</a>.</p>
+
+    <div class="instruction-step" style="margin-top:20px;">
       <span class="step-num">Passo 1 · um usuário dedicado, antes de conectar</span>
       <h4>Mesmo aqui, onde a IA vai escrever, nunca o usuário administrador</h4>
       <p style="color:var(--text-muted);">Rodar isto uma vez, manualmente, no phpMyAdmin (aba SQL) ou no cliente de linha de comando do MySQL — não faz parte do que a IA vai executar depois.</p>
